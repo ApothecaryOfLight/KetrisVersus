@@ -1,3 +1,6 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 document.addEventListener( "DOMContentLoaded", function(event) {
 	console.log( 'Initing...' );
 
