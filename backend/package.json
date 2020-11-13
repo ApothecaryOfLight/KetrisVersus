@@ -1,7 +1,9 @@
 {
-	"name" : "modern-chat-backend",
-	"version" : 0.0.1",
-	"dependencies" : {
-		"socket.io" : "3.x"
+	"name": "modern-chat-backend",
+	"version": "0.0.1",
+	"dependencies": {
+		"http": "0.x",
+		"nodemon": "2.x",
+		"websocket": "1.x"
 	}
 }

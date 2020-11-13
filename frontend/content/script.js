@@ -20,6 +20,8 @@ class LikeButton extends React.Component {
 	}
 }
 
+
+
 document.addEventListener( "DOMContentLoaded", function(event) {
 	console.log( 'Initing...' );
 
@@ -32,4 +34,12 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 
 	const domContainer = document.querySelector('#like_button_container');
 	ReactDOM.render(e(LikeButton), domContainer);
+
+	var ws = new WebSocket( 'ws://34.222.250.86:3000' );
+	ws.addEventListener( 'open', function(event) {
+		console.log( "WebSocket opened!" );
+		//ws.onopen = function() { console.log( "Opened!" ); }
+		//ws.onerror = function(error) { console.log( "Error!" ); }
+		ws.send( 'Hellos!' );
+	});
 });

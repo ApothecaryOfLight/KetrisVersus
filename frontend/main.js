@@ -1,7 +1,5 @@
 const express = require('express');
-const useragent = require('express-useragent');
 const app = express();
-app.use( useragent.express() );
 
 const fs = require('fs');
 
@@ -9,9 +7,9 @@ let requests = {};
 
 function load_files() {
 	let files = {
-		'/' : './frontend/index.html',
-		'/script.js' : './frontend/script.js',
-		'/style.css' : './frontend/style.css'
+		'/' : './content/index.html',
+		'/script.js' : './content/script.js',
+		'/style.css' : './content/style.css',
 	}
 	let file_counter = 0;
 	for( const request in files ) {
@@ -35,14 +33,17 @@ function isLoaded( inCount ) {
 
 function doLaunch() {
 	app.get( '/', function(req,res) {
-		console.log( req.useragent.browser + ' === ' + req.useragent.version  );
+		console.log( "get/" );
+		//console.log( req.useragent.browser + ' === ' + req.useragent.version  );
 		res.send( requests['/'] );
 	});
 	app.get( '/style.css', function(req,res) {
+		console.log( "style.css" );
 		res.contentType('.css');
 		res.send( requests['/style.css'] );
 	});
 	app.get( '/script.js', function(req,res) {
+		console.log( "script.js" );
 		res.send( requests['/script.js'] );
 	});
 	app.listen(8080, function() {
