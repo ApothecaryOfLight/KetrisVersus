@@ -1,0 +1,7 @@
+{
+	"name" : "modern-chat-backend",
+	"version" : 0.0.1",
+	"dependencies" : {
+		"socket.io" : "3.x"
+	}
+}
