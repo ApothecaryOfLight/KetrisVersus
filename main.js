@@ -45,7 +45,7 @@ function doLaunch() {
 	app.get( '/script.js', function(req,res) {
 		res.send( requests['/script.js'] );
 	});
-	app.listen(80, function() {
-		console.log( 'HTTP Server listening.' );
+	app.listen(8080, function() {
+		console.log( 'HTTP Server listening!' );
 	});
 }

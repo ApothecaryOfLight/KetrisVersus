@@ -1,1 +1,1 @@
-npx nodemon --watch frontend main.js
+npx nodemon --watch frontend -e js,css,html main.js
