@@ -2,6 +2,7 @@
 	"name": "modern-chat-backend",
 	"version": "0.0.1",
 	"dependencies": {
+		"@babel/core": "7.x",
 		"http": "0.x",
 		"nodemon": "2.x",
 		"websocket": "1.x"

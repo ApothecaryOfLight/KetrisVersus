@@ -1,7 +1,12 @@
 const express = require('express');
+const useragent = require('express-useragent');
 const app = express();
+app.use(useragent.express());
 
 const fs = require('fs');
+
+const babelCore = require("@babel/core");
+const babelPreset = require("@babel/preset-env");
 
 let requests = {};
 
@@ -34,7 +39,7 @@ function isLoaded( inCount ) {
 function doLaunch() {
 	app.get( '/', function(req,res) {
 		console.log( "get/" );
-		//console.log( req.useragent.browser + ' === ' + req.useragent.version  );
+		console.log( req.useragent.browser + ' === ' + req.useragent.version  );
 		res.send( requests['/'] );
 	});
 	app.get( '/style.css', function(req,res) {
@@ -44,7 +49,21 @@ function doLaunch() {
 	});
 	app.get( '/script.js', function(req,res) {
 		console.log( "script.js" );
-		res.send( requests['/script.js'] );
+//		res.send( requests['/script.js'] );
+		babelCore.transform(
+			requests['/script.js'],
+			{
+				presets: [
+					"@babel/preset-env"
+				]
+			},
+			function(error,result) {
+				if( error ) {
+					console.log( error );
+				}
+				res.send( result.code );
+			}
+		);
 	});
 	app.listen(8080, function() {
 		console.log( 'HTTP Server listening!' );
