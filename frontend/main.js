@@ -54,7 +54,8 @@ function doLaunch() {
 			requests['/script.js'],
 			{
 				presets: [
-					"@babel/preset-env"
+					"@babel/preset-env",
+					"@babel/preset-react"
 				]
 			},
 			function(error,result) {

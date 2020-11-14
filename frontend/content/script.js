@@ -20,7 +20,17 @@ class LikeButton extends React.Component {
 	}
 }
 
-
+function ChatRoom(props) {
+	const lines = props.chatLog;
+	const retList = lines.map( (line) =>
+		<div key={line.text}>
+			{line.user} : {line.text}
+		</div>
+	);
+	return(
+		<div>{retList}</div>
+	);
+}
 
 document.addEventListener( "DOMContentLoaded", function(event) {
 	console.log( 'Initing...' );
@@ -42,4 +52,16 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 		//ws.onerror = function(error) { console.log( "Error!" ); }
 		ws.send( 'Hellos!' );
 	});
+
+	const chatLog = [
+		{ user: 'me', text: 'hello' },
+		{ user: 'you', text: 'hi!' },
+		{ user: 'me', text: 'howyadoin?' },
+		{ user: 'you', text: 'goodgood, yaself?' },
+		{ user: 'me', text: 'goodgood goodgood' }
+	];
+	ReactDOM.render(
+		<ChatRoom chatLog={chatLog} />,
+		document.getElementById('react_container')
+	);
 });
