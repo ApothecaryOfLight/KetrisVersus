@@ -20,25 +20,15 @@ function launchLoginInterface( inWebsocket ) {
 
 }
 
-function launchChat( inWebsocket ) {
-
-}
-
-document.addEventListener( "DOMContentLoaded", function(event) {
-	console.log( 'Initing...' );
-
-/*	let login_interface = document.getElementById('login_interface');
+function launchChatInterface( ws ) {
+	console.log( "Loggin in..." );
+	let login_interface = document.getElementById('login_interface');
 	let chat_interface = document.getElementById('chat_interface');
-	chat_interface.display = "none";*/
+	login_interface.style.display = "none";
+	chat_interface.style.display = "flex";
 
-	var ws = new WebSocket( 'ws://34.222.250.86:3000' );
-	ws.addEventListener( 'open', function(event) {
-		console.log( "WebSocket opened!" );
-		//ws.onopen = function() { console.log( "Opened!" ); }
-		//ws.onerror = function(error) { console.log( "Error!" ); }
-		//ws.send( 'Hellos!' );
-	});
 	let chatLog = [];
+	//ws.removeEventListener( 'message' );
 	ws.addEventListener( 'message', function(event) {
 		console.log( event.data );
 		chatLog.push( {
@@ -55,6 +45,14 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 		myChatbox.scrollTop =  myChatbox.scrollHeight;
 	});
 
+	function send_chat_message( inMessage ) {
+		const send_message = {
+			event : "chat_message",
+			text : inMessage
+		}
+		const send_message_json = JSON.stringify( send_message );
+		ws.send( send_message_json );
+	}
 
 	let mySendButton = document.getElementById("send_button");
 	mySendButton.addEventListener( 'click', doSend );
@@ -67,7 +65,7 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 			console.log( "enter!" );
 			const textfield = myInputText.value;
 			if( textfield != "" ) {
-				ws.send( textfield );
+				send_chat_message( textfield );
 			}
 			myInputText.value = "";
 		}
@@ -77,7 +75,7 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 		//const input_textfield = document.getElementById("input_text");
 		const input_text = myInputText.value;
 		if( input_text != "" ) {
-			ws.send( input_text );
+			send_chat_message( input_text );
 		}
 		myInputText.value = "";
 		myInputText.focus()
@@ -95,4 +93,52 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 		<ChatRoom chatLog={chatLog} />,
 		document.getElementById('chat_box')
 	);
+}
+
+function doLogin( websocket, username, password ) {
+	const login = {
+		"event" : "login",
+		"username" : username,
+		"password" : password
+	}
+	const login_text = JSON.stringify( login );
+	websocket.send( login_text );
+}
+
+document.addEventListener( "DOMContentLoaded", function(event) {
+	console.log( 'Initing...' );
+
+	let login_interface = document.getElementById('login_interface');
+	let chat_interface = document.getElementById('chat_interface');
+	chat_interface.style.display = "none";
+
+	var ws = new WebSocket( 'ws://34.222.250.86:3000' );
+	ws.addEventListener( 'open', function(event) {
+		console.log( "WebSocket opened!" );
+		//ws.onopen = function() { console.log( "Opened!" ); }
+		//ws.onerror = function(error) { console.log( "Error!" ); }
+		//ws.send( 'Hellos!' );
+	});
+
+	let login_button = document.getElementById('login_button');
+	login_button.addEventListener( 'click', function() {
+		let username_box = document.getElementById('login_username');
+		let password_box = document.getElementById('login_password');
+		let username = username_box.value;
+		let password = password_box.value;
+		if( username != "" && password != "" ) {
+			console.log( "Attempting login!" );
+			doLogin( ws, username, password );
+		}
+	});
+
+	ws.addEventListener( 'message', function(event) {
+		console.log( "Message!" );
+		if( event.data === "login_approved" ) {
+			console.log( "Login approved!" );
+			launchChatInterface( ws );
+		}
+	});
+
+
 });

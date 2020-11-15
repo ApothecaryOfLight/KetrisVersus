@@ -1,28 +1,47 @@
-.top_class {
-
+.login_interface_class {
+  width:100%;
+  height:100%;
+  display: flex;
+  justify-content: center;
+}
+.login_box_class {
+  width: 30%;
+  height: 25%;
+  align-self: center;
+  background-color: white;
+  border-radius: 5%;
+}
+.login_top_class {
+  box-sizing: conent-box;
 }
 .login_class {
-
+  
 }
-.med_class {
-
+.login_med_class {
+  box-sizing: content-box;
 }
-.username_class {
-
+.login_username_class {
+  width:100%;
+  box-sizing: content-box;
 }
-.password_class {
-
+.login_password_class {
+  width:100%;
 }
-.bot_class {
-
+.login_bot_class {
+  display: flex;
+  justify-content: space-between;
 }
-.login_class {
-
+.login_button_class {
+  
 }
-.create_account_class {
-
+.create_account_button_class {
+  
 }
 
+.chat_interface_class {
+  display: none;
+  width:100%;
+}
 .column_user_area_class {
   height: 100%;
   width: 20%;

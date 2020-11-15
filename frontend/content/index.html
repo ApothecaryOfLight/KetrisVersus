@@ -8,11 +8,23 @@
 </head>
 
 <body>
-<!--<div id='login_interface'>
-login area
-</div>-->
+<div id='login_interface' class='login_interface_class'>
+  <div id='login_box' class='login_box_class'>
+    <div id='login_top' class='login_top_class'>
+      Login
+    </div>
+    <div id='login_mid' class='login_mid_class'>
+      <input id='login_username' class='login_username_class'/>
+      <input id='login_password' class='login_password_class'/>
+    </div>
+    <div id='login_bot' class='login_bot_class'>
+      <button id='login_button' class='login_button_class'>Login</button>
+      <button id='create_account_button' class='create_account_button_class'>Create Account</button>
+    </div>
+  </div>  
+</div>
 
-<!--<div id='chat_interface'>-->
+<div id='chat_interface' class='chat_interface_class'>
   <div id='column_user_area' class='column_user_area_class'>
     <div id='user_area' class='user_area_class'>
       user_area
@@ -22,10 +34,9 @@ login area
   <div id='column_chat_area' class='column_chat_area_class'>
     <div id='chat_area' class='chat_area_class'>
       <div id='chat_box' class='chat_box_class'></div>
-        <div id='input_text_wrapper' class='input_text_wrapper_class'>
-          <textarea id='input_text' class='input_text_class' rows=4 autofocus></textarea>
-          <button id='send_button' class='send_button_class'>Send</button>
-        </div>
+      <div id='input_text_wrapper' class='input_text_wrapper_class'>
+        <textarea id='input_text' class='input_text_class' rows=4 autofocus></textarea>
+        <button id='send_button' class='send_button_class'>Send</button>
       </div>
     </div>
   </div>
@@ -35,7 +46,7 @@ login area
     </div>
     <button id='start_new_game_button' class='start_new_game_button_class'>Start New Game</buton>
   </div>
-<!--</div>-->
+</div>
 </body>
 
 </html>
