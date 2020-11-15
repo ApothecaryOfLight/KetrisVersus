@@ -5,8 +5,10 @@ const e = React.createElement;
 function ChatRoom(props) {
 	const lines = props.chatLog;
 	const retList = lines.map( (line) =>
-		<div className='chatline' key={line.uid}>
+		<div className='chat_line_wrapper_class' key={line.uid}>
+		<div className='chat_line_class' key={line.uid}>
 			{line.user} : {line.text}
+		</div>
 		</div>
 	);
 	return(
@@ -14,8 +16,20 @@ function ChatRoom(props) {
 	);
 }
 
+function launchLoginInterface( inWebsocket ) {
+
+}
+
+function launchChat( inWebsocket ) {
+
+}
+
 document.addEventListener( "DOMContentLoaded", function(event) {
 	console.log( 'Initing...' );
+
+/*	let login_interface = document.getElementById('login_interface');
+	let chat_interface = document.getElementById('chat_interface');
+	chat_interface.display = "none";*/
 
 	var ws = new WebSocket( 'ws://34.222.250.86:3000' );
 	ws.addEventListener( 'open', function(event) {
@@ -34,21 +48,41 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 		);
 		ReactDOM.render(
 			<ChatRoom chatLog={chatLog} />,
-			document.getElementById('chatbox')
+			document.getElementById('chat_box')
 		);
-		let myChatbox = document.getElementById('chatbox');
+		let myChatbox = document.getElementById('chat_box');
 		console.dir( myChatbox );
 		myChatbox.scrollTop =  myChatbox.scrollHeight;
 	});
 
-	function doSend() {
-		const input_textfield = document.getElementById("input_text");
-		const input_text = input_textfield.value;
-		ws.send( input_text );
-	}
 
 	let mySendButton = document.getElementById("send_button");
 	mySendButton.addEventListener( 'click', doSend );
+
+	let myInputText = document.getElementById("input_text");
+	myInputText.addEventListener( 'keydown', keypress_event => {
+		//console.dir( keypress_event.key );
+		if( keypress_event.key === "Enter" ) {
+			keypress_event.preventDefault();
+			console.log( "enter!" );
+			const textfield = myInputText.value;
+			if( textfield != "" ) {
+				ws.send( textfield );
+			}
+			myInputText.value = "";
+		}
+	});
+
+	function doSend() {
+		//const input_textfield = document.getElementById("input_text");
+		const input_text = myInputText.value;
+		if( input_text != "" ) {
+			ws.send( input_text );
+		}
+		myInputText.value = "";
+		myInputText.focus()
+	}
+
 
 	chatLog = [
 		{ user: 'me', text: 'hello', uid: 0 },
@@ -59,6 +93,6 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 	];
 	ReactDOM.render(
 		<ChatRoom chatLog={chatLog} />,
-		document.getElementById('chatbox')
+		document.getElementById('chat_box')
 	);
 });
