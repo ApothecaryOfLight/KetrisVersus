@@ -2,6 +2,26 @@
 
 const e = React.createElement;
 
+//TODO: List of IDs, retire, reissue
+class UID {
+	constructor() {
+		this.fields = {};
+	}
+	generateUID( inField ) {
+		if( inField in this.fields ) {
+			this.fields[inField]++;
+			return this.fields[inField]
+		} else {
+			this.fields[inField] = 0;
+			//this.fields[inField].counter = 0;
+			return 0;
+		}
+	}
+	retireUID( inField, inUID ) {
+
+	}
+}
+
 function ChatRoom(props) {
 	const lines = props.chatLog;
 	const retList = lines.map( (line) =>
@@ -16,6 +36,49 @@ function ChatRoom(props) {
 	);
 }
 
+/*function UserList() {
+	const
+}*/
+
+class CurrentUsers extends React.Component {
+	/*constructor(props) {
+		super(props)
+		this.state = {
+			"users" : []
+		};
+	}*/
+	//const loggedUsers = React.useState( this.props.users );
+  render() {
+    const users = this.props.users;
+    const users_dom = users.map( (user) =>
+      <div className='user_wrapper_class' key={user.UID}>
+        <div className='user_class' key={user.UID}>
+          {user.username}
+        </div>
+      </div>
+    );
+    return(
+      <div>{users_dom}</div>
+    );
+  }
+}
+
+class AvailGames extends React.Component {
+  render() {
+    const avail_games = this.props.avail_games;
+    const avail_games_dom = avail_games.map( (avail_game) =>
+      <div className='avail_game_wrapper_class'>
+        <div className='avail_game_class' key={avail_game.UID}>
+          {avail_game.game_name}
+        </div>
+      </div>
+    );
+    return(
+      <div>{avail_games_dom}</div>
+    );
+  }
+}
+
 function launchLoginInterface( inWebsocket ) {
 
 }
@@ -28,21 +91,63 @@ function launchChatInterface( ws ) {
 	chat_interface.style.display = "flex";
 
 	let chatLog = [];
+	let userList = [];
+	let gameList = [];
+	const myUID = new UID();
 	//ws.removeEventListener( 'message' );
+
 	ws.addEventListener( 'message', function(event) {
-		console.log( event.data );
-		chatLog.push( {
-		  user:'NotYetImplemented',
-		  text:event.data,
-		  uid: chatLog.length}
-		);
-		ReactDOM.render(
-			<ChatRoom chatLog={chatLog} />,
-			document.getElementById('chat_box')
-		);
-		let myChatbox = document.getElementById('chat_box');
-		console.dir( myChatbox );
-		myChatbox.scrollTop =  myChatbox.scrollHeight;
+		const inMessage = JSON.parse( event.data );
+
+		if( inMessage.event === "chat_message" ) {
+			chatLog.push( {
+			  user: inMessage.username,
+			  text: inMessage.text,
+			  uid: chatLog.length}
+			);
+			ReactDOM.render(
+				<ChatRoom chatLog={chatLog} />,
+				document.getElementById('chat_box')
+			);
+			let myChatbox = document.getElementById('chat_box');
+			console.dir( myChatbox );
+			myChatbox.scrollTop =  myChatbox.scrollHeight;
+		} else if( inMessage.event === "new_user" ) {
+			console.log( "New User" );
+			userList.push({
+				username: inMessage.username,
+				UID: myUID.generateUID( "user" )
+			});
+			ReactDOM.render(
+				<CurrentUsers users={userList} />,
+				document.getElementById('user_area')
+			);
+		} else if( inMessage.event === "remove_user" ) {
+			console.log( "Remove User" );
+			userList.splice( userList.indexOf( inMessage.username ), 1 );
+			ReactDOM.render(
+				<CurrentUsers users={userList} />,
+				document.getElementById('user_area')
+			);
+		} else if( inMessage.event === "new_game" ) {
+			gameList.push({
+				game_name : inMessage.game_name,
+				UID : myUID.generateUID( "game" )
+			});
+			ReactDOM.render(
+				<AvailGames avail_games={gameList} />,
+				document.getElementById('avail_games_area')
+			);
+		} else if( inMessage.event === "remove_game" ) {
+			gameList.splice( gameList.indexOf( inMessage.game_name ), 1 );
+			ReactDOM.render(
+				<AvailGames avail_games={gameList} />,
+				document.getElementById('avail_games_area')
+			);
+		} else {
+			console.log( "Unrecognized message." );
+			console.dir( inMessage );
+		}
 	});
 
 	function send_chat_message( inMessage ) {
@@ -69,6 +174,13 @@ function launchChatInterface( ws ) {
 			}
 			myInputText.value = "";
 		}
+	});
+
+	let myNewGameButton = document.getElementById("start_new_game_button");
+	myNewGameButton.addEventListener( 'click', () => {
+		ws.send( JSON.stringify({
+			event: "new_game"
+		}));
 	});
 
 	function doSend() {
@@ -139,6 +251,4 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 			launchChatInterface( ws );
 		}
 	});
-
-
 });

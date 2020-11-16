@@ -60,10 +60,11 @@
 
 }
 .user_wrapper_class {
-
+  margin-left: 2%;
+  margin-top: 2%;
 }
 .user_class {
-
+  
 }
 .contact_dev_button_class {
   position: absolute;
