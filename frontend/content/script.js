@@ -20,6 +20,9 @@ class UID {
 	retireUID( inField, inUID ) {
 
 	}
+	retireAll( inField ) {
+
+	}
 }
 
 function ChatRoom(props) {
@@ -49,6 +52,8 @@ class CurrentUsers extends React.Component {
 	}*/
 	//const loggedUsers = React.useState( this.props.users );
   render() {
+  console.log( "Rendering" );
+  console.dir( this.props.users );
     const users = this.props.users;
     const users_dom = users.map( (user) =>
       <div className='user_wrapper_class' key={user.UID}>
@@ -67,7 +72,7 @@ class AvailGames extends React.Component {
   render() {
     const avail_games = this.props.avail_games;
     const avail_games_dom = avail_games.map( (avail_game) =>
-      <div className='avail_game_wrapper_class'>
+      <div className='avail_game_wrapper_class' key={avail_game.UID}>
         <div className='avail_game_class' key={avail_game.UID}>
           {avail_game.game_name}
         </div>
@@ -83,23 +88,95 @@ function launchLoginInterface( inWebsocket ) {
 
 }
 
+
+/*If, for asynchronous reasons or other error, our user tries
+to interact with a user or game that no longer exists,
+our server will refuse the request and send full lists of relevant data.
+We could, as the commented out code depicts, iterate through
+both old and new lists, inserting and deleting as appropriate.
+However that would be a relatively expensive operation,
+even with the increased efficiency of DOM manipulation gained
+through react and the uniquely identifying keys.*/
+function updateUserList( UserList, UpdatedUserList, myUID ) {
+  console.log( "Update UserList!" );
+  /*UpdatedUserList.forEach( (updated_user) => {
+    const user_index = UserList.indexOf( updated_user.username );
+    if( user_index == -1 ) { //There is a new user who was missed.
+      UserList.push({
+        username: updated_user.username,
+        UID: myUID.generate( "user" );
+      });
+    }
+  );
+  UserList.forEach( (existing_user,index) => {
+    const updated_user_index = UpdatedUserList.indexOf( existing_user.username );
+    if( updated_user.index == -1 ) { //A user left and was missed.
+      UserList.splice( index, 1 );
+    }
+  });*/
+  console.log( "OldList: " );
+  console.dir( UserList );
+  console.log( "NewList: " );
+  console.dir( UpdatedUserList );
+  //UserList = [];
+  myUID.retireAll( "user" );
+  UpdatedUserList.forEach( (user) => {
+    UserList.push({
+      username: user.username,
+      UID: myUID.generateUID( "user" )
+    });
+  });
+console.dir( UserList );
+  ReactDOM.render(
+    <CurrentUsers users={UserList} />,
+    document.getElementById('user_area')
+  );
+}
+
+function updateGameList( AvailGamesList, UpdatedGameList, myUID ) {
+  AvailGamesList = [];
+  myUID.retireAll( "game" );
+  UpdatedGameList.forEach( (game) => {
+    AvailGamesList.push({
+      game_name : game.game_name,
+      UID: myUID.generateUID( "game" )
+    });
+  });
+  ReactDOM.render(
+    <AvailGames avail_games={AvailGamesList} />,
+    document.getElementById('avail_games_area')
+  );
+}
+
+//Chrome's dev console logs collections (console.dir) by reference.
+//This function ensures that you will see a snapshot of the data
+//At the time the log takes place.
+//Recursivity could be easily implemented.
+function doLogObject( inObj ) {
+  inObj.forEach( (element) => {
+    console.log( element );
+  });
+}
+
 function launchChatInterface( ws ) {
-	console.log( "Loggin in..." );
+	console.log( "Launching chat interface!" );
 	let login_interface = document.getElementById('login_interface');
 	let chat_interface = document.getElementById('chat_interface');
 	login_interface.style.display = "none";
 	chat_interface.style.display = "flex";
 
 	let chatLog = [];
-	let userList = [];
+	const userList = [];
 	let gameList = [];
 	const myUID = new UID();
 	//ws.removeEventListener( 'message' );
 
 	ws.addEventListener( 'message', function(event) {
 		const inMessage = JSON.parse( event.data );
-
+		console.log( "==========================================" );
+		console.dir( userList );
 		if( inMessage.event === "chat_message" ) {
+			console.log( "chat_message" );
 			chatLog.push( {
 			  user: inMessage.username,
 			  text: inMessage.text,
@@ -114,22 +191,29 @@ function launchChatInterface( ws ) {
 			myChatbox.scrollTop =  myChatbox.scrollHeight;
 		} else if( inMessage.event === "new_user" ) {
 			console.log( "New User" );
+			console.dir( inMessage.username );
 			userList.push({
 				username: inMessage.username,
 				UID: myUID.generateUID( "user" )
 			});
+			console.dir( userList );
 			ReactDOM.render(
 				<CurrentUsers users={userList} />,
 				document.getElementById('user_area')
 			);
 		} else if( inMessage.event === "remove_user" ) {
-			console.log( "Remove User" );
-			userList.splice( userList.indexOf( inMessage.username ), 1 );
+			console.log( "Remove User: " + inMessage.username );
+			userList.forEach( (user,index) => {
+				if( user.username == inMessage.username ) {
+					userList.splice(index,1);
+				}
+			});
 			ReactDOM.render(
 				<CurrentUsers users={userList} />,
 				document.getElementById('user_area')
 			);
 		} else if( inMessage.event === "new_game" ) {
+			console.log( "new_game" );
 			gameList.push({
 				game_name : inMessage.game_name,
 				UID : myUID.generateUID( "game" )
@@ -139,11 +223,27 @@ function launchChatInterface( ws ) {
 				document.getElementById('avail_games_area')
 			);
 		} else if( inMessage.event === "remove_game" ) {
-			gameList.splice( gameList.indexOf( inMessage.game_name ), 1 );
+			console.log( "remove_game" );
+			gameList.forEach( (game,index) => {
+				if( game.game_name == inMessage.game_name ) {
+					gameList.splice( index, 1 );
+				}
+			});
 			ReactDOM.render(
 				<AvailGames avail_games={gameList} />,
 				document.getElementById('avail_games_area')
 			);
+		} else if( inMessage.event === "user_list" ) {
+			console.log( "Userlist!" );
+			//Should only happen on initial login.
+			//Or if the user tries to interact w/ logged out user.
+			console.log( "OldListPre" );
+			console.dir( userList );
+			updateUserList( userList, inMessage.user_list, myUID );
+		} else if( inMessage.event === "game_list" ) {
+			console.log( "game_list" );
+			//Should only happen if user tries to join removed game.
+			updateGameList( userList, inMessage.game_list, myUID );
 		} else {
 			console.log( "Unrecognized message." );
 			console.dir( inMessage );
@@ -245,7 +345,6 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 	});
 
 	ws.addEventListener( 'message', function(event) {
-		console.log( "Message!" );
 		if( event.data === "login_approved" ) {
 			console.log( "Login approved!" );
 			launchChatInterface( ws );

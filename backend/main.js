@@ -15,6 +15,7 @@ wsServer = new WebSocketServer({
 });
 
 const clients = [];
+const avail_games = [];
 
 function doesUserExist( inUsername ) {
 	clients.forEach( client => {
@@ -25,21 +26,54 @@ function doesUserExist( inUsername ) {
 	return false;
 }
 
-function sendNewUserNotification( inUsername ) {
+function sendNewUserNotification( inUsername, connection ) {
+	console.log( "Sending new user notification to all logged-in clients." );
 	const newUser = {
 		event: "new_user",
 		username: inUsername
 	};
 	const out = JSON.stringify( newUser );
+	console.dir( newUser );
 	clients.forEach( client => {
-		client.conn.sendUTF( out );
+		if( connection != client.conn && client.username != "placeholder" ) {
+			client.conn.sendUTF( out );
+		}
 	});
 }
 
-function sendLists() {
-//1) Get the list for logged-in users.
+function sendUserList(conn) {
+	console.log( "Sending UserList" );
+	const userList = [];
+	clients.forEach( client=> {
+		userList.push({
+			username: client.username
+		});
+	});
+	console.dir( userList );
+	const out = {
+		event : "user_list",
+		user_list : userList
+	}
+	conn.sendUTF( JSON.stringify( out ) );
+}
 
-//2) Get the list for available games.
+function sendGameList(conn) {
+	const avail_gamesList = [];
+	avail_games.forEach( game=> {
+		avail_gamesList.push({
+			game_name: game.game_name
+		});
+	});
+	const out = {
+		event: "game_list",
+		game_list : avail_gamesList
+	}
+	conn.sendUTF( JSON.stringify( out ) );
+}
+
+function sendLists(conn) {
+	sendUserList(conn);
+	sendGameList(conn);
 }
 
 function sendLogoutUserNotification( inUsername ) {
@@ -51,6 +85,17 @@ function sendLogoutUserNotification( inUsername ) {
 	clients.forEach( client => {
 		client.conn.sendUTF( out );
 	});
+}
+
+function remove_game(connection,in_game_name) {
+  clients.forEach( (client) => {
+    if( client.conn != connection ) {
+      client.conn.sendUTF( JSON.stringify({
+        game_name: in_game_name,
+        event: "remove_game"
+      }));
+    }
+  });
 }
 
 wsServer.on('request', function(request) {
@@ -76,7 +121,8 @@ wsServer.on('request', function(request) {
 				console.log( "Login approved!" );
 				clients.push( new_user );
 				connection.sendUTF( "login_approved" );
-				sendNewUserNotification( new_user.username );
+				sendLists(connection);
+				sendNewUserNotification( new_user.username, connection );
 			} else {
 				connection.sendUTF( "login_rejected" );
 			}
@@ -97,6 +143,7 @@ wsServer.on('request', function(request) {
 				event : "new_game",
 				game_name : new_user.username
 			}
+			avail_games.push( new_game );
 			const new_game_text = JSON.stringify( new_game );
 			clients.forEach( client => {
 				if( client.username != new_user.username ) {
@@ -119,6 +166,12 @@ wsServer.on('request', function(request) {
 					console.log( "Logged out username: " + client.username );
 					sendLogoutUserNotification( client.username );
 				}
+				avail_games.forEach( (game,index) => {
+					if( game.game_name === client.username ) {
+						avail_games.splice( index, 1 );
+						remove_game(connection,game.game_name);
+					}
+				});
 				clients.splice( index, 1 );
 			}
 		});
