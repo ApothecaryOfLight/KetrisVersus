@@ -1,28 +1,56 @@
 .login_interface_class {
+  /*Set the login interface to the size of the window.*/
   width:100%;
   height:100%;
+
+  /*Make it a flex container*/
   display: flex;
+
+  /*Align the child div(login_box) in the center vetically and horizontally.*/
   justify-content: center;
+  align-items: center;
 }
 .login_box_class {
+  /*Set the width of the login-box to a fraction of the screen*/
   width: 30%;
-  height: 25%;
-  align-self: center;
+  min-height: 25%;
+
+  /*Set up the flex properties*/
+  display: flex; /*Make this a flex parent. It's already a flex child.*/
+  flex-direction: column; /*Arrange the content (login_top mid and bot) vertically*/
+  flex-shrink: 0; /*Shrink the login box to fit the content*/
+  justify-content: center;
+
+  /*Set the color white*/
   background-color: white;
+
+  /*Round the corners of the login interface.*/
   border-radius: 5%;
+
+  /*Create shadows for the login box, for all major browsers.*/
   -moz-box-shadow: 10px 10px 20px #000000;
   -webkit-box-shadow: 10px 10px 20px #000000;
   box-shadow: 10px 10px 20px #000000;
+
+  /*Provide padding (distance between content and borders)*/
   padding: 3%;
-  padding-bottom: 5%;
 }
 .login_top_class {
+  /*Apply font styling to the Login text.*/
   font-size: 25px;
   font-family: "Arial Black";
   text-align: center;
 }
 .login_mid_class {
+  /*Adjust the margins around the Username and Password fields.*/
   margin: 3%;
+}
+.login_bot_class {
+  /*Arrange the spacing of the buttons.*/
+  display: flex; /*We make this a flex parent to contain the buttons as flex children.*/
+  justify-content: space-between; /*Spaces buttons evenly.*/
+  margin-left: 15%;
+  margin-right: 15%;
 }
 .login_username_class {
   width:100%;
@@ -32,18 +60,6 @@
   font-family: "Arial Black";
   font-size: 15px;
 }
-/*.login_username_class::-webkit-input-placeholder {
-  font-style: italic;
-}
-.login_username_class:-moz-placehold {
-  font-style: italic;
-}
-.login_username_class::-moz-placeholder {
-  font-style: italic;
-}
-.login_username_class:-ms-input-placeholder {
-  font-style: italic;
-}*/
 .login_password_class {
   width:100%;
   border: 0px;
@@ -51,24 +67,6 @@
   padding-bottom: 5%;
   font-family: "Arial Black";
   font-size: 15px;
-}
-/*.login_password_class::-webkit-input-placeholder {
-  font-style: italic;
-}
-.login_password_class:-moz-placehold {
-  font-style: italic;
-}
-.login_password_class::-moz-placeholder {
-  font-style: italic;
-}
-.login_password_class:-ms-input-placeholder {
-  font-style: italic;
-}*/
-.login_bot_class {
-  display: flex;
-  justify-content: space-between;
-  margin-left: 15%;
-  margin-right: 15%;
 }
 .button_class {
   color: white;
@@ -78,12 +76,6 @@
   border: none;
   font-family: "Arial Black";
   font-size: 15px;
-}
-.login_button_class {
-  
-}
-.create_account_button_class {
-  
 }
 
 
