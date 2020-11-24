@@ -10,26 +10,74 @@
   align-self: center;
   background-color: white;
   border-radius: 5%;
+  -moz-box-shadow: 10px 10px 20px #000000;
+  -webkit-box-shadow: 10px 10px 20px #000000;
+  box-shadow: 10px 10px 20px #000000;
+  padding: 3%;
+  padding-bottom: 5%;
 }
 .login_top_class {
-  box-sizing: conent-box;
+  font-size: 25px;
+  font-family: "Arial Black";
+  text-align: center;
 }
-.login_class {
-  
-}
-.login_med_class {
-  box-sizing: content-box;
+.login_mid_class {
+  margin: 3%;
 }
 .login_username_class {
   width:100%;
-  box-sizing: content-box;
+  border: 0px;
+  outline: none;
+  padding-bottom: 5%;
+  font-family: "Arial Black";
+  font-size: 15px;
 }
+/*.login_username_class::-webkit-input-placeholder {
+  font-style: italic;
+}
+.login_username_class:-moz-placehold {
+  font-style: italic;
+}
+.login_username_class::-moz-placeholder {
+  font-style: italic;
+}
+.login_username_class:-ms-input-placeholder {
+  font-style: italic;
+}*/
 .login_password_class {
   width:100%;
+  border: 0px;
+  outline: none;
+  padding-bottom: 5%;
+  font-family: "Arial Black";
+  font-size: 15px;
 }
+/*.login_password_class::-webkit-input-placeholder {
+  font-style: italic;
+}
+.login_password_class:-moz-placehold {
+  font-style: italic;
+}
+.login_password_class::-moz-placeholder {
+  font-style: italic;
+}
+.login_password_class:-ms-input-placeholder {
+  font-style: italic;
+}*/
 .login_bot_class {
   display: flex;
   justify-content: space-between;
+  margin-left: 15%;
+  margin-right: 15%;
+}
+.button_class {
+  color: white;
+  background-color: DodgerBlue;
+  border-radius: 5%; 
+  padding: 4%;
+  border: none;
+  font-family: "Arial Black";
+  font-size: 15px;
 }
 .login_button_class {
   
@@ -37,6 +85,7 @@
 .create_account_button_class {
   
 }
+
 
 .chat_interface_class {
   display: none;
@@ -57,7 +106,7 @@
 
 
 .user_area_class {
-
+  
 }
 .user_wrapper_class {
   margin-left: 2%;
@@ -73,6 +122,7 @@
 }
 
 
+
 .chat_box_class {
 width: 100%;
 height: auto;
@@ -83,8 +133,6 @@ border-radius: 15px 15px 0px 0px;
 border-width: 2px;
 flex-grow: 4;
 }
-
-
 .chat_line_class {
 margin: 1%;
 word-wrap: break-word;
@@ -121,8 +169,7 @@ box-sizing: border-box;
 resize: none;
 }
 .send_button_class {
-  border-radius: 50%;
-  width: 10%
+  border-radius: 5px;
   outline: none;
 }
 .send_button_class:focus {

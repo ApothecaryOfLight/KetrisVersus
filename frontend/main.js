@@ -39,10 +39,12 @@ function isLoaded( inCount ) {
 function doLaunch() {
 	app.get( '/', function(req,res) {
 		console.log( "get/" );
+		console.log( "isMobile: " + req.useragent.isMobile );
 		console.log( req.useragent.browser + ' === ' + req.useragent.version  );
 		res.send( requests['/'] );
 	});
 	app.get( '/style.css', function(req,res) {
+		
 		console.log( "style.css" );
 		res.contentType('.css');
 		res.send( requests['/style.css'] );
