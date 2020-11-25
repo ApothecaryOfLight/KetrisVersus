@@ -102,10 +102,14 @@
 }
 .user_wrapper_class {
   margin-left: 2%;
+  margin-right: 2%;
   margin-top: 2%;
+  width: 60%;
+  background-color: white;
+  border-radius: 15%;
 }
 .user_class {
-  
+  width: 100%;
 }
 .contact_dev_button_class {
   position: absolute;
@@ -114,7 +118,10 @@
 }
 
 
-
+.chat_box_wrapper_class {
+flex-grow: 1;
+background-color: white;
+}
 .chat_box_class {
 width: 100%;
 height: auto;
@@ -123,7 +130,7 @@ overflow-y: auto;
 overflow-x: hidden;
 border-radius: 15px 15px 0px 0px;
 border-width: 2px;
-flex-grow: 4;
+flex-grow: 0;
 }
 .chat_line_class {
 margin: 1%;

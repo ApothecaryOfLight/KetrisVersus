@@ -35,7 +35,7 @@ function ChatRoom(props) {
 		</div>
 	);
 	return(
-		<div>{retList}</div>
+		<div id='chat_box' className='chat_box_class'>{retList}</div>
 	);
 }
 
@@ -44,18 +44,74 @@ function ChatRoom(props) {
 }*/
 
 class CurrentUsers extends React.Component {
-	/*constructor(props) {
-		super(props)
-		this.state = {
-			"users" : []
-		};
-	}*/
-	//const loggedUsers = React.useState( this.props.users );
+  constructor( userlist, websocket ) {
+    console.log( "==========================" );
+    console.log( "Constructor." );
+    super( userlist, websocket );
+    console.dir( userlist );
+    //console.dir( users );
+    this.state = {...userlist};
+    this.UID = new UID;
+  }
+  componentDidMount() {
+    console.log( "=============================" );
+    console.log( "componentDidMount()" );
+    this.setState( this.state.userlist );
+    let parent = this;
+    console.dir( this );
+    this.state.websocket.addEventListener('message', function(event) {
+      console.log( "CurrentUsers::message." );
+      const inMessage = JSON.parse( event.data );
+      console.log( inMessage );
+      if( inMessage.event === "new_user" ) {
+        console.log( "new user" );
+        parent.state.userlist.push({
+          username: inMessage.username,
+          UID: parent.UID.generateUID('users')
+        });
+        parent.setState( parent.state.userlist );
+      } else if( inMessage.event === "remove_user" ) {
+        console.log( "removing: " );
+        console.dir( inMessage.username );
+        parent.state.userlist.forEach( (element, index ) => {
+          if( element.username == inMessage.username ) {
+            parent.state.userlist.splice( index, 1 );
+          }
+        });
+        parent.setState( parent.state.userlist );
+      } else if( inMessage.event === "user_list" ) {
+        console.log( "Even userlist!" );
+        console.dir( inMessage.user_list );
+        parent.state.userlist = [];
+        inMessage.user_list.map( (user) => {
+          console.dir( user );
+          console.log( user.username );
+          console.dir( parent.state.userlist );
+          parent.state.userlist.push({
+            username: user.username,
+            UID: parent.UID.generateUID('users')
+          });
+          console.dir( parent.state.userlist );
+        });
+        console.log( "Setting userlist" );
+        console.dir( parent.state.userlist );
+        parent.setState( parent.state.userlist );
+      }
+    });
+  }
   render() {
-  console.log( "Rendering" );
-  console.dir( this.props.users );
-    const users = this.props.users;
-    const users_dom = users.map( (user) =>
+    console.log( "=====================" );
+    console.log( "Rendering" );
+    console.dir( this );
+    console.dir( this.state.users );
+    /*if( this.state.userlist.length == 0 ) {
+      console.log( "Empty" );
+      return( <div id='user_area' className='user_area_class'>None yet!</div> );
+    }*/
+    //const users = this.props.users;
+    console.dir( this );
+    console.dir( this.state.userlist );
+    const users_dom = this.state.userlist.map( (user) =>
       <div className='user_wrapper_class' key={user.UID}>
         <div className='user_class' key={user.UID}>
           {user.username}
@@ -63,12 +119,19 @@ class CurrentUsers extends React.Component {
       </div>
     );
     return(
-      <div>{users_dom}</div>
+      <div id='user_area' className='user_area_class'>{users_dom}</div>
     );
   }
 }
 
 class AvailGames extends React.Component {
+  constructor( inGames ) {
+    super( inGames );
+    this.state = inGames;
+  }
+  update_games( inGames ) {
+    this.setState( inGames )
+  }
   render() {
     const avail_games = this.props.avail_games;
     const avail_games_dom = avail_games.map( (avail_game) =>
@@ -79,7 +142,7 @@ class AvailGames extends React.Component {
       </div>
     );
     return(
-      <div>{avail_games_dom}</div>
+      <div id='avail_games_area' className='avail_games_area_class'>{avail_games_dom}</div>
     );
   }
 }
@@ -114,10 +177,10 @@ function updateUserList( UserList, UpdatedUserList, myUID ) {
       UserList.splice( index, 1 );
     }
   });*/
-  console.log( "OldList: " );
+  /*console.log( "OldList: " );
   console.dir( UserList );
   console.log( "NewList: " );
-  console.dir( UpdatedUserList );
+  console.dir( UpdatedUserList );*/
   //UserList = [];
   myUID.retireAll( "user" );
   UpdatedUserList.forEach( (user) => {
@@ -126,11 +189,11 @@ function updateUserList( UserList, UpdatedUserList, myUID ) {
       UID: myUID.generateUID( "user" )
     });
   });
-console.dir( UserList );
-  ReactDOM.render(
+  //console.dir( UserList );
+  /*ReactDOM.render(
     <CurrentUsers users={UserList} />,
-    document.getElementById('user_area')
-  );
+    document.getElementById('column_user_area')
+  );*/
 }
 
 function updateGameList( AvailGamesList, UpdatedGameList, myUID ) {
@@ -144,7 +207,7 @@ function updateGameList( AvailGamesList, UpdatedGameList, myUID ) {
   });
   ReactDOM.render(
     <AvailGames avail_games={AvailGamesList} />,
-    document.getElementById('avail_games_area')
+    document.getElementById('column_avail_games_area')
   );
 }
 
@@ -171,6 +234,11 @@ function launchChatInterface( ws ) {
 	const myUID = new UID();
 	//ws.removeEventListener( 'message' );
 
+	ReactDOM.render(
+		<CurrentUsers userlist={userList} websocket={ws} />,
+		document.getElementById('user_area')
+	);
+
 	ws.addEventListener( 'message', function(event) {
 		const inMessage = JSON.parse( event.data );
 		console.log( "==========================================" );
@@ -184,12 +252,12 @@ function launchChatInterface( ws ) {
 			);
 			ReactDOM.render(
 				<ChatRoom chatLog={chatLog} />,
-				document.getElementById('chat_box')
+				document.getElementById('chat_box_wrapper')
 			);
 			let myChatbox = document.getElementById('chat_box');
 			console.dir( myChatbox );
 			myChatbox.scrollTop =  myChatbox.scrollHeight;
-		} else if( inMessage.event === "new_user" ) {
+		} /*else if( inMessage.event === "new_user" ) {
 			console.log( "New User" );
 			console.dir( inMessage.username );
 			userList.push({
@@ -212,7 +280,7 @@ function launchChatInterface( ws ) {
 				<CurrentUsers users={userList} />,
 				document.getElementById('user_area')
 			);
-		} else if( inMessage.event === "new_game" ) {
+		} */ else if( inMessage.event === "new_game" ) {
 			console.log( "new_game" );
 			gameList.push({
 				game_name : inMessage.game_name,
@@ -233,7 +301,7 @@ function launchChatInterface( ws ) {
 				<AvailGames avail_games={gameList} />,
 				document.getElementById('avail_games_area')
 			);
-		} else if( inMessage.event === "user_list" ) {
+		} /*else if( inMessage.event === "user_list" ) {
 			console.log( "Userlist!" );
 			//Should only happen on initial login.
 			//Or if the user tries to interact w/ logged out user.
@@ -244,7 +312,7 @@ function launchChatInterface( ws ) {
 			console.log( "game_list" );
 			//Should only happen if user tries to join removed game.
 			updateGameList( userList, inMessage.game_list, myUID );
-		} else {
+		} */else {
 			console.log( "Unrecognized message." );
 			console.dir( inMessage );
 		}
