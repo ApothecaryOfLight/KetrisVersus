@@ -7,6 +7,7 @@ const fs = require('fs');
 
 const babelCore = require("@babel/core");
 const babelPreset = require("@babel/preset-env");
+const babelReact = require("@babel/preset-react");
 
 let requests = {};
 
@@ -51,14 +52,14 @@ function doLaunch() {
 	});
 	app.get( '/script.js', function(req,res) {
 		console.log( "script.js" );
-//		res.send( requests['/script.js'] );
+		//res.send( requests['/script.js'] );
 		babelCore.transform(
 			requests['/script.js'],
 			{
 				presets: [
 					"@babel/preset-env",
 					"@babel/preset-react"
-				]
+				],
 			},
 			function(error,result) {
 				if( error ) {

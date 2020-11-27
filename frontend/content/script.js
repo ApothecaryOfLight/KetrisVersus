@@ -2,26 +2,25 @@
 
 const e = React.createElement;
 
-//TODO: List of IDs, retire, reissue
 class UID {
 	constructor() {
-		this.fields = {};
+		this.UIDs = [];
 	}
 	generateUID( inField ) {
-		if( inField in this.fields ) {
-			this.fields[inField]++;
-			return this.fields[inField]
-		} else {
-			this.fields[inField] = 0;
-			//this.fields[inField].counter = 0;
+		if( !this.UIDs[inField] ) {
+			this.UIDs[inField] = {
+				counter: 1,
+				retiredIDs : []
+			};
 			return 0;
+		} else if( this.UIDs[inField].reitredIDs.length ) {
+			return this.UIDs[inField].retiredIDs.pop();
+		} else {
+			return this.UIDs[inField].counter++;
 		}
 	}
 	retireUID( inField, inUID ) {
-
-	}
-	retireAll( inField ) {
-
+		this.UIDs[inField].retiredIDs.push( inUID );
 	}
 }
 
@@ -39,78 +38,46 @@ function ChatRoom(props) {
 	);
 }
 
-/*function UserList() {
-	const
-}*/
-
 class CurrentUsers extends React.Component {
   constructor( userlist, websocket ) {
-    console.log( "==========================" );
-    console.log( "Constructor." );
     super( userlist, websocket );
-    console.dir( userlist );
-    //console.dir( users );
     this.state = {...userlist};
     this.UID = new UID;
   }
   componentDidMount() {
-    console.log( "=============================" );
-    console.log( "componentDidMount()" );
     this.setState( this.state.userlist );
     let parent = this;
-    console.dir( this );
     this.state.websocket.addEventListener('message', function(event) {
-      console.log( "CurrentUsers::message." );
       const inMessage = JSON.parse( event.data );
-      console.log( inMessage );
       if( inMessage.event === "new_user" ) {
-        console.log( "new user" );
         parent.state.userlist.push({
           username: inMessage.username,
           UID: parent.UID.generateUID('users')
         });
         parent.setState( parent.state.userlist );
       } else if( inMessage.event === "remove_user" ) {
-        console.log( "removing: " );
-        console.dir( inMessage.username );
+	let held_index;
         parent.state.userlist.forEach( (element, index ) => {
           if( element.username == inMessage.username ) {
+            held_index = index;
             parent.state.userlist.splice( index, 1 );
           }
         });
         parent.setState( parent.state.userlist );
+	parent.UID.retireUID( held_index );
       } else if( inMessage.event === "user_list" ) {
-        console.log( "Even userlist!" );
-        console.dir( inMessage.user_list );
         parent.state.userlist = [];
         inMessage.user_list.map( (user) => {
-          console.dir( user );
-          console.log( user.username );
-          console.dir( parent.state.userlist );
           parent.state.userlist.push({
             username: user.username,
             UID: parent.UID.generateUID('users')
           });
-          console.dir( parent.state.userlist );
         });
-        console.log( "Setting userlist" );
-        console.dir( parent.state.userlist );
         parent.setState( parent.state.userlist );
       }
     });
   }
   render() {
-    console.log( "=====================" );
-    console.log( "Rendering" );
-    console.dir( this );
-    console.dir( this.state.users );
-    /*if( this.state.userlist.length == 0 ) {
-      console.log( "Empty" );
-      return( <div id='user_area' className='user_area_class'>None yet!</div> );
-    }*/
-    //const users = this.props.users;
-    console.dir( this );
-    console.dir( this.state.userlist );
     const users_dom = this.state.userlist.map( (user) =>
       <div className='user_wrapper_class' key={user.UID}>
         <div className='user_class' key={user.UID}>
@@ -149,51 +116,6 @@ class AvailGames extends React.Component {
 
 function launchLoginInterface( inWebsocket ) {
 
-}
-
-
-/*If, for asynchronous reasons or other error, our user tries
-to interact with a user or game that no longer exists,
-our server will refuse the request and send full lists of relevant data.
-We could, as the commented out code depicts, iterate through
-both old and new lists, inserting and deleting as appropriate.
-However that would be a relatively expensive operation,
-even with the increased efficiency of DOM manipulation gained
-through react and the uniquely identifying keys.*/
-function updateUserList( UserList, UpdatedUserList, myUID ) {
-  console.log( "Update UserList!" );
-  /*UpdatedUserList.forEach( (updated_user) => {
-    const user_index = UserList.indexOf( updated_user.username );
-    if( user_index == -1 ) { //There is a new user who was missed.
-      UserList.push({
-        username: updated_user.username,
-        UID: myUID.generate( "user" );
-      });
-    }
-  );
-  UserList.forEach( (existing_user,index) => {
-    const updated_user_index = UpdatedUserList.indexOf( existing_user.username );
-    if( updated_user.index == -1 ) { //A user left and was missed.
-      UserList.splice( index, 1 );
-    }
-  });*/
-  /*console.log( "OldList: " );
-  console.dir( UserList );
-  console.log( "NewList: " );
-  console.dir( UpdatedUserList );*/
-  //UserList = [];
-  myUID.retireAll( "user" );
-  UpdatedUserList.forEach( (user) => {
-    UserList.push({
-      username: user.username,
-      UID: myUID.generateUID( "user" )
-    });
-  });
-  //console.dir( UserList );
-  /*ReactDOM.render(
-    <CurrentUsers users={UserList} />,
-    document.getElementById('column_user_area')
-  );*/
 }
 
 function updateGameList( AvailGamesList, UpdatedGameList, myUID ) {
@@ -236,7 +158,7 @@ function launchChatInterface( ws ) {
 
 	ReactDOM.render(
 		<CurrentUsers userlist={userList} websocket={ws} />,
-		document.getElementById('user_area')
+		document.getElementById('column_user_area')
 	);
 
 	ws.addEventListener( 'message', function(event) {
@@ -257,30 +179,7 @@ function launchChatInterface( ws ) {
 			let myChatbox = document.getElementById('chat_box');
 			console.dir( myChatbox );
 			myChatbox.scrollTop =  myChatbox.scrollHeight;
-		} /*else if( inMessage.event === "new_user" ) {
-			console.log( "New User" );
-			console.dir( inMessage.username );
-			userList.push({
-				username: inMessage.username,
-				UID: myUID.generateUID( "user" )
-			});
-			console.dir( userList );
-			ReactDOM.render(
-				<CurrentUsers users={userList} />,
-				document.getElementById('user_area')
-			);
-		} else if( inMessage.event === "remove_user" ) {
-			console.log( "Remove User: " + inMessage.username );
-			userList.forEach( (user,index) => {
-				if( user.username == inMessage.username ) {
-					userList.splice(index,1);
-				}
-			});
-			ReactDOM.render(
-				<CurrentUsers users={userList} />,
-				document.getElementById('user_area')
-			);
-		} */ else if( inMessage.event === "new_game" ) {
+		} else if( inMessage.event === "new_game" ) {
 			console.log( "new_game" );
 			gameList.push({
 				game_name : inMessage.game_name,
