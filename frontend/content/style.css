@@ -79,21 +79,30 @@
 }
 
 
+.left_pane_class {
+  width: 20%;
+}
+.middle_pane_class {
+  width: 60%;
+}
+.right_pane_class {
+  width: 20%;
+}
 .chat_interface_class {
   display: none;
   width:100%;
 }
 .column_user_area_class {
-  height: 100%;
-  width: 20%;
+  /*height: 100%;
+  width: 20%;*/
 }
 .column_chat_area_class {
-  height: 100%;
-  width: 60%;
+  /*height: 100%;
+  width: 60%;*/
 }
 .column_avail_games_area_class {
-  height: 100%;
-  width: 20%;
+  /*height: 100%;
+  width: 20%;*/
 }
 
 

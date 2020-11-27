@@ -13,7 +13,7 @@ class UID {
 				retiredIDs : []
 			};
 			return 0;
-		} else if( this.UIDs[inField].reitredIDs.length ) {
+		} else if( this.UIDs[inField].retiredIDs.length ) {
 			return this.UIDs[inField].retiredIDs.pop();
 		} else {
 			return this.UIDs[inField].counter++;
@@ -24,18 +24,39 @@ class UID {
 	}
 }
 
-function ChatRoom(props) {
-	const lines = props.chatLog;
-	const retList = lines.map( (line) =>
-		<div className='chat_line_wrapper_class' key={line.uid}>
-		<div className='chat_line_class' key={line.uid}>
-			{line.user} : {line.text}
-		</div>
-		</div>
-	);
-	return(
-		<div id='chat_box' className='chat_box_class'>{retList}</div>
-	);
+class ChatRoom extends React.Component {
+  constructor( chatmessages, websocket ) {
+    super( chatmessages, websocket );
+    this.state = {...chatmessages};
+    this.UID = new UID;
+  }
+  componentDidMount() {
+    this.setState( this.state.chatmessages );
+    let parent = this;
+    this.state.websocket.addEventListener('message', function(event) {
+      const inMessage = JSON.parse( event.data );
+      if( inMessage.event === "chat_message" ) {
+        parent.state.chatmessages.push({
+          username: inMessage.username,
+          text: inMessage.text,
+          UID: parent.UID.generateUID('chats')
+        });
+        parent.setState( parent.state.chatmessages );
+      }
+    });
+  }
+  render() {
+    const chat_dom = this.state.chatmessages.map( (chatmessage) =>
+      <div className='chat_line_wrapper_class' key={chatmessage.UID}>
+        <div className='chat_line_class' key={chatmessage.UID}>
+          {chatmessage.username}: {chatmessage.text}
+        </div>
+      </div>
+    );
+    return(
+      <div id='chat_area' className='chat_area_class'>{chat_dom}</div>
+    );
+  }
 }
 
 class CurrentUsers extends React.Component {
@@ -59,12 +80,12 @@ class CurrentUsers extends React.Component {
 	let held_index;
         parent.state.userlist.forEach( (element, index ) => {
           if( element.username == inMessage.username ) {
-            held_index = index;
+            held_index = element.UID;
             parent.state.userlist.splice( index, 1 );
           }
         });
         parent.setState( parent.state.userlist );
-	parent.UID.retireUID( held_index );
+	parent.UID.retireUID( 'users', held_index );
       } else if( inMessage.event === "user_list" ) {
         parent.state.userlist = [];
         inMessage.user_list.map( (user) => {
@@ -92,16 +113,46 @@ class CurrentUsers extends React.Component {
 }
 
 class AvailGames extends React.Component {
-  constructor( inGames ) {
-    super( inGames );
-    this.state = inGames;
+  constructor( inGames, websocket ) {
+    super( inGames, websocket );
+    this.state = {...inGames};
+    this.UID = new UID;
   }
-  update_games( inGames ) {
-    this.setState( inGames )
-  }
+  componentDidMount() {
+    this.setState( this.state.inGames );
+    let parent = this;
+    this.state.websocket.addEventListener('message', function(event) {
+      const inMessage = JSON.parse( event.data );
+      if( inMessage.event === "new_game" ) {
+        parent.state.inGames.push({
+          game_name: inMessage.game_name,
+          UID: parent.UID.generateUID('games')
+        });
+        parent.setState( parent.state.inGames );
+      } else if( inMessage.event === "remove_game" ) {
+        let held_index;
+        parent.state.inGames.forEach( (element,index) => {
+          if( element.game_name === inMessage.game_name ) {
+            held_index = element.UID;
+            parent.state.inGames.splice( index, 1 );
+          }
+        });
+        parent.setState( parent.state.inGames );
+        parent.UID.retireUID( 'games', held_index );
+      } else if( inMessage.event === "game_list" ) {
+        parent.state.inGames = [];
+        inMessage.game_list.map( (game) => {
+          parent.state.inGames.push({
+            game_name: game.game_name,
+            UID: parent.UID.generateUID('games')
+          });
+        });
+        parent.setState( parent.state.inGames );
+      }
+    });
+  };
   render() {
-    const avail_games = this.props.avail_games;
-    const avail_games_dom = avail_games.map( (avail_game) =>
+    const avail_games_dom = this.state.inGames.map( (avail_game) =>
       <div className='avail_game_wrapper_class' key={avail_game.UID}>
         <div className='avail_game_class' key={avail_game.UID}>
           {avail_game.game_name}
@@ -118,25 +169,6 @@ function launchLoginInterface( inWebsocket ) {
 
 }
 
-function updateGameList( AvailGamesList, UpdatedGameList, myUID ) {
-  AvailGamesList = [];
-  myUID.retireAll( "game" );
-  UpdatedGameList.forEach( (game) => {
-    AvailGamesList.push({
-      game_name : game.game_name,
-      UID: myUID.generateUID( "game" )
-    });
-  });
-  ReactDOM.render(
-    <AvailGames avail_games={AvailGamesList} />,
-    document.getElementById('column_avail_games_area')
-  );
-}
-
-//Chrome's dev console logs collections (console.dir) by reference.
-//This function ensures that you will see a snapshot of the data
-//At the time the log takes place.
-//Recursivity could be easily implemented.
 function doLogObject( inObj ) {
   inObj.forEach( (element) => {
     console.log( element );
@@ -160,8 +192,16 @@ function launchChatInterface( ws ) {
 		<CurrentUsers userlist={userList} websocket={ws} />,
 		document.getElementById('column_user_area')
 	);
+        ReactDOM.render(
+		<AvailGames inGames={gameList} websocket={ws} />,
+		document.getElementById('column_avail_games_area')
+        );
+	ReactDOM.render(
+		<ChatRoom chatmessages={chatLog} websocket={ws} />,
+		document.getElementById('column_chat_area')
+	);
 
-	ws.addEventListener( 'message', function(event) {
+	/*ws.addEventListener( 'message', function(event) {
 		const inMessage = JSON.parse( event.data );
 		console.log( "==========================================" );
 		console.dir( userList );
@@ -179,43 +219,11 @@ function launchChatInterface( ws ) {
 			let myChatbox = document.getElementById('chat_box');
 			console.dir( myChatbox );
 			myChatbox.scrollTop =  myChatbox.scrollHeight;
-		} else if( inMessage.event === "new_game" ) {
-			console.log( "new_game" );
-			gameList.push({
-				game_name : inMessage.game_name,
-				UID : myUID.generateUID( "game" )
-			});
-			ReactDOM.render(
-				<AvailGames avail_games={gameList} />,
-				document.getElementById('avail_games_area')
-			);
-		} else if( inMessage.event === "remove_game" ) {
-			console.log( "remove_game" );
-			gameList.forEach( (game,index) => {
-				if( game.game_name == inMessage.game_name ) {
-					gameList.splice( index, 1 );
-				}
-			});
-			ReactDOM.render(
-				<AvailGames avail_games={gameList} />,
-				document.getElementById('avail_games_area')
-			);
-		} /*else if( inMessage.event === "user_list" ) {
-			console.log( "Userlist!" );
-			//Should only happen on initial login.
-			//Or if the user tries to interact w/ logged out user.
-			console.log( "OldListPre" );
-			console.dir( userList );
-			updateUserList( userList, inMessage.user_list, myUID );
-		} else if( inMessage.event === "game_list" ) {
-			console.log( "game_list" );
-			//Should only happen if user tries to join removed game.
-			updateGameList( userList, inMessage.game_list, myUID );
-		} */else {
+		} else {
 			console.log( "Unrecognized message." );
 			console.dir( inMessage );
 		}
-	});
+	});*/
 
 	function send_chat_message( inMessage ) {
 		const send_message = {
@@ -261,7 +269,7 @@ function launchChatInterface( ws ) {
 	}
 
 
-	chatLog = [
+	/*chatLog = [
 		{ user: 'me', text: 'hello', uid: 0 },
 		{ user: 'you', text: 'hi!', uid: 1 },
 		{ user: 'me', text: 'howyadoin?', uid: 2 },
@@ -271,7 +279,7 @@ function launchChatInterface( ws ) {
 	ReactDOM.render(
 		<ChatRoom chatLog={chatLog} />,
 		document.getElementById('chat_box')
-	);
+	);*/
 }
 
 function doLogin( websocket, username, password ) {

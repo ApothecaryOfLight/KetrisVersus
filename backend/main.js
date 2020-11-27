@@ -128,7 +128,7 @@ wsServer.on('request', function(request) {
 			}
 		} else if( inMessage.event === "chat_message" ) {
 			const chat_message = {
-				username : "placeholder",
+				username : new_user.username,
 				userdata : "placeholder",
 				text : inMessage.text,
 				event: "chat_message"
