@@ -75,6 +75,7 @@ class CurrentUsers extends React.Component {
       if( inMessage.event === "new_user" ) {
         parent.state.userlist.push({
           username: inMessage.username,
+          user_icon: inMessage.username.charAt(0).toUpperCase(),
           UID: parent.UID.generateUID('users')
         });
         parent.setState( parent.state.userlist );
@@ -93,6 +94,7 @@ class CurrentUsers extends React.Component {
         inMessage.user_list.map( (user) => {
           parent.state.userlist.push({
             username: user.username,
+            user_icon: user.username.charAt(0).toUpperCase(),
             UID: parent.UID.generateUID('users')
           });
         });
@@ -104,7 +106,19 @@ class CurrentUsers extends React.Component {
     const users_dom = this.state.userlist.map( (user) =>
       <div className='user_wrapper_class' key={user.UID}>
         <div className='user_class' key={user.UID}>
-          {user.username}
+          <div className='user_left_class' key={user.UID}>
+            <div className='user_icon_class' key={user.UID}>
+              {user.user_icon}
+            </div>
+          </div>
+          <div className='user_right_class' key={user.UID}>
+            <div className='user_username_class' key={user.UID}>
+              {user.username}
+            </div>
+            <div className='user_score_class' key={user.UID}>
+              700
+            </div>
+          </div>
         </div>
       </div>
     );
