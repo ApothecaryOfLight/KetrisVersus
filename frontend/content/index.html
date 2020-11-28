@@ -2,6 +2,8 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="style.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Goldman:wght@700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 <script src="script.js"></script>
@@ -25,33 +27,37 @@
 </div>
 
 <div id='chat_interface' class='chat_interface_class'>
-
-  <div id='left_pane' class='left_pane_class'>
-    <div id='column_user_area' class='column_user_area_class'>
-      <div id='user_area' class='user_area_class'></div>
-    </div>
-    <button id='contact_dev_button' class='contact_dev_button_class'>Contact Developer!</button>
+  <div id='top_pane' class='top_pane_class'>
+    <div id='banner' class='banner_class'>KETRIS</div>
   </div>
+  <div id='bottom_pane' class='bottom_pane_class'>
+    <div id='left_pane' class='left_pane_class'>
+      <div id='column_user_area' class='column_user_area_class'>
+        <div id='user_area' class='user_area_class'></div>
+      </div>
+      <button id='contact_dev_button' class='contact_dev_button_class button_class'>Contact Developer!</button>
+    </div>
 
-  <div id='middle_pane' class='middle_pane_class'>
-    <div id='column_chat_area' class='column_chat_area_class'>
-      <div id='chat_area' class='chat_area_class'>
-        <div id='chat_box_wrapper' class='chat_box_wrapper_class'>
-          <div id='chat_box' class='chat_box_class'></div>
+    <div id='middle_pane' class='middle_pane_class'>
+      <div id='column_chat_area' class='column_chat_area_class'>
+        <div id='chat_area' class='chat_area_class'>
+          <div id='chat_box_wrapper' class='chat_box_wrapper_class'>
+            <div id='chat_box' class='chat_box_class'></div>
+          </div>
         </div>
       </div>
+      <div id='input_text_wrapper' class='input_text_wrapper_class'>
+        <textarea id='input_text' class='input_text_class' rows=4 autofocus></textarea>
+        <button id='send_button' class='send_button_class button_class'>Send</button>
+      </div>
     </div>
-    <div id='input_text_wrapper' class='input_text_wrapper_class'>
-      <textarea id='input_text' class='input_text_class' rows=4 autofocus></textarea>
-      <button id='send_button' class='send_button_class'>Send</button>
-    </div>
-  </div>
 
-  <div id='right_pane' class='right_pane_class'>
-    <div id='column_avail_games_area' class='column_avail_games_area_class'>
-      <div id='avail_games_area' class='avail_games_area_class'></div>
-    </div>
-  <button id='start_new_game_button' class='start_new_game_button_class'>Start New Game</buton>
+    <div id='right_pane' class='right_pane_class'>
+      <div id='column_avail_games_area' class='column_avail_games_area_class'>
+        <div id='avail_games_area' class='avail_games_area_class'></div>
+      </div>
+    <button id='start_new_game_button' class='start_new_game_button_class button_class'>Start New Game</buton>
+  </div>
 </div>
 </body>
 

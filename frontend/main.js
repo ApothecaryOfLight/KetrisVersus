@@ -17,6 +17,9 @@ function load_files() {
 		'/script.js' : './content/script.js',
 		'/style.css' : './content/style.css',
 	}
+	let images = {
+		'/border.png' : './content/border.png'
+	}
 	let file_counter = 0;
 	for( const request in files ) {
 		fs.readFile( files[request], 'utf8', function read(error, data ) {
@@ -28,11 +31,19 @@ function load_files() {
 			isLoaded( file_counter );
 		});
 	}
+	for( const request in images ) {
+		fs.readFile( images[request], function read( error, data ) {
+			if( error ) { throw error; }
+			requests[request] = data;
+			file_counter++;
+			isLoaded( file_counter );
+		});
+	}
 }
 load_files();
 
 function isLoaded( inCount ) {
-	if( inCount >= 3 ) {
+	if( inCount >= 4 ) {
 		doLaunch();
 	}
 }
@@ -68,6 +79,10 @@ function doLaunch() {
 				res.send( result.code );
 			}
 		);
+	});
+	app.get( '/border.png', function(req,res) {
+		console.log( "Border request!" );
+		res.send( requests['/border.png'] );
 	});
 	app.listen(8080, function() {
 		console.log( 'HTTP Server listening!' );
