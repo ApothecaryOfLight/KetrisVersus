@@ -42,6 +42,8 @@ class ChatRoom extends React.Component {
           UID: parent.UID.generateUID('chats')
         });
         parent.setState( parent.state.chatmessages );
+        let column_chat_area_div = document.getElementById("column_chat_area");
+	column_chat_area_div.scrollTop = column_chat_area_div.scrollHeight;
       }
     });
   }
@@ -181,6 +183,10 @@ function launchChatInterface( ws ) {
 	let chat_interface = document.getElementById('chat_interface');
 	login_interface.style.display = "none";
 	chat_interface.style.display = "flex";
+
+	let body = document.body;
+	console.dir( body );
+	body.style["background"] = "white";
 
 	let chatLog = [];
 	const userList = [];

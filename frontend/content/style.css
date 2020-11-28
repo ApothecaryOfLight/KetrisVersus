@@ -79,31 +79,46 @@
 }
 
 
+
 .left_pane_class {
   width: 20%;
+  height: 100%;
 }
 .middle_pane_class {
   width: 60%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .right_pane_class {
   width: 20%;
+  height: 100%;
 }
 .chat_interface_class {
-  display: none;
+  display: flex;
   width:100%;
 }
+
+
+
 .column_user_area_class {
   /*height: 100%;
   width: 20%;*/
 }
 .column_chat_area_class {
-  /*height: 100%;
-  width: 60%;*/
+  /*height: 80%;
+  width: 100%;*/
+  flex-grow: 1;
+  padding-top: 0%;
+  padding-bottom: 1%;
+  overflow-y: auto;
+  background-color: white;
 }
 .column_avail_games_area_class {
   /*height: 100%;
   width: 20%;*/
 }
+
 
 
 .user_area_class {
@@ -113,9 +128,9 @@
   margin-left: 2%;
   margin-right: 2%;
   margin-top: 2%;
-  width: 60%;
+  width: 95%;
   background-color: white;
-  border-radius: 15%;
+  border-radius: 15pt;
 }
 .user_class {
   width: 100%;
@@ -127,34 +142,27 @@
 }
 
 
-.chat_box_wrapper_class {
-flex-grow: 1;
-background-color: white;
-}
-.chat_box_class {
-width: 100%;
-height: auto;
-background-color: white;
-overflow-y: auto;
-overflow-x: hidden;
-border-radius: 15px 15px 0px 0px;
-border-width: 2px;
-flex-grow: 0;
+
+.chat_area_class {
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  background-color: white;
 }
 .chat_line_class {
-margin: 1%;
-word-wrap: break-word;
-padding-left: 2%;
-padding-right: 2%;
-padding-top:1%;
-padding-bottom:1%;
-border-radius: 15px;
+  word-wrap: break-word;
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-top:1%;
+  padding-bottom:1%;
+  border-radius: 15px;
 }
 .chat_line_wrapper_class {
-background-color: #CCEEFF;
-border-radius: 15px;
-margin-left: 1%;
-margin-right: 1%;
+  background-color: #CCEEFF;
+  border-radius: 15px;
+  margin-left: 1%;
+  margin-right: 1%;
+  margin-bottom: 2%;
 }
 .chat_line_message {
 
@@ -164,17 +172,18 @@ margin-right: 1%;
 }
 
 
+
 .input_text_wrapper_class {
   display: flex;
   flex-flow: row nowrap;
 }
 .input_text_class {
-width: 100%;
-outline: none;
-border-width: 0px;
-margin-top: 4px;
-box-sizing: border-box;
-resize: none;
+  width: 100%;
+  outline: none;
+  border-width: 0px;
+  margin-top: 4px;
+  box-sizing: border-box;
+  resize: none;
 }
 .send_button_class {
   border-radius: 5px;
@@ -185,12 +194,7 @@ resize: none;
 }
 
 
-.chat_area_class {
-width: 100%;
-height: 100%;
-display: flex;
-flex-flow: column nowrap;
-}
+
 
 
 .avail_games_area_class {
