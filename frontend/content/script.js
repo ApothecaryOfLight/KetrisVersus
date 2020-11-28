@@ -2,11 +2,25 @@
 
 const e = React.createElement;
 
+let colors = [
+  "#ffff66",
+  "#66ff99",
+  "#33ccff",
+  "#9966ff",
+  "#3366cc",
+  "#00cc66"
+]
+
+function getColor() {
+ return colors[Math.floor(Math.random()*colors.length)];
+}
+
 class UID {
 	constructor() {
 		this.UIDs = [];
 	}
 	generateUID( inField ) {
+		console.log( "Generating UID." );
 		if( !this.UIDs[inField] ) {
 			this.UIDs[inField] = {
 				counter: 1,
@@ -38,6 +52,7 @@ class ChatRoom extends React.Component {
       if( inMessage.event === "chat_message" ) {
         parent.state.chatmessages.push({
           username: inMessage.username,
+          user_icon: inMessage.username.charAt(0).toUpperCase(),
           text: inMessage.text,
           UID: parent.UID.generateUID('chats')
         });
@@ -50,8 +65,23 @@ class ChatRoom extends React.Component {
   render() {
     const chat_dom = this.state.chatmessages.map( (chatmessage) =>
       <div className='chat_line_wrapper_class' key={chatmessage.UID}>
-        <div className='chat_line_class' key={chatmessage.UID}>
-          {chatmessage.username}: {chatmessage.text}
+        <div className='chat_line_class'>
+          <div className='chat_line_left_class'>
+            <div className='chat_line_icon_class'>
+              {chatmessage.user_icon}
+            </div>
+          </div>
+          <div className='chat_line_right_class'>
+            <div className='chat_line_username_class'>
+              {chatmessage.username}:
+            </div>
+            <div className='chat_line_text_class'>
+              {chatmessage.text}
+            </div>
+            <div className='chat_line_timestamp_class'>
+              Timestamp
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -105,17 +135,17 @@ class CurrentUsers extends React.Component {
   render() {
     const users_dom = this.state.userlist.map( (user) =>
       <div className='user_wrapper_class' key={user.UID}>
-        <div className='user_class' key={user.UID}>
-          <div className='user_left_class' key={user.UID}>
-            <div className='user_icon_class' key={user.UID}>
+        <div className='user_class'>
+          <div className='user_left_class'>
+            <div className='user_icon_class' style={{background:getColor()}}>
               {user.user_icon}
             </div>
           </div>
-          <div className='user_right_class' key={user.UID}>
-            <div className='user_username_class' key={user.UID}>
+          <div className='user_right_class'>
+            <div className='user_username_class'>
               {user.username}
             </div>
-            <div className='user_score_class' key={user.UID}>
+            <div className='user_score_class'>
               700
             </div>
           </div>
@@ -142,6 +172,7 @@ class AvailGames extends React.Component {
       if( inMessage.event === "new_game" ) {
         parent.state.inGames.push({
           game_name: inMessage.game_name,
+          game_icon: inMessage.game_name.charAt(0).toUpperCase(),
           UID: parent.UID.generateUID('games')
         });
         parent.setState( parent.state.inGames );
@@ -160,6 +191,7 @@ class AvailGames extends React.Component {
         inMessage.game_list.map( (game) => {
           parent.state.inGames.push({
             game_name: game.game_name,
+            game_icon: game.game_name.charAt(0).toUpperCase(),
             UID: parent.UID.generateUID('games')
           });
         });
@@ -170,8 +202,23 @@ class AvailGames extends React.Component {
   render() {
     const avail_games_dom = this.state.inGames.map( (avail_game) =>
       <div className='avail_game_wrapper_class' key={avail_game.UID}>
-        <div className='avail_game_class' key={avail_game.UID}>
-          {avail_game.game_name}
+        <div className='avail_game_class'>
+          <div className='avail_game_left_class'>
+            <div className='avail_game_icon_class' style={{background:getColor()}}>
+              {avail_game.game_icon}
+            </div>
+            <div className='avail_game_username_class'>
+              Started By: {avail_game.game_name}
+            </div>
+            <div className='avail_game_timestamp_class'>
+              Timestamp
+            </div>
+          </div>
+          <div className='avail_game_right_class'>
+            <button className='avail_game_join_game_button_class button_class'>
+              Join Game
+            </button>
+          </div>
         </div>
       </div>
     );

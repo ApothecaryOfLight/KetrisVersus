@@ -143,8 +143,9 @@
   margin-bottom: 2%;
   margin-left: 1%;
   margin-right: 1%;
-  position: relative;
   border-left: 1px solid #e2e2e2;
+  display:flex;
+  flex-direction: column;
 }
 .chat_interface_class {
   display: flex;
@@ -179,6 +180,8 @@
 .column_avail_games_area_class {
   /*height: 100%;
   width: 20%;*/
+  flex-grow:1;
+  overflow-y:auto;
 }
 
 
@@ -255,6 +258,8 @@
   padding-top:1%;
   padding-bottom:1%;
   border-radius: 15px;
+  display:flex;
+  flex-direction:row;
 }
 .chat_line_wrapper_class {
   background-color: #CCEEFF;
@@ -263,11 +268,39 @@
   margin-right: 1%;
   margin-bottom: 2%;
 }
-.chat_line_message {
+.chat_line_message_class {
 
 }
-.chat_line_user {
+.chat_line_username_class {
+  font-weight: bold;
+  font-size: 15px;
+}
+.chat_line_left_class {
 
+}
+.chat_line_right_class {
+  flex-grow:1;
+  padding-left: 10px;
+  display:flex;
+  flex-direction:column;
+}
+.chat_line_icon_class {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  background: green;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 25px;
+}
+.chat_line_text_class {
+
+}
+.chat_line_timestamp_class {
+  font-size: 9px;
+  text-align:right;
 }
 
 
@@ -300,16 +333,44 @@
 .avail_games_area_class {
 
 }
-.avail_games_wrapper_class {
-
+.avail_game_wrapper_class {
+  border-bottom: 1px solid #e2e2e2;
 }
 .avail_game_class {
-
+  display:flex;
+  flex-direction:row;
+}
+.avail_game_left_class {
+  display:flex;
+  flex-direction:column;
+}
+.avail_game_icon_class {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  background: green;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 25px;
+}
+.avail_game_username_class {
+  align-text: center;
+}
+.avail_game_timestamp_class {
+  align-text: center;
+}
+.avail_game_right_class {
+  
+}
+.avail_game_join_button_class {
+  padding: 15px;
 }
 .start_new_game_button_class {
   width: 96%;
   margin-left: 4%;
-  position: absolute;
+  flex-grow:0;
   bottom: 0px;
 }
 
