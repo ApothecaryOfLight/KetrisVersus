@@ -17,6 +17,26 @@ wsServer = new WebSocketServer({
 const clients = [];
 const avail_games = [];
 
+class game_id_generator {
+	constructor() {
+		this.game_ids = [];
+		this.game_ids.counter = 0;
+		this.game_ids.retiredIDs = [];
+		console.log( this.game_ids.retiredIDs.length );
+	}
+	generateUID( inField ) {
+		console.log( "Generating Game ID." );
+		if( !this.game_ids.retiredIDs.length ) {
+			return this.game_ids.counter++;
+		} else if( this.game_ids.retiredIDs > 0 ) {
+			return this.game_ids.retiredIDs.pop();
+		}
+	}
+	retireUID( inUID ) {
+		this.game_ids.retiredIDs.push( inUID );
+	}
+}
+
 function doesUserExist( inUsername ) {
 	clients.forEach( client => {
 		if( client.username === inUsername ) {
@@ -98,6 +118,8 @@ function remove_game(connection,in_game_name) {
   });
 }
 
+const myGameIDGen = new game_id_generator;
+
 wsServer.on('request', function(request) {
 	//console.dir( request );
 	var connection = request.accept( null, request.origin );
@@ -141,17 +163,33 @@ wsServer.on('request', function(request) {
 			console.log( "New game" );
 			const new_game = {
 				event : "new_game",
-				game_name : new_user.username
+				game_name : new_user.username,
+				game_id: myGameIDGen.generateUID()
 			}
-			avail_games.push( new_game );
 			const new_game_text = JSON.stringify( new_game );
 			clients.forEach( client => {
 				if( client.username != new_user.username ) {
 					client.conn.sendUTF( new_game_text );
 				}
 			});
-		} else if( inMessage.event === "game_select" ) {
-
+			new_game.user = connection;
+			avail_games.push( new_game );
+		} else if( inMessage.event === "enter_game" ) {
+			console.log( "enter_game" );
+			console.log( "game_id: " + inMessage.game_id );
+			//1) Send ip of ketris server to both users, along with game id.
+			const enter_game_approval = {
+				event: "enter_game_approval",
+				ip: "todo_loadbalancing",
+				game_id: inMessage.game_id
+			};
+			const enter_game_approval_json = JSON.stringify( enter_game_approval );
+			connection.send( enter_game_approval_json );
+			avail_games.forEach( (game) => {
+				if( game.game_id == inMessage.game_id ) {
+					game.user.send( enter_game_approval_json );
+				}
+			});
 		} else {
 			console.log( "Unrecognized object!" );
 			console.dir( inMessage );
@@ -168,6 +206,7 @@ wsServer.on('request', function(request) {
 				}
 				avail_games.forEach( (game,index) => {
 					if( game.game_name === client.username ) {
+						myGameIDGen.retireUID( game.game_id );
 						avail_games.splice( index, 1 );
 						remove_game(connection,game.game_name);
 					}

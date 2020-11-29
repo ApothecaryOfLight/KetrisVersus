@@ -2,17 +2,38 @@
 
 const e = React.createElement;
 
-let colors = [
-  "#ffff66",
-  "#66ff99",
-  "#33ccff",
-  "#9966ff",
-  "#3366cc",
-  "#00cc66"
-]
+let colors = {
+  "A": "#ffff66",
+  "B": "#66ff99",
+  "C": "#33ccff",
+  "D": "#9966ff",
+  "E": "#3366cc",
+  "F": "#00cc66",
+  "G": "#ffa07a",
+  "H": "#ffa500",
+  "I": "#f0e68c",
+  "J": "#3cb371",
+  "K": "#e0ffff",
+  "L": "#87ceeb",
+  "M": "#7b68ee",
+  "N": "#e6e6fa",
+  "O": "#d8bfd8",
+  "P": "#9370db",
+  "Q": "#ffc0cb",
+  "R": "#faebd7",
+  "S": "#c0c0c0",
+  "T": "#deb887",
+  "U": "#daa520",
+  "V": "#a52a2a",
+  "W": "#800000",
+  "X": "#87cefa",
+  "Y": "#4169e1",
+  "Z": "#ee82ee"
+}
 
-function getColor() {
- return colors[Math.floor(Math.random()*colors.length)];
+function getColor( inLetter ) {
+  console.log( "background:" + colors[inLetter] );
+  return {background: colors[inLetter]};
 }
 
 class UID {
@@ -53,6 +74,7 @@ class ChatRoom extends React.Component {
         parent.state.chatmessages.push({
           username: inMessage.username,
           user_icon: inMessage.username.charAt(0).toUpperCase(),
+          user_color: getColor( inMessage.username.charAt(0).toUpperCase() ),
           text: inMessage.text,
           UID: parent.UID.generateUID('chats')
         });
@@ -67,7 +89,7 @@ class ChatRoom extends React.Component {
       <div className='chat_line_wrapper_class' key={chatmessage.UID}>
         <div className='chat_line_class'>
           <div className='chat_line_left_class'>
-            <div className='chat_line_icon_class'>
+            <div className='chat_line_icon_class' style={chatmessage.user_color}>
               {chatmessage.user_icon}
             </div>
           </div>
@@ -106,6 +128,7 @@ class CurrentUsers extends React.Component {
         parent.state.userlist.push({
           username: inMessage.username,
           user_icon: inMessage.username.charAt(0).toUpperCase(),
+          user_color: getColor( inMessage.username.charAt(0).toUpperCase() ),
           UID: parent.UID.generateUID('users')
         });
         parent.setState( parent.state.userlist );
@@ -125,6 +148,7 @@ class CurrentUsers extends React.Component {
           parent.state.userlist.push({
             username: user.username,
             user_icon: user.username.charAt(0).toUpperCase(),
+            user_color: getColor( user.username.charAt(0).toUpperCase() ),
             UID: parent.UID.generateUID('users')
           });
         });
@@ -137,7 +161,7 @@ class CurrentUsers extends React.Component {
       <div className='user_wrapper_class' key={user.UID}>
         <div className='user_class'>
           <div className='user_left_class'>
-            <div className='user_icon_class' style={{background:getColor()}}>
+            <div className='user_icon_class' style={user.user_color}>
               {user.user_icon}
             </div>
           </div>
@@ -158,6 +182,13 @@ class CurrentUsers extends React.Component {
   }
 }
 
+function join_game( inGameID ) {
+  return function( inGameID ) {
+    console.log( "jinning: " + inGameID );
+    console.dir( inGameID );
+  }
+}
+
 class AvailGames extends React.Component {
   constructor( inGames, websocket ) {
     super( inGames, websocket );
@@ -169,10 +200,13 @@ class AvailGames extends React.Component {
     let parent = this;
     this.state.websocket.addEventListener('message', function(event) {
       const inMessage = JSON.parse( event.data );
+	console.dir( event.data );
       if( inMessage.event === "new_game" ) {
         parent.state.inGames.push({
           game_name: inMessage.game_name,
           game_icon: inMessage.game_name.charAt(0).toUpperCase(),
+          game_color: getColor( inMessage.game_name.charAt(0).toUpperCase() ),
+          game_id: inMessage.game_id,
           UID: parent.UID.generateUID('games')
         });
         parent.setState( parent.state.inGames );
@@ -192,6 +226,8 @@ class AvailGames extends React.Component {
           parent.state.inGames.push({
             game_name: game.game_name,
             game_icon: game.game_name.charAt(0).toUpperCase(),
+            game_color: getColor( game.game_name.charAt(0).toUpperCase() ),
+            game_id: game.game_id,
             UID: parent.UID.generateUID('games')
           });
         });
@@ -199,12 +235,21 @@ class AvailGames extends React.Component {
       }
     });
   };
+  join_game( inGameID ) {
+    console.log( "Joining game:" + inGameID );
+    console.dir( inGameID );
+    console.dir( this );
+    this.state.websocket.send(JSON.stringify({
+      event: "enter_game",
+      game_id: inGameID
+    }));
+  }
   render() {
     const avail_games_dom = this.state.inGames.map( (avail_game) =>
       <div className='avail_game_wrapper_class' key={avail_game.UID}>
         <div className='avail_game_class'>
           <div className='avail_game_left_class'>
-            <div className='avail_game_icon_class' style={{background:getColor()}}>
+            <div className='avail_game_icon_class' style={avail_game.game_color}>
               {avail_game.game_icon}
             </div>
             <div className='avail_game_username_class'>
@@ -215,7 +260,9 @@ class AvailGames extends React.Component {
             </div>
           </div>
           <div className='avail_game_right_class'>
-            <button className='avail_game_join_game_button_class button_class'>
+            <button className='avail_game_join_game_button_class button_class'
+              onClick={()=> this.join_game(avail_game.game_id) }
+            >
               Join Game
             </button>
           </div>
@@ -228,8 +275,18 @@ class AvailGames extends React.Component {
   }
 }
 
-function launchLoginInterface( inWebsocket ) {
+function launchGameInterface( inIPAddress ) {
+  console.log( "Launching game interface!" );
+  let login_interface = document.getElementById('login_interface');
+  let chat_interface = document.getElementById('chat_interface');
+  let game_interface = document.getElementById('game_interface');
+  login_interface.style.display = "none";
+  chat_interface.style.display = "none";
+  game_interface.style.display = "flex";
+}
 
+function launchLoginInterface( inWebsocket ) {
+  
 }
 
 function doLogObject( inObj ) {
@@ -268,6 +325,13 @@ function launchChatInterface( ws ) {
 		document.getElementById('column_chat_area')
 	);
 
+	ws.addEventListener( 'message', function(event) {
+		const inMessage = JSON.parse( event.data );
+		console.dir( inMessage );
+		if( inMessage.event === "enter_game_approval" ) {
+			launchGameInterface( inMessage.ip );
+		}
+	});
 	/*ws.addEventListener( 'message', function(event) {
 		const inMessage = JSON.parse( event.data );
 		console.log( "==========================================" );
@@ -334,19 +398,6 @@ function launchChatInterface( ws ) {
 		myInputText.value = "";
 		myInputText.focus()
 	}
-
-
-	/*chatLog = [
-		{ user: 'me', text: 'hello', uid: 0 },
-		{ user: 'you', text: 'hi!', uid: 1 },
-		{ user: 'me', text: 'howyadoin?', uid: 2 },
-		{ user: 'you', text: 'goodgood, yaself?', uid: 3 },
-		{ user: 'me', text: 'goodgood goodgood', uid: 4 }
-	];
-	ReactDOM.render(
-		<ChatRoom chatLog={chatLog} />,
-		document.getElementById('chat_box')
-	);*/
 }
 
 function doLogin( websocket, username, password ) {

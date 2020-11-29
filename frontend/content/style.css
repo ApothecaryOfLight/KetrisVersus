@@ -330,9 +330,11 @@
 
 
 .avail_games_area_class {
-
+  margin-left: 5px;
 }
 .avail_game_wrapper_class {
+  padding-bottom: 2px;
+  margin-bottom: 5px;
   border-bottom: 1px solid #e2e2e2;
 }
 .avail_game_class {
@@ -372,6 +374,13 @@
   flex-grow:0;
   bottom: 0px;
 }
+
+
+
+.game_interface_class {
+  display: hidden;
+}
+
 
 
 html {
