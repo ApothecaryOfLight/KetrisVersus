@@ -378,7 +378,9 @@
 
 
 .game_interface_class {
-  display: hidden;
+  display: none;
+  /*height: 100%;
+  width: 100%;*/
 }
 
 

@@ -89,7 +89,7 @@ function doLaunch() {
 		console.log( "Border request!" );
 		res.send( requests['/border.png'] );
 	});
-	app.get( '/spritsheet_mod.png', function(req,res) {
+	app.get( '/spritesheet_mod.png', function(req,res) {
 		res.send( requests['/spritesheet_mod.png'] );
 	});
 	app.listen(8080, function() {

@@ -24,12 +24,17 @@ class game_id_generator {
 		this.game_ids.retiredIDs = [];
 		console.log( this.game_ids.retiredIDs.length );
 	}
-	generateUID( inField ) {
+	generateUID() {
 		console.log( "Generating Game ID." );
 		if( !this.game_ids.retiredIDs.length ) {
+			console.log( this.game_ids.counter+1 );
 			return this.game_ids.counter++;
 		} else if( this.game_ids.retiredIDs > 0 ) {
+			console.log( this.back_ids.retiredIDs.slice(-1)[0] );
 			return this.game_ids.retiredIDs.pop();
+		} else {
+			console.log( "WTH" );
+			return this.game_ids.counter++; //TODO: fix this. god I'm tired.
 		}
 	}
 	retireUID( inUID ) {

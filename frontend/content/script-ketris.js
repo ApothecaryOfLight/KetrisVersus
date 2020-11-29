@@ -4,9 +4,6 @@
 //TODO: User system
 //TODO: Highscore system
 
-function test() {
-  console.log( "now comes the next part." );
-}
 function launchKetris( inIPAddress, inGameID ) {
 	console.log( "Connection to server " + inIPAddress + " for game " + inGameID + "." );
 	//console.log( "Starting match against " + inOpponent );
@@ -17,7 +14,7 @@ function launchKetris( inIPAddress, inGameID ) {
 			target: inOpponent
 		}
 	);*/
-	connection.send( outMessage );
+	//connection.send( outMessage );
 	console.log( "Launching Ketris." );
 
 ///////////////////////////////////////////////////////////////////////////
@@ -204,8 +201,15 @@ function launchKetris( inIPAddress, inGameID ) {
 	}
 	//connection = new WebSocket( 'ws://127.0.0.1:1337' );
 	//connection = new WebSocket( 'ws://34.218.240.70:1337' );
-	connection = new WebSocket( 'ws://34.220.192.63:1337' );
-	connection.onopen = function () {  };
+	let connection = new WebSocket( 'ws://34.222.250.86:1337' );
+	connection.onopen = function () {
+		console.log( "New connection!" );
+		connection.send( JSON.stringify({
+			type: "game_event",
+			event: "start_ketris",
+			game_id: inGameID
+		}));
+        };
 	connection.onerror = function (error) {
 		console.log( "There has been an error." );
 		myDOMHandles.content.html($('<p>', {
@@ -214,82 +218,26 @@ function launchKetris( inIPAddress, inGameID ) {
 		}));
 	};
 	connection.onmessage = function (message) {
-		//console.log( "Message recieved." );
+		console.log( "Ketris message recieved." );
 		let inPacket;
 		try {
 			inPacket = JSON.parse( message.data );
-		} catch (e) {
+		} catch (error) {
+			console.log( error );
+			console.dir( inPacket );
 			//console.log( 'Invalid JSON: ', message.data );
 			return;
 		}
-		if( inPacket.type === 'end_game_interface' ) {
-			myGameState.GameOver = true;
-			myGameState.GlobalPlay = false;
-			$("#myNewGameButton").removeAttr( "disabled", "disabled" );
-			$("#Matchmaker").show();
-			$("#GameArea").hide();
-		} else if( inPacket.type === 'login_approved' ) {
-			console.log( "Successful login." );
-			myDOMHandles.input.attr( "placeholder", "Chat here" );
-			$("#myNewGameButton").removeAttr( "disabled" );
-			let myOngoingGames = JSON.parse( inPacket.ongoing );
-			for( let myKey in myOngoingGames ) {
-				let ComposingButton = "<button id=\'" + 
-					"myBtnPlayVs" + myOngoingGames[myKey] +
-					"\' onclick=\"" +
-					"doLaunchKetris(\'" + myOngoingGames[myKey] +
-					"\');\">" +
-					"Play against " + myOngoingGames[myKey] +
-					" </button>";
-				//console.log( ComposingButton );
-				$("#myGames").append( ComposingButton );
-			}
-			myGameState.myName = inPacket.author;
-		} else if( inPacket.type === 'login_announcement' ) {
-			addMessage(
-				inPacket.author,
-				" I just logged in! (Automated message)"
-			);
-		} else if( inPacket.type === 'login_rejected' ) {
-			myDOMHandles.input.attr( "placeholder",
-				"Username is already taken. Please choose another."
-			);
-		} else if( inPacket.type === 'chat' ) {
-			addMessage(
-				inPacket.author,
-				inPacket.text
-			);
-		} else if( inPacket.type === "logout" ) {
-			$("#myBtnPlayVs"+inPacket.logoutee).remove();
-			addMessage(
-				inPacket.logoutee,
-				"Has logged out. (Automated message)"
-			);
-		} else if( inPacket.type === 'event' ) {
+		console.dir( inPacket );
+		if( inPacket.type === 'game_event' ) {
 			if( inPacket.event === 'end_game' ) {
 				//console.log( "Ending game packet recieved." );
 				myGameState.GameOver = true;
 				myGameState.GlobalPlay = false;
 				doComposeMenu( 10, 3, 0 );
 				DrawMenu = true;
-			} else if( inPacket.event === 'new_game' ) {
-				let ComposingButton = "<button id=\'" + 
-					"myBtnPlayVs" + inPacket.author +
-					"\' onclick=\"" +
-					"doLaunchKetris(\'" + inPacket.author +
-					"\');\">" +
-					"Play against " + inPacket.author +
-					" </button>";
-				$("#myGames").append( ComposingButton );
-			} else if( inPacket.event === 'start_game' ) {
-				$("#myBtnPlayVs"+inPacket.author).remove();
-				$("#myBtnPlayVs"+inPacket.participant).remove();
-				$("#Matchmaker").hide();
-				$("#GameArea").show();
+			} else if( inPacket.event === 'commence_gameplay' ) {
 				doLaunchKetrisGameplayer();
-			} else if( inPacket.event === 'remove_game' ) {
-				$("#myBtnPlayVs"+inPacket.participantA).remove();
-				$("#myBtnPlayVs"+inPacket.participantB).remove();
 			} else if( inPacket.event === 'new_shape' ) {
 				//console.log( "New shape event from opponent." );
 				CurrentElement_Enemy.Shape = inPacket.Shape;
@@ -380,27 +328,6 @@ function launchKetris( inIPAddress, inGameID ) {
 			);
 		}
 	}, 3000 );
-	function addMessage( author, message ) {
-		myDOMHandles.content.append(
-			'<p>' + author +
-			': ' + message + '</p>'
-		);
-		let myChatBoxHandle = document.getElementById("content");
-		myChatBoxHandle.scrollTop = myChatBoxHandle.scrollHeight;
-	}
-	$("#myNewGameButton").on( 'click', function() {
-		let json = JSON.stringify(
-			{
-				type:'event',
-				event: "new_game"
-			}
-		);
-		connection.send(json);
-		$("#myNewGameButton").attr( "disabled", "disabled" );
-		myDOMHandles.content.append(
-		'<p>' + "SERVER TO YOU, YES YOU: Your game is now listed. Other players may join it. You may also join any available games, which will be listed below, but doing so will end your game. As a last note, you can also click Play Ketris again on AbesKetris.com and play against yourself..." + '</p>'
-		);
-	});
 	function doManageDrawing( inTimestamp ) {
 		let progress;
 		if( myAnimationValues.last != null ) {
@@ -416,7 +343,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		}
 	}
 	function doLaunchKetrisGameplayer() {
-		console.log( "Launching Ketris." );
+		console.log( "Launching Ketris Gameplayer." );
 		myDOMHandles.KetrisImage.src = "spritesheet_mod.png";
 		myDOMHandles.KetrisImage.onload = function() {
 			console.log( "Images loaded.");
