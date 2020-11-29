@@ -168,10 +168,10 @@ wsServer.on('request', function(request) {
 
 		} else if( json.event === "restart" ) {
 			console.log( "Restart" );
-			var restart = JSON.stringify(
+			var out = JSON.stringify(
 				{
 					type:'game_event',
-					event: "restart"
+					event: 'restart'
 				}
 			);
 			sendToEnemy( game_id, connection, out );
