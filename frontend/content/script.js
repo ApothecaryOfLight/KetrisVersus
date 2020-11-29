@@ -275,7 +275,7 @@ class AvailGames extends React.Component {
   }
 }
 
-function launchGameInterface( inIPAddress ) {
+function launchGameInterface( inIPAddress, inGameID ) {
   console.log( "Launching game interface!" );
   let login_interface = document.getElementById('login_interface');
   let chat_interface = document.getElementById('chat_interface');
@@ -283,6 +283,7 @@ function launchGameInterface( inIPAddress ) {
   login_interface.style.display = "none";
   chat_interface.style.display = "none";
   game_interface.style.display = "flex";
+  launchKetris( inIPAddress, inGameID );
 }
 
 function launchLoginInterface( inWebsocket ) {
@@ -329,7 +330,7 @@ function launchChatInterface( ws ) {
 		const inMessage = JSON.parse( event.data );
 		console.dir( inMessage );
 		if( inMessage.event === "enter_game_approval" ) {
-			launchGameInterface( inMessage.ip );
+			launchGameInterface( inMessage.ip, inMessage.game_id );
 		}
 	});
 	/*ws.addEventListener( 'message', function(event) {

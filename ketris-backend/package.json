@@ -3,6 +3,7 @@
 	"version": "1.0.1",
 	"dependencies": {
 		"http": "0.x",
+		"nodemon": "2.x",
 		"websocket": "1.x"
 	}
 }

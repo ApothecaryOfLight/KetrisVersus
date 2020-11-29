@@ -4,21 +4,21 @@
 //TODO: User system
 //TODO: Highscore system
 
-var connection;
-function doLaunchKetris( inOpponent ) {
+function test() {
+  console.log( "now comes the next part." );
+}
+function launchKetris( inIPAddress, inGameID ) {
+	console.log( "Connection to server " + inIPAddress + " for game " + inGameID + "." );
 	//console.log( "Starting match against " + inOpponent );
-	let outMessage = JSON.stringify(
+	/*let outMessage = JSON.stringify(
 		{
 			type:'message',
 			event: "join_game",
 			target: inOpponent
 		}
-	);
+	);*/
 	connection.send( outMessage );
-}
-$(function () {
-	"use strict";
-	console.log( "Launching javascript." );
+	console.log( "Launching Ketris." );
 
 ///////////////////////////////////////////////////////////////////////////
 //  Global Letiables  /////////////////////////////////////////////////////
@@ -200,7 +200,7 @@ $(function () {
 			)
 		);
 		myDOMHandles.input.hide();
-		return;
+		//return;
 	}
 	//connection = new WebSocket( 'ws://127.0.0.1:1337' );
 	//connection = new WebSocket( 'ws://34.218.240.70:1337' );
@@ -1751,4 +1751,4 @@ Engage a timer to make it look realistic, timed to ai 'skill'
 			
 		}
 	}
-});
+}

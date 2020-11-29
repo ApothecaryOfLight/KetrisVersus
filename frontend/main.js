@@ -16,9 +16,11 @@ function load_files() {
 		'/' : './content/index.html',
 		'/script.js' : './content/script.js',
 		'/style.css' : './content/style.css',
+		'/script-ketris.js' : './content/script-ketris.js'
 	}
 	let images = {
-		'/border.png' : './content/border.png'
+		'/border.png' : './content/border.png',
+		'/spritesheet_mod.png' : './content/spritesheet_mod.png'
 	}
 	let file_counter = 0;
 	for( const request in files ) {
@@ -43,7 +45,7 @@ function load_files() {
 load_files();
 
 function isLoaded( inCount ) {
-	if( inCount >= 4 ) {
+	if( inCount >= 6 ) {
 		doLaunch();
 	}
 }
@@ -80,9 +82,15 @@ function doLaunch() {
 			}
 		);
 	});
+	app.get( '/script-ketris.js', function(req,res) {
+		res.send( requests['/script-ketris.js'] );
+	});
 	app.get( '/border.png', function(req,res) {
 		console.log( "Border request!" );
 		res.send( requests['/border.png'] );
+	});
+	app.get( '/spritsheet_mod.png', function(req,res) {
+		res.send( requests['/spritesheet_mod.png'] );
 	});
 	app.listen(8080, function() {
 		console.log( 'HTTP Server listening!' );
