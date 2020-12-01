@@ -10,7 +10,7 @@ function launchKetris( inIPAddress, inGameID ) {
 	console.log( "Launching Ketris." );
 
 	document.addEventListener("visibilitychange", function() {
-		console.log( document.visibilityState );
+		//console.log( document.visibilityState );
 		if( document.visibilityState == "hidden" ) {
 			doPause();
 		} else if( document.visibilityState == "visible" ) {
@@ -174,7 +174,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		TimeZoomButtonHeldTotal: 0,
 		ZoomButtonHeld: false,
 		NextElement: Math.floor(Math.random()*7),
-		NextColor: Math.floor(Math.random()*5)
+		NextColor: Math.floor(Math.random()*5)+1
 	};
 	let CurrentElement_Enemy = {
 		Timestamp: 0,
@@ -203,7 +203,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		console.log( "There has been an error." );
 	}
 	connection.onmessage = function (message) {
-		console.log( "Ketris message recieved." );
+		//console.log( "Ketris message recieved." );
 		let inPacket;
 		try {
 			inPacket = JSON.parse( message.data );
@@ -213,7 +213,7 @@ function launchKetris( inIPAddress, inGameID ) {
 			//console.log( 'Invalid JSON: ', message.data );
 			return;
 		}
-		console.dir( inPacket );
+		//console.dir( inPacket );
 		if( inPacket.type === 'game_event' ) {
 			if( inPacket.event === 'end_game' ) {
 				//console.log( "Ending game packet recieved." );
@@ -268,6 +268,12 @@ function launchKetris( inIPAddress, inGameID ) {
 					Date.now()-myGameState.PausedTimestamp;
 			} else if( inPacket.event === 'restart' ) {
 				doStartNewGame();
+			} else if( inPacket.event === 'disconnect' ) {
+				let game_interface = document.getElementById('game_interface');
+				let chat_interface = document.getElementById('chat_interface');
+				game_interface.style.display = "none";
+				chat_interface.style.display = "flex";
+				return;
 			}
 		} else {
 			console.log(
@@ -400,6 +406,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		connection.send( newElementOut );
 	}
 	function doGenerateNextElement() {
+		console.log( "doGenerateNextElement" );
 		CurrentElement.Shape = CurrentElement.NextElement;
 		CurrentElement.Color = CurrentElement.NextColor;
 		CurrentElement.Rotation = Math.floor(Math.random()*4);
@@ -418,6 +425,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		CurrentElement.LastLevel = 0;
 		CurrentElement.NextElement = Math.floor(Math.random()*7);
 		CurrentElement.NextColor = Math.floor(Math.random()*5)+1;
+		console.dir( CurrentElement );
 		doSendNewElement();
 	}
 	function doGravity_Enemy( inX, inY ) {

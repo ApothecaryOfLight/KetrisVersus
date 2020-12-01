@@ -176,4 +176,11 @@ wsServer.on('request', function(request) {
 			}
 		}
 	});
+	connection.on( 'close', function( reasonCode, description ) {
+		console.log( "Close connection." );
+		sendToEnemy( game_id, connection, JSON.stringify({
+			type: 'game_event',
+			event: 'disconnect'
+		}));
+	});
 });
