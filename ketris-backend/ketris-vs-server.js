@@ -157,7 +157,23 @@ wsServer.on('request', function(request) {
 					event: 'end_game'
 				})
 			);
-		} else if( json.event === "start_ketris" ) {
+		} else if( json.event === "visible" ) {
+			console.log( "visible" );
+			sendToEnemy( game_id, connection,
+				JSON.stringify({
+					type: 'game_event',
+					event: 'visible'
+				})
+			);
+		} else if( json.event === "hidden" ) {
+			console.log( "hidden" );
+			sendToEnemy( game_id, connection,
+				JSON.stringify({
+					type: 'game_event',
+					event: 'hidden'
+				})
+			);
+		}else if( json.event === "start_ketris" ) {
 			console.log( "Logging a start_ketris" );
 			game_id = json.game_id;
 			if( !myGames[json.game_id] ) {

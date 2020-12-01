@@ -9,15 +9,6 @@ function launchKetris( inIPAddress, inGameID ) {
 	console.log( "Connection to server " + inIPAddress + " for game " + inGameID + "." );
 	console.log( "Launching Ketris." );
 
-	document.addEventListener("visibilitychange", function() {
-		//console.log( document.visibilityState );
-		if( document.visibilityState == "hidden" ) {
-			doPause();
-		} else if( document.visibilityState == "visible" ) {
-			doUnpause();
-		}
-	});
-
 ///////////////////////////////////////////////////////////////////////////
 //  Global Letiables  /////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -150,7 +141,8 @@ function launchKetris( inIPAddress, inGameID ) {
 		myLastScore: 1,
 		myEnemyScore: 0,
 		myEnemyLastScore: 1,
-		StartGameTimestamp: null
+		StartGameTimestamp: null,
+		enemy_visibility: true
 	}
 	//Global configuration letiables TODO: Sync with server
 	let myAnimationValues = {
@@ -257,15 +249,25 @@ function launchKetris( inIPAddress, inGameID ) {
 				CurrentElement_Enemy.Rotation = inPacket.rotation;
 			} else if( inPacket.event === 'pause' ) {
 				//console.log( "pause recieved" );
-				myGameState.PausedTimestamp = Date.now();
-				myGameState.Paused = true;
+				if( myGameState.Paused == false ) {
+					myGameState.PausedTimestamp = Date.now();
+					myGameState.Paused = true;
+				}
 			} else if( inPacket.event === 'unpause' ) {
 				//console.log( "unpause recieved" );
-				myGameState.Paused = false;
-				CurrentElement.Timestamp +=
-					Date.now()-myGameState.PausedTimestamp;
-				CurrentElement_Enemy.Timestamp +=
-					Date.now()-myGameState.PausedTimestamp;
+				if( document.visibilityState == "visible" ) {
+					myGameState.Paused = false;
+					CurrentElement.Timestamp +=
+						Date.now()-myGameState.PausedTimestamp;
+					CurrentElement_Enemy.Timestamp +=
+						Date.now()-myGameState.PausedTimestamp;
+				}
+			} else if ( inPacket.event === 'visible' ) {
+				console.log( "Recieved visible" );
+				myGameState.enemy_visibility = true;
+			} else if ( inPacket.event === 'hidden' ) {
+				console.log( "Recieved hidden" );
+				myGameState.enemy_visibility = false;
 			} else if( inPacket.event === 'restart' ) {
 				doStartNewGame();
 			} else if( inPacket.event === 'disconnect' ) {
@@ -1238,37 +1240,67 @@ function launchKetris( inIPAddress, inGameID ) {
 	function doDownKeyPress() {
 		doElementDrop();
 	}
-	function doPause() {
+	function doPause( inEventType ) {
 		console.log( "Pausing" );
 		myGameState.PausedTimestamp = Date.now();
 		myGameState.Paused = true;
 		let pause = JSON.stringify({
-			type: 'game-event',
+			type: 'game_event',
 			event: 'pause'
 		});
 		connection.send( pause );
 	}
-	function doUnpause() {
+
+	document.addEventListener("visibilitychange", function() {
+		//console.log( document.visibilityState );
+		if( document.visibilityState == "hidden" ) {
+			console.log( "Sending hidden" );
+			connection.send( JSON.stringify({
+				type: "game_event",
+				event: "hidden"
+			}));
+			doPause( "visibility" );
+		} else if( document.visibilityState == "visible" ) {
+			console.log( "Sending visible" );
+			connection.send( JSON.stringify({
+				type: "game_event",
+				event: "visible"
+			}));
+			doUnpause( "visibility" );
+		}
+	});
+
+	function doUnpause( inEventType ) {
 		console.log( "Unpausing" );
+		if( !areBothVisible() ) {
+			console.log( "Someone is minimized/on another tab." );
+			return;
+		}
+		console.log( "Successfully unpaused." );
 		myGameState.Paused = false;
 		CurrentElement.Timestamp +=
 		Date.now()-myGameState.PausedTimestamp;
 		CurrentElement_Enemy.Timestamp +=
 		Date.now()-myGameState.PausedTimestamp
 		let unpause = JSON.stringify({
-			type: 'game-event',
+			type: 'game_event',
 			event: 'unpause'
 		});
 		connection.send( unpause );
 	}
+	function areBothVisible() {
+		console.log( "enemy_visibility:" + myGameState.enemy_visibility );
+		console.log( "doc: " + document.visibilityState );
+		return( myGameState.enemy_visibility && document.visibilityState=="visible" );
+	}
 	function doSpaceKeyPress() {
 		console.log( "Space pressed." );
 		if( myGameState.Paused == false ) {
-			doPause();
+			doPause( "key" );
 		}
 		else {
 			//console.log("Unpausing...");
-			doUnpause();
+			doUnpause( "key" );
 		}
 		//doUnpause();
 	}
