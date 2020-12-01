@@ -181,6 +181,7 @@ wsServer.on('request', function(request) {
 			}
 			myGames[json.game_id].push( connection );
 			//TODO: Send approval packet to make sure both connections are in myGames
+			console.dir( myGames[json.game_id].length );
 			if( myGames[json.game_id].length == 2 ) {
 				console.log( "Starting match." );
 				myGames[json.game_id].forEach( game => {

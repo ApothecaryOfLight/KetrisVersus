@@ -113,13 +113,15 @@ function sendLogoutUserNotification( inUsername ) {
 }
 
 function remove_game(connection,in_game_name) {
+  console.log( "remove_game" );
   clients.forEach( (client) => {
-    if( client.conn != connection ) {
+    console.log( "removing game " + in_game_name + "." );
+//    if( client.conn != connection ) {
       client.conn.sendUTF( JSON.stringify({
         game_name: in_game_name,
         event: "remove_game"
       }));
-    }
+//    }
   });
 }
 
@@ -183,11 +185,13 @@ wsServer.on('request', function(request) {
 			console.log( "enter_game" );
 			console.log( "game_id: " + inMessage.game_id );
 			//1) Send ip of ketris server to both users, along with game id.
+
 			const enter_game_approval = {
 				event: "enter_game_approval",
 				ip: "todo_loadbalancing",
 				game_id: inMessage.game_id
 			};
+			console.log( "Remove games due to enter game." );
 			const enter_game_approval_json = JSON.stringify( enter_game_approval );
 			connection.send( enter_game_approval_json );
 			avail_games.forEach( (game) => {
@@ -195,6 +199,12 @@ wsServer.on('request', function(request) {
 					game.user.send( enter_game_approval_json );
 				}
 			});
+			avail_games.forEach( (game,index) => {
+				if( game.game_id == inMessage.game_id ) {
+					avail_games.splice( index, 1 );
+				}
+			});
+			remove_game( connection, inMessage.game_name );
 		} else {
 			console.log( "Unrecognized object!" );
 			console.dir( inMessage );

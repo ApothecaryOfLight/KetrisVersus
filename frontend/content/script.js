@@ -55,6 +55,7 @@ class UID {
 		}
 	}
 	retireUID( inField, inUID ) {
+		console.log( "reitiringUID " + inUID + " of " + inField );
 		this.UIDs[inField].retiredIDs.push( inUID );
 	}
 }
@@ -235,13 +236,15 @@ class AvailGames extends React.Component {
       }
     });
   };
-  join_game( inGameID ) {
+  join_game( inGameID, inGameName ) {
     console.log( "Joining game:" + inGameID );
     console.dir( inGameID );
+    console.dir( inGameName );
     console.dir( this );
     this.state.websocket.send(JSON.stringify({
       event: "enter_game",
-      game_id: inGameID
+      game_id: inGameID,
+      game_name: inGameName
     }));
   }
   render() {
@@ -261,7 +264,7 @@ class AvailGames extends React.Component {
           </div>
           <div className='avail_game_right_class'>
             <button className='avail_game_join_game_button_class button_class'
-              onClick={()=> this.join_game(avail_game.game_id) }
+              onClick={()=> this.join_game(avail_game.game_id,avail_game.game_name) }
             >
               Join Game
             </button>
