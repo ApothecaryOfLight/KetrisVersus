@@ -7,15 +7,6 @@
 
 function launchKetris( inIPAddress, inGameID ) {
 	console.log( "Connection to server " + inIPAddress + " for game " + inGameID + "." );
-	//console.log( "Starting match against " + inOpponent );
-	/*let outMessage = JSON.stringify(
-		{
-			type:'message',
-			event: "join_game",
-			target: inOpponent
-		}
-	);*/
-	//connection.send( outMessage );
 	console.log( "Launching Ketris." );
 
 	document.addEventListener("visibilitychange", function() {
@@ -199,18 +190,6 @@ function launchKetris( inIPAddress, inGameID ) {
 	};
 
 	window.WebSocket = window.WebSocket || window.MozWebSocket;
-	/*if (!window.WebSocket) {
-		myDOMHandles.content.html(
-			$(
-				'<p>',
-				{ text:'Does your browser support WebSocket?' }
-			)
-		);
-		myDOMHandles.input.hide();
-		//return;
-	}*/
-	//connection = new WebSocket( 'ws://127.0.0.1:1337' );
-	//connection = new WebSocket( 'ws://34.218.240.70:1337' );
 	let connection = new WebSocket( 'ws://34.222.250.86:1337' );
 	connection.onopen = function () {
 		console.log( "New connection!" );
@@ -219,14 +198,10 @@ function launchKetris( inIPAddress, inGameID ) {
 			event: "start_ketris",
 			game_id: inGameID
 		}));
-        };
+        }
 	connection.onerror = function (error) {
 		console.log( "There has been an error." );
-		/*myDOMHandles.content.html($('<p>', {
-			text: 'Sorry, but there\'s some problem with your '
-			 + 'connection or the server is down.'
-		}));*/
-	};
+	}
 	connection.onmessage = function (message) {
 		console.log( "Ketris message recieved." );
 		let inPacket;
@@ -301,36 +276,6 @@ function launchKetris( inIPAddress, inGameID ) {
 			);
 		}
 	};
-	/*myDOMHandles.input.keydown(function(e) {
-		if (e.keyCode === 13) {
-			let msg = $(this).val();
-			if( !msg ) {
-				return;
-			}
-			if( myGameState.myName === false ) {
-				//console.log( "Sending log-in request." );
-				let outPacket = JSON.stringify(
-					{
-						type:'message',
-						event: 'login_request',
-						username: msg
-					}
-				);
-				connection.send(outPacket);
-				$(this).val('');
-			} else	{
-				let outPacket = JSON.stringify(
-					{
-						type:'message',
-						event: "chat",
-						text: msg
-					}
-				);
-				connection.send( outPacket );
-				$(this).val('');
-			}
-		}
-	});*/
 	setInterval( function() {
 		if( connection.readyState !== 1 ) {
 			myDOMHandles.input.attr( 'disabled', 'disabled' ).val(
@@ -440,8 +385,6 @@ function launchKetris( inIPAddress, inGameID ) {
 		}
 	}
 	function doSendNewElement() {
-		//if( myGameState.GlobalPlay == true ) {
-		//console.log( "Sending my current element." );
 		let newElementOut = JSON.stringify(
 			{
 				type: "event",
@@ -455,27 +398,16 @@ function launchKetris( inIPAddress, inGameID ) {
 			}
 		);
 		connection.send( newElementOut );
-		//}
 	}
 	function doGenerateNextElement() {
 		CurrentElement.Shape = CurrentElement.NextElement;
 		CurrentElement.Color = CurrentElement.NextColor;
 		CurrentElement.Rotation = Math.floor(Math.random()*4);
-		//CurrentElement.Color = Math.floor(Math.random()*5)+1;
 
 		if( isShapeSpawnable (
 			CurrentElement.Shape,
 			CurrentElement.Rotation
 		) == false ) {
-			/*console.log( "Game over A." );
-			myGameState.GameOver = true;
-			myGameState.GlobalPlay = false;
-			let end_game = JSON.stringify(
-				{ type: 'event',
-				event: 'end_game' }
-			);
-			connection.send( end_game );*/
-
 			doComposeMenu( 10, 3, 0 );
 			DrawMenu = true;
 			return;
@@ -767,7 +699,6 @@ function launchKetris( inIPAddress, inGameID ) {
 			doDrawMenu();
 		}
 		let TimeElapsed = Date.now() - myGameState.StartGameTimestamp;
-		//console.log( TimeElapsed/1000000000 );
 		//Config.Speed = 0.001 + ( TimeElapsed/50000000 );
 	}
 	function doDrawBackgroundTile( inX, inY, inCanvasContext ) {
@@ -908,10 +839,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		let Elapsed = Date.now() - CurrentElement.Timestamp;
 		if( myGameState.Falling == true ) { Elapsed = Date.now(); }
 		if( myGameState.Paused == true ) {
-		//console.log( Elapsed + " -= " + Date.now() + " - " + myGameState.PausedTimestamp );
 			Elapsed -= Date.now() - myGameState.PausedTimestamp;
-			//Elapsed = myGameState.PausedTimestamp;
-			//console.log( Elapsed );
 		}
 		let yOffset = Config.Speed*Elapsed;
 
@@ -1534,13 +1462,6 @@ function launchKetris( inIPAddress, inGameID ) {
 
 		for( let x=0; x<4; x++ ) {
 			for( let y=0; y<4; y++ ) {
-				/*console.log( "Chrissakes " + CurrentElement.Shape + "/" +
-					newRotation + "/" + x + "/" + y );
-				console.log( "SHAPES: " + Shapes
-					[CurrentElement.Shape]
-					[newRotation]
-					[x]
-					[y] );*/
 				while( Shapes
 					[CurrentElement.Shape]
 					[newRotation]
@@ -1548,9 +1469,6 @@ function launchKetris( inIPAddress, inGameID ) {
 					[y] == 1 &&
 					(x+CurrentElement.XPos) >= 10
 				) {
-					/*console.log(
-						"Doing wallkick"
-					);*/
 					CurrentElement.XPos--;
 				}
 
@@ -1629,74 +1547,5 @@ function launchKetris( inIPAddress, inGameID ) {
 			}
 		}
 		return true;
-	}
-
-
-/////////////////////////////////////////////////////////////////////////
-//  'AI' Functions  /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-/*
-1) -Check for block adjacent to empty space, searching bottom-to-top, left-to-right
-	2)- Check against rotation and for clear vertical passage for line elimination avialability 
-		-Choose first found line elimination and move block there
-			-Drop block based on difficulty (hard=drop, less=relative delay for drop)
-		-Remember best possible drop (lowest) that is vertically allowable, despite no line elim
-3) -Check for first available place to drop it from the bottom-to-top, left-to-right
-*/
-/*
-Check each drop position 0 through 8, at each possible rotation
-Choose the position and the rotation
-Engage a timer to make it look realistic, timed to ai 'skill'
-*/
-	function doAITick() {
-		for( let BlockX = 9; BlockX < 0; BlockX-- ) {
-			for( let BlockY = 19; BlockY < 0; BlockY-- ) {
-				let CheckBlocks = isAdjacentSpaceEmpty( BlockX, BlockY );
-				if( CheckBlocks !== false ) {
-					for( CheckBlockKey in CheckBlocks ) {
-						isShapesFitting( CheckBlocks[CheckBlockKey] );
-					}
-				}
-			}
-		} 
-	}
-	function isAdjacentSpaceEmpty( inX, inY ) {
-		let EmptySpaces = {};
-		if( myKetrisGrid[inX+1][inY] === 0 ) {
-			let change = inX+1;
-			EmptySpaces.push( {X:change,Y:inY} );
-		}
-		if( myKetrisGrid[inX-1][inY] === 0 ) {
-			let change = inX-1;
-			EmptySpaces.push( {X:change,Y:inY} );
-		}
-		/*if( myKetrisGrid[inX][inY+1] === 0 ) { //No fancy slide-unders. Yet.
-			return -1;
-		}*/
-		if( myKetrisGrid[inX][inY-1] === 0 ) {
-			let change = inY-1;
-			EmptySpaces.push( {X:inX,Y:change} );
-		}
-		if( EmptySpaces && EmptySpaces.length ) {
-			return EmptySpaces;
-		}
-		return false;
-	}
-	function isShapesFitting( inCoord ) {
-		let PermissableShapes;
-		for( let Shape = 0; Shape < 6; Shape++ ) {
-			let doesFit;
-			for( let ShapeX = 0; ShapeX < 4; ShapeX ++ ) {
-				for( let ShapeY = 0; ShapeY < 4; ShapeY ++ ) {
-					var isFit = false;
-					if( Shapes[ShapeX][ShapeY] == 1 ) {
-						if( myKetrisGrid[inCoord.X+ShapeX][inCoord.Y+ShapeY] == 0 ) {
-							
-						}
-					}
-				}
-			}
-			
-		}
 	}
 }
