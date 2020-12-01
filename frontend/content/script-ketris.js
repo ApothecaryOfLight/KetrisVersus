@@ -247,27 +247,43 @@ function launchKetris( inIPAddress, inGameID ) {
 			} else if( inPacket.event === 'rotation' ) {
 				//console.log( "Rotation recieved" );
 				CurrentElement_Enemy.Rotation = inPacket.rotation;
+			//(A)
 			} else if( inPacket.event === 'pause' ) {
-				//console.log( "pause recieved" );
-				if( myGameState.Paused == false ) {
+				console.log( "pause recieved" );
+				doReceivePause();
+				/*if( myGameState.Paused == false ) {
 					myGameState.PausedTimestamp = Date.now();
 					myGameState.Paused = true;
-				}
+				}*/
 			} else if( inPacket.event === 'unpause' ) {
-				//console.log( "unpause recieved" );
-				if( document.visibilityState == "visible" ) {
-					myGameState.Paused = false;
+				console.log( "unpause recieved" );
+				doReceiveUnpause();
+				//if( document.visibilityState == "visible" ) {
+					/*myGameState.Paused = false;
 					CurrentElement.Timestamp +=
 						Date.now()-myGameState.PausedTimestamp;
 					CurrentElement_Enemy.Timestamp +=
-						Date.now()-myGameState.PausedTimestamp;
-				}
+						Date.now()-myGameState.PausedTimestamp;*/
+				doUnpause();
+				//}
 			} else if ( inPacket.event === 'visible' ) {
 				console.log( "Recieved visible" );
-				myGameState.enemy_visibility = true;
+				doReceieveVisible();
+				//myGameState.enemy_visibility = true;
+				/*if( document.visibilityState == "visible" ) {
+					console.log( "Enemy and us visible, remdining enemy." );
+					connection.send( JSON.stringify({
+						type: "game_event",
+						event: "visible"
+					}));
+					doUnpause();
+				}*/
+				//doUnpause();
 			} else if ( inPacket.event === 'hidden' ) {
 				console.log( "Recieved hidden" );
-				myGameState.enemy_visibility = false;
+				doReceiveHidden();
+				//myGameState.enemy_visibility = false;
+				//doPause();
 			} else if( inPacket.event === 'restart' ) {
 				doStartNewGame();
 			} else if( inPacket.event === 'disconnect' ) {
@@ -1240,55 +1256,94 @@ function launchKetris( inIPAddress, inGameID ) {
 	function doDownKeyPress() {
 		doElementDrop();
 	}
-	function doPause( inEventType ) {
-		console.log( "Pausing" );
-		myGameState.PausedTimestamp = Date.now();
-		myGameState.Paused = true;
+
+	//Pausing functions (A)
+	function doReceivePause() {
+		console.log( "doReceivePause()" );
+		doPause();
+	}
+	function doReceiveUnpause() {
+		console.log( "doReceiveUnpause()" );
+		doUnpause();
+	}
+	function doReceiveHidden() {
+		console.log( "doReceiveHidden()" );
+		myGameState.enemy_visiblity = false;
+	}
+	function doReceiveVisible() {
+		console.log( "doReceiveVisible()" );
+		myGameState.enemy_visibility = true;
+	}
+
+	function doSendPause() {
+		console.log( "doSendPause()" );
 		let pause = JSON.stringify({
 			type: 'game_event',
 			event: 'pause'
 		});
 		connection.send( pause );
 	}
-
-	document.addEventListener("visibilitychange", function() {
-		//console.log( document.visibilityState );
-		if( document.visibilityState == "hidden" ) {
-			console.log( "Sending hidden" );
-			connection.send( JSON.stringify({
-				type: "game_event",
-				event: "hidden"
-			}));
-			doPause( "visibility" );
-		} else if( document.visibilityState == "visible" ) {
-			console.log( "Sending visible" );
-			connection.send( JSON.stringify({
-				type: "game_event",
-				event: "visible"
-			}));
-			doUnpause( "visibility" );
-		}
-	});
-
-	function doUnpause( inEventType ) {
-		console.log( "Unpausing" );
-		if( !areBothVisible() ) {
-			console.log( "Someone is minimized/on another tab." );
-			return;
-		}
-		console.log( "Successfully unpaused." );
-		myGameState.Paused = false;
-		CurrentElement.Timestamp +=
-		Date.now()-myGameState.PausedTimestamp;
-		CurrentElement_Enemy.Timestamp +=
-		Date.now()-myGameState.PausedTimestamp
+	function doSendUnpause() {
+		console.log( "doSendUnpause" );
 		let unpause = JSON.stringify({
 			type: 'game_event',
 			event: 'unpause'
 		});
 		connection.send( unpause );
 	}
+	function doSendVisible() {
+		console.log( "doSendVisible." );
+		connection.send( JSON.stringify({
+			type: "game_event",
+			event: "visible"
+		}));
+	}
+	function doSendHidden() {
+		console.log( "doSendHidden." );
+		connection.send( JSON.stringify({
+			type: "game_event",
+			event: "hidden"
+		}));
+	}
+
+	function doPause( inEventType ) {
+		console.log( "doPause()" );
+		if( myGameState.Paused == false ) {
+			console.log( "Pausing." );
+			myGameState.PausedTimestamp = Date.now();
+			myGameState.Paused = true;
+		} else {
+			console.log( "Already paused." );
+		}
+	}
+	function doUnpause( inEventType ) {
+		console.log( "doUnpause()" );
+		if( myGameState.Paused == false ) {
+			console.log( "Already unpaused." );
+			return;
+		}
+		if( !areBothVisible() ) {
+			console.log( "Someone is minimized/on another tab." );
+			return;
+		}
+		console.log( "Successfully unpaused." );
+		myGameState.Paused = false;
+		CurrentElement.Timestamp += Date.now()-myGameState.PausedTimestamp;
+		CurrentElement_Enemy.Timestamp += Date.now()-myGameState.PausedTimestamp
+	}
+
+	document.addEventListener("visibilitychange", function() {
+		console.log( "Docuemnt visibility change: " + document.visibilityState );
+		if( document.visibilityState == "hidden" ) {
+			doPause();
+			doSendPause();
+		} else if( document.visibilityState == "visible" ) {
+			doUnpause();
+			doSendUnpause();
+		}
+	});
 	function areBothVisible() {
+		console.log( "Checking visibility: " );
 		console.log( "enemy_visibility:" + myGameState.enemy_visibility );
 		console.log( "doc: " + document.visibilityState );
 		return( myGameState.enemy_visibility && document.visibilityState=="visible" );
@@ -1297,13 +1352,15 @@ function launchKetris( inIPAddress, inGameID ) {
 		console.log( "Space pressed." );
 		if( myGameState.Paused == false ) {
 			doPause( "key" );
+			doSendPause();
 		}
 		else {
-			//console.log("Unpausing...");
 			doUnpause( "key" );
+			doSendUnpause();
 		}
-		//doUnpause();
 	}
+
+
 	function doEscapeKeyPress () {
 	}
 	document.onkeydown = function(event) {
