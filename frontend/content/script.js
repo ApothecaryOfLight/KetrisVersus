@@ -282,7 +282,7 @@ function launchGameInterface( inIPAddress, inGameID ) {
   let game_interface = document.getElementById('game_interface');
   login_interface.style.display = "none";
   chat_interface.style.display = "none";
-  game_interface.style.display = "block";
+  game_interface.style.display = "flex";
   launchKetris( inIPAddress, inGameID );
 }
 

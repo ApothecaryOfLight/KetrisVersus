@@ -3,6 +3,7 @@
 //TODO: Integrate pause and increased speed rate
 //TODO: User system
 //TODO: Highscore system
+//TODO: Fix pause
 
 function launchKetris( inIPAddress, inGameID ) {
 	console.log( "Connection to server " + inIPAddress + " for game " + inGameID + "." );
@@ -1290,30 +1291,30 @@ function launchKetris( inIPAddress, inGameID ) {
 		doElementDrop();
 	}
 	function doSpaceKeyPress() {
-		//console.log( "Space pressed." );
-		if( myGameState.Paused == false ) {
-			//console.log( "Pausing" );
+		console.log( "Space pressed." );
+		/*if( myGameState.Paused == false ) {
+			console.log( "Pausing" );
 			myGameState.PausedTimestamp = Date.now();
 			myGameState.Paused = true;
 			let pause = JSON.stringify(
-				{ type: 'event', //TODO: Gameplay type
+				{ type: 'game-event',
 				event: 'pause' }
 			);
 			connection.send( pause );
 		}
 		else {
-			//console.log("Unpausing...");
+			console.log("Unpausing...");
 			myGameState.Paused = false;
 			CurrentElement.Timestamp +=
 				Date.now()-myGameState.PausedTimestamp;
 			CurrentElement_Enemy.Timestamp +=
 				Date.now()-myGameState.PausedTimestamp
 			let unpause = JSON.stringify(
-				{ type: 'event', //TODO: Gameplay type
+				{ type: 'game-event',
 				event: 'unpause' }
 			);
 			connection.send( unpause );
-		}
+		}*/
 	}
 	function doEscapeKeyPress () {
 	}
