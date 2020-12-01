@@ -284,6 +284,8 @@ function launchGameInterface( inIPAddress, inGameID ) {
   chat_interface.style.display = "none";
   game_interface.style.display = "flex";
   launchKetris( inIPAddress, inGameID );
+  //var myKetrisThread = new Worker('script-ketris.js');
+  //myKetrisThread.postMessage([inIPAddress,inGameID]);
 }
 
 function launchLoginInterface( inWebsocket ) {

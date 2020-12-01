@@ -18,6 +18,15 @@ function launchKetris( inIPAddress, inGameID ) {
 	//connection.send( outMessage );
 	console.log( "Launching Ketris." );
 
+	document.addEventListener("visibilitychange", function() {
+		console.log( document.visibilityState );
+		if( document.visibilityState == "hidden" ) {
+			doPause();
+		} else if( document.visibilityState == "visible" ) {
+			doUnpause();
+		}
+	});
+
 ///////////////////////////////////////////////////////////////////////////
 //  Global Letiables  /////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -129,8 +138,8 @@ function launchKetris( inIPAddress, inGameID ) {
 		]
 	];
 	let myDOMHandles = {
-		content: $('#content'),
-		input: $('#input'),
+		//content: $('#content'),
+		//input: $('#input'),
 		KetrisImage: new Image(),
 		myBackgroundCanvas: null,
 		myPlayCanvas: null,
@@ -190,7 +199,7 @@ function launchKetris( inIPAddress, inGameID ) {
 	};
 
 	window.WebSocket = window.WebSocket || window.MozWebSocket;
-	if (!window.WebSocket) {
+	/*if (!window.WebSocket) {
 		myDOMHandles.content.html(
 			$(
 				'<p>',
@@ -199,7 +208,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		);
 		myDOMHandles.input.hide();
 		//return;
-	}
+	}*/
 	//connection = new WebSocket( 'ws://127.0.0.1:1337' );
 	//connection = new WebSocket( 'ws://34.218.240.70:1337' );
 	let connection = new WebSocket( 'ws://34.222.250.86:1337' );
@@ -213,10 +222,10 @@ function launchKetris( inIPAddress, inGameID ) {
         };
 	connection.onerror = function (error) {
 		console.log( "There has been an error." );
-		myDOMHandles.content.html($('<p>', {
+		/*myDOMHandles.content.html($('<p>', {
 			text: 'Sorry, but there\'s some problem with your '
 			 + 'connection or the server is down.'
-		}));
+		}));*/
 	};
 	connection.onmessage = function (message) {
 		console.log( "Ketris message recieved." );
@@ -292,7 +301,7 @@ function launchKetris( inIPAddress, inGameID ) {
 			);
 		}
 	};
-	myDOMHandles.input.keydown(function(e) {
+	/*myDOMHandles.input.keydown(function(e) {
 		if (e.keyCode === 13) {
 			let msg = $(this).val();
 			if( !msg ) {
@@ -321,7 +330,7 @@ function launchKetris( inIPAddress, inGameID ) {
 				$(this).val('');
 			}
 		}
-	});
+	});*/
 	setInterval( function() {
 		if( connection.readyState !== 1 ) {
 			myDOMHandles.input.attr( 'disabled', 'disabled' ).val(
@@ -1293,31 +1302,39 @@ function launchKetris( inIPAddress, inGameID ) {
 	function doDownKeyPress() {
 		doElementDrop();
 	}
+	function doPause() {
+		console.log( "Pausing" );
+		myGameState.PausedTimestamp = Date.now();
+		myGameState.Paused = true;
+		let pause = JSON.stringify({
+			type: 'game-event',
+			event: 'pause'
+		});
+		connection.send( pause );
+	}
+	function doUnpause() {
+		console.log( "Unpausing" );
+		myGameState.Paused = false;
+		CurrentElement.Timestamp +=
+		Date.now()-myGameState.PausedTimestamp;
+		CurrentElement_Enemy.Timestamp +=
+		Date.now()-myGameState.PausedTimestamp
+		let unpause = JSON.stringify({
+			type: 'game-event',
+			event: 'unpause'
+		});
+		connection.send( unpause );
+	}
 	function doSpaceKeyPress() {
 		console.log( "Space pressed." );
 		if( myGameState.Paused == false ) {
-			console.log( "Pausing" );
-			myGameState.PausedTimestamp = Date.now();
-			myGameState.Paused = true;
-			let pause = JSON.stringify(
-				{ type: 'game-event',
-				event: 'pause' }
-			);
-			connection.send( pause );
+			doPause();
 		}
 		else {
-			console.log("Unpausing...");
-			myGameState.Paused = false;
-			CurrentElement.Timestamp +=
-				Date.now()-myGameState.PausedTimestamp;
-			CurrentElement_Enemy.Timestamp +=
-				Date.now()-myGameState.PausedTimestamp
-			let unpause = JSON.stringify(
-				{ type: 'game-event',
-				event: 'unpause' }
-			);
-			connection.send( unpause );
+			//console.log("Unpausing...");
+			doUnpause();
 		}
+		//doUnpause();
 	}
 	function doEscapeKeyPress () {
 	}
