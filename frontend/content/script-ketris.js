@@ -759,7 +759,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		}
 		let TimeElapsed = Date.now() - myGameState.StartGameTimestamp;
 		//console.log( TimeElapsed/1000000000 );
-		Config.Speed = 0.001 + ( TimeElapsed/50000000 );
+		//Config.Speed = 0.001 + ( TimeElapsed/50000000 );
 	}
 	function doDrawBackgroundTile( inX, inY, inCanvasContext ) {
 		let BackgroundColor = 0;
@@ -899,7 +899,10 @@ function launchKetris( inIPAddress, inGameID ) {
 		let Elapsed = Date.now() - CurrentElement.Timestamp;
 		if( myGameState.Falling == true ) { Elapsed = Date.now(); }
 		if( myGameState.Paused == true ) {
+		//console.log( Elapsed + " -= " + Date.now() + " - " + myGameState.PausedTimestamp );
 			Elapsed -= Date.now() - myGameState.PausedTimestamp;
+			//Elapsed = myGameState.PausedTimestamp;
+			//console.log( Elapsed );
 		}
 		let yOffset = Config.Speed*Elapsed;
 
@@ -1292,7 +1295,7 @@ function launchKetris( inIPAddress, inGameID ) {
 	}
 	function doSpaceKeyPress() {
 		console.log( "Space pressed." );
-		/*if( myGameState.Paused == false ) {
+		if( myGameState.Paused == false ) {
 			console.log( "Pausing" );
 			myGameState.PausedTimestamp = Date.now();
 			myGameState.Paused = true;
@@ -1314,7 +1317,7 @@ function launchKetris( inIPAddress, inGameID ) {
 				event: 'unpause' }
 			);
 			connection.send( unpause );
-		}*/
+		}
 	}
 	function doEscapeKeyPress () {
 	}
