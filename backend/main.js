@@ -29,7 +29,7 @@ class game_id_generator {
 		if( !this.game_ids.retiredIDs.length ) {
 			console.log( this.game_ids.counter+1 );
 			return this.game_ids.counter++;
-		} else if( this.game_ids.retiredIDs > 0 ) {
+		} else if( this.game_ids.retiredIDs.length > 0 ) {
 			console.log( this.back_ids.retiredIDs.slice(-1)[0] );
 			return this.game_ids.retiredIDs.pop();
 		} else {
