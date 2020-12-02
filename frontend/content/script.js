@@ -1,34 +1,20 @@
 'use strict';
 
+/*
+TODO:
+1) Make all attache event listeners into functions, and remove as appropriate (login).
+*/
+
 const e = React.createElement;
 
-let colors = {
-  "A": "#ffff66",
-  "B": "#66ff99",
-  "C": "#33ccff",
-  "D": "#9966ff",
-  "E": "#3366cc",
-  "F": "#00cc66",
-  "G": "#ffa07a",
-  "H": "#ffa500",
-  "I": "#f0e68c",
-  "J": "#3cb371",
-  "K": "#e0ffff",
-  "L": "#87ceeb",
-  "M": "#7b68ee",
-  "N": "#e6e6fa",
-  "O": "#d8bfd8",
-  "P": "#9370db",
-  "Q": "#ffc0cb",
-  "R": "#faebd7",
-  "S": "#c0c0c0",
-  "T": "#deb887",
-  "U": "#daa520",
-  "V": "#a52a2a",
-  "W": "#800000",
-  "X": "#87cefa",
-  "Y": "#4169e1",
-  "Z": "#ee82ee"
+const colors = {
+  "A": "#ffff66", "B": "#66ff99", "C": "#33ccff", "D": "#9966ff",
+  "E": "#3366cc", "F": "#00cc66", "G": "#ffa07a", "H": "#ffa500",
+  "I": "#f0e68c", "J": "#3cb371", "K": "#e0ffff", "L": "#87ceeb",
+  "M": "#7b68ee", "N": "#e6e6fa", "O": "#d8bfd8", "P": "#9370db",
+  "Q": "#ffc0cb", "R": "#faebd7", "S": "#c0c0c0", "T": "#deb887",
+  "U": "#daa520", "V": "#a52a2a", "W": "#800000", "X": "#87cefa",
+  "Y": "#4169e1", "Z": "#ee82ee"
 }
 
 function getColor( inLetter ) {
@@ -37,27 +23,29 @@ function getColor( inLetter ) {
 }
 
 class UID {
-	constructor() {
-		this.UIDs = [];
-	}
-	generateUID( inField ) {
-		console.log( "Generating UID." );
-		if( !this.UIDs[inField] ) {
-			this.UIDs[inField] = {
-				counter: 1,
-				retiredIDs : []
-			};
-			return 0;
-		} else if( this.UIDs[inField].retiredIDs.length ) {
-			return this.UIDs[inField].retiredIDs.pop();
-		} else {
-			return this.UIDs[inField].counter++;
-		}
-	}
-	retireUID( inField, inUID ) {
-		console.log( "reitiringUID " + inUID + " of " + inField );
-		this.UIDs[inField].retiredIDs.push( inUID );
-	}
+    constructor() {
+      this.UIDs = [];
+    }
+    generateUID( inField ) {
+      console.log( "Generating first UID of field " + inField + "." );
+      if( !this.UIDs[inField] ) {
+        this.UIDs[inField] = {
+        counter: 1,
+        retiredIDs : []
+      };
+      return 0;
+    } else if( this.UIDs[inField].retiredIDs.length ) {
+      console.log( "Issuing retired UID of field " + inField + "." );
+      return this.UIDs[inField].retiredIDs.pop();
+    } else {
+      console.log( "Generating new UID of field " + inField + "." );
+      return this.UIDs[inField].counter++;
+    }
+  }
+  retireUID( inField, inUID ) {
+    console.log( "reitiring UID " + inUID + " of " + inField );
+    this.UIDs[inField].retiredIDs.push( inUID );
+  }
 }
 
 class ChatRoom extends React.Component {
@@ -71,7 +59,7 @@ class ChatRoom extends React.Component {
     let parent = this;
     this.state.websocket.addEventListener('message', function(event) {
       const inMessage = JSON.parse( event.data );
-      if( inMessage.event === "chat_message" ) {
+      if( inMessage.event === "server_chat_message" ) {
         parent.state.chatmessages.push({
           username: inMessage.username,
           user_icon: inMessage.username.charAt(0).toUpperCase(),
@@ -125,7 +113,7 @@ class CurrentUsers extends React.Component {
     let parent = this;
     this.state.websocket.addEventListener('message', function(event) {
       const inMessage = JSON.parse( event.data );
-      if( inMessage.event === "new_user" ) {
+      if( inMessage.event === "server_new_user" ) {
         parent.state.userlist.push({
           username: inMessage.username,
           user_icon: inMessage.username.charAt(0).toUpperCase(),
@@ -133,7 +121,7 @@ class CurrentUsers extends React.Component {
           UID: parent.UID.generateUID('users')
         });
         parent.setState( parent.state.userlist );
-      } else if( inMessage.event === "remove_user" ) {
+      } else if( inMessage.event === "server_remove_user" ) {
 	let held_index;
         parent.state.userlist.forEach( (element, index ) => {
           if( element.username == inMessage.username ) {
@@ -143,7 +131,7 @@ class CurrentUsers extends React.Component {
         });
         parent.setState( parent.state.userlist );
 	parent.UID.retireUID( 'users', held_index );
-      } else if( inMessage.event === "user_list" ) {
+      } else if( inMessage.event === "server_user_list" ) {
         parent.state.userlist = [];
         inMessage.user_list.map( (user) => {
           parent.state.userlist.push({
@@ -183,13 +171,6 @@ class CurrentUsers extends React.Component {
   }
 }
 
-function join_game( inGameID ) {
-  return function( inGameID ) {
-    console.log( "jinning: " + inGameID );
-    console.dir( inGameID );
-  }
-}
-
 class AvailGames extends React.Component {
   constructor( inGames, websocket ) {
     super( inGames, websocket );
@@ -202,7 +183,7 @@ class AvailGames extends React.Component {
     this.state.websocket.addEventListener('message', function(event) {
       const inMessage = JSON.parse( event.data );
 	console.dir( event.data );
-      if( inMessage.event === "new_game" ) {
+      if( inMessage.event === "server_new_game" ) {
         parent.state.inGames.push({
           game_name: inMessage.game_name,
           game_icon: inMessage.game_name.charAt(0).toUpperCase(),
@@ -211,7 +192,7 @@ class AvailGames extends React.Component {
           UID: parent.UID.generateUID('games')
         });
         parent.setState( parent.state.inGames );
-      } else if( inMessage.event === "remove_game" ) {
+      } else if( inMessage.event === "server_remove_game" ) {
         let held_index;
         parent.state.inGames.forEach( (element,index) => {
           if( element.game_name === inMessage.game_name ) {
@@ -221,7 +202,7 @@ class AvailGames extends React.Component {
         });
         parent.setState( parent.state.inGames );
         parent.UID.retireUID( 'games', held_index );
-      } else if( inMessage.event === "game_list" ) {
+      } else if( inMessage.event === "server_game_list" ) {
         parent.state.inGames = [];
         inMessage.game_list.map( (game) => {
           parent.state.inGames.push({
@@ -237,12 +218,12 @@ class AvailGames extends React.Component {
     });
   };
   join_game( inGameID, inGameName ) {
-    console.log( "Joining game:" + inGameID );
-    console.dir( inGameID );
-    console.dir( inGameName );
-    console.dir( this );
+    console.log( "Joining game ID: " + inGameID + " GameName: " + inGameName + "." );
+    //console.dir( inGameID );
+    //console.dir( inGameName );
+    //console.dir( this );
     this.state.websocket.send(JSON.stringify({
-      event: "enter_game",
+      event: "client_enter_game",
       game_id: inGameID,
       game_name: inGameName
     }));
@@ -287,8 +268,10 @@ function launchGameInterface( inIPAddress, inGameID ) {
   chat_interface.style.display = "none";
   game_interface.style.display = "flex";
   launchKetris( inIPAddress, inGameID );
-  //var myKetrisThread = new Worker('script-ketris.js');
-  //myKetrisThread.postMessage([inIPAddress,inGameID]);
+}
+
+function remove_game_id( inGameID ) {
+
 }
 
 function launchLoginInterface( inWebsocket ) {
@@ -334,37 +317,14 @@ function launchChatInterface( ws ) {
 	ws.addEventListener( 'message', function(event) {
 		const inMessage = JSON.parse( event.data );
 		console.dir( inMessage );
-		if( inMessage.event === "enter_game_approval" ) {
+		if( inMessage.event === "server_enter_game_approval" ) {
 			launchGameInterface( inMessage.ip, inMessage.game_id );
 		}
 	});
-	/*ws.addEventListener( 'message', function(event) {
-		const inMessage = JSON.parse( event.data );
-		console.log( "==========================================" );
-		console.dir( userList );
-		if( inMessage.event === "chat_message" ) {
-			console.log( "chat_message" );
-			chatLog.push( {
-			  user: inMessage.username,
-			  text: inMessage.text,
-			  uid: chatLog.length}
-			);
-			ReactDOM.render(
-				<ChatRoom chatLog={chatLog} />,
-				document.getElementById('chat_box_wrapper')
-			);
-			let myChatbox = document.getElementById('chat_box');
-			console.dir( myChatbox );
-			myChatbox.scrollTop =  myChatbox.scrollHeight;
-		} else {
-			console.log( "Unrecognized message." );
-			console.dir( inMessage );
-		}
-	});*/
 
 	function send_chat_message( inMessage ) {
 		const send_message = {
-			event : "chat_message",
+			event : "client_chat_message",
 			text : inMessage
 		}
 		const send_message_json = JSON.stringify( send_message );
@@ -391,12 +351,11 @@ function launchChatInterface( ws ) {
 	let myNewGameButton = document.getElementById("start_new_game_button");
 	myNewGameButton.addEventListener( 'click', () => {
 		ws.send( JSON.stringify({
-			event: "new_game"
+			event: "client_new_game"
 		}));
 	});
 
 	function doSend() {
-		//const input_textfield = document.getElementById("input_text");
 		const input_text = myInputText.value;
 		if( input_text != "" ) {
 			send_chat_message( input_text );
@@ -408,7 +367,7 @@ function launchChatInterface( ws ) {
 
 function doLogin( websocket, username, password ) {
 	const login = {
-		"event" : "login",
+		"event" : "client_login",
 		"username" : username,
 		"password" : password
 	}
@@ -417,8 +376,6 @@ function doLogin( websocket, username, password ) {
 }
 
 document.addEventListener( "DOMContentLoaded", function(event) {
-	console.log( 'Initing...' );
-
 	let login_interface = document.getElementById('login_interface');
 	let chat_interface = document.getElementById('chat_interface');
 	chat_interface.style.display = "none";
@@ -426,9 +383,6 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 	var ws = new WebSocket( 'ws://34.222.250.86:3000' );
 	ws.addEventListener( 'open', function(event) {
 		console.log( "WebSocket opened!" );
-		//ws.onopen = function() { console.log( "Opened!" ); }
-		//ws.onerror = function(error) { console.log( "Error!" ); }
-		//ws.send( 'Hellos!' );
 	});
 
 	let login_button = document.getElementById('login_button');
@@ -444,7 +398,7 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 	});
 
 	ws.addEventListener( 'message', function(event) {
-		if( event.data === "login_approved" ) {
+		if( event.data === "server_login_approved" ) {
 			console.log( "Login approved!" );
 			launchChatInterface( ws );
 		}

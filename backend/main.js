@@ -33,8 +33,7 @@ class game_id_generator {
 			console.log( this.back_ids.retiredIDs.slice(-1)[0] );
 			return this.game_ids.retiredIDs.pop();
 		} else {
-			console.log( "WTH" );
-			return this.game_ids.counter++; //TODO: fix this. god I'm tired.
+			return this.game_ids.counter++;
 		}
 	}
 	retireUID( inUID ) {
@@ -54,7 +53,8 @@ function doesUserExist( inUsername ) {
 function sendNewUserNotification( inUsername, connection ) {
 	console.log( "Sending new user notification to all logged-in clients." );
 	const newUser = {
-		event: "new_user",
+		type: "chat_event",
+		event: "server_new_user",
 		username: inUsername
 	};
 	const out = JSON.stringify( newUser );
@@ -76,7 +76,8 @@ function sendUserList(conn) {
 	});
 	console.dir( userList );
 	const out = {
-		event : "user_list",
+		type: "chat_event",
+		event : "server_user_list",
 		user_list : userList
 	}
 	conn.sendUTF( JSON.stringify( out ) );
@@ -90,7 +91,8 @@ function sendGameList(conn) {
 		});
 	});
 	const out = {
-		event: "game_list",
+		type: "chat_event",
+		event: "server_game_list",
 		game_list : avail_gamesList
 	}
 	conn.sendUTF( JSON.stringify( out ) );
@@ -103,7 +105,8 @@ function sendLists(conn) {
 
 function sendLogoutUserNotification( inUsername ) {
 	const oldUser = {
-		event: "remove_user",
+		type: "chat_event",
+		event: "server_remove_user",
 		username: inUsername
 	};
 	const out = JSON.stringify( oldUser );
@@ -116,12 +119,10 @@ function remove_game(connection,in_game_name) {
   console.log( "remove_game" );
   clients.forEach( (client) => {
     console.log( "removing game " + in_game_name + "." );
-//    if( client.conn != connection ) {
       client.conn.sendUTF( JSON.stringify({
         game_name: in_game_name,
-        event: "remove_game"
+        event: "server_remove_game"
       }));
-//    }
   });
 }
 
@@ -142,34 +143,36 @@ wsServer.on('request', function(request) {
 		console.log( "Recieved message!" );
 		const inMessage = JSON.parse( message.utf8Data );
 		console.dir( inMessage );
-		if( inMessage.event === "login" ) {
+		if( inMessage.event === "client_login" ) {
 			console.log( "Attempting login!" );
 			if( doesUserExist( inMessage.username ) == false ) {
 				new_user.username = inMessage.username;
 				new_user.password = inMessage.password;
 				console.log( "Login approved!" );
 				clients.push( new_user );
-				connection.sendUTF( "login_approved" );
+				connection.sendUTF( "server_login_approved" );
 				sendLists(connection);
 				sendNewUserNotification( new_user.username, connection );
 			} else {
 				connection.sendUTF( "login_rejected" );
 			}
-		} else if( inMessage.event === "chat_message" ) {
+		} else if( inMessage.event === "client_chat_message" ) {
 			const chat_message = {
+				type: "chat_event",
 				username : new_user.username,
 				userdata : "placeholder",
 				text : inMessage.text,
-				event: "chat_message"
+				event: "server_chat_message"
 			}
 			const chat_message_string = JSON.stringify( chat_message );
 			clients.forEach( client => {
 				client.conn.sendUTF( chat_message_string );
 			});
-		} else if( inMessage.event === "new_game" ) {
+		} else if( inMessage.event === "client_new_game" ) {
 			console.log( "New game" );
 			const new_game = {
-				event : "new_game",
+				type: "chat_event",
+				event : "server_new_game",
 				game_name : new_user.username,
 				game_id: myGameIDGen.generateUID()
 			}
@@ -181,13 +184,14 @@ wsServer.on('request', function(request) {
 			});
 			new_game.user = connection;
 			avail_games.push( new_game );
-		} else if( inMessage.event === "enter_game" ) {
+		} else if( inMessage.event === "client_enter_game" ) {
 			console.log( "enter_game" );
 			console.log( "game_id: " + inMessage.game_id );
 			//1) Send ip of ketris server to both users, along with game id.
 
 			const enter_game_approval = {
-				event: "enter_game_approval",
+				type: "chat_event",
+				event: "server_enter_game_approval",
 				ip: "todo_loadbalancing",
 				game_id: inMessage.game_id
 			};
@@ -231,4 +235,3 @@ wsServer.on('request', function(request) {
 		});
 	});
 });
-

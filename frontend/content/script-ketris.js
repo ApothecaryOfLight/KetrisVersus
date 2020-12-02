@@ -1,9 +1,7 @@
-//TODO: Fix rotation in cases where the rotation will overlap blocks!!!
 //TODO: Increasing speed rate
 //TODO: Integrate pause and increased speed rate
 //TODO: User system
 //TODO: Highscore system
-//TODO: Fix pause
 
 function launchKetris( inIPAddress, inGameID ) {
 	console.log( "Connection to server " + inIPAddress + " for game " + inGameID + "." );
@@ -120,8 +118,6 @@ function launchKetris( inIPAddress, inGameID ) {
 		]
 	];
 	let myDOMHandles = {
-		//content: $('#content'),
-		//input: $('#input'),
 		KetrisImage: new Image(),
 		myBackgroundCanvas: null,
 		myPlayCanvas: null,
@@ -136,7 +132,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		GameOver: false,
 		Falling: false,
 		Falling_Enemy: false,
-		myName: false,//TODO: This is awkward and unncessesary.
+		myName: false,
 		myScore: 0,
 		myLastScore: 1,
 		myEnemyScore: 0,
@@ -187,7 +183,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		console.log( "Connected to Ketris server!" );
 		connection.send( JSON.stringify({
 			type: "game_event",
-			event: "start_ketris",
+			event: "client_start_ketris",
 			game_id: inGameID
 		}));
         }
@@ -207,15 +203,15 @@ function launchKetris( inIPAddress, inGameID ) {
 		}
 		//console.dir( inPacket );
 		if( inPacket.type === 'game_event' ) {
-			if( inPacket.event === 'end_game' ) {
+			if( inPacket.event === 'server_end_game' ) {
 				//console.log( "Ending game packet recieved." );
 				myGameState.GameOver = true;
 				myGameState.GlobalPlay = false;
 				doComposeMenu( 10, 3, 0 );
 				DrawMenu = true;
-			} else if( inPacket.event === 'commence_gameplay' ) {
+			} else if( inPacket.event === 'server_commence_gameplay' ) {
 				doLaunchKetrisGameplayer();
-			} else if( inPacket.event === 'new_shape' ) {
+			} else if( inPacket.event === 'server_new_shape' ) {
 				//console.log( "New shape event from opponent." );
 				CurrentElement_Enemy.Shape = inPacket.Shape;
 				CurrentElement_Enemy.Rotation = inPacket.Rotation;
@@ -225,7 +221,7 @@ function launchKetris( inIPAddress, inGameID ) {
 				CurrentElement_Enemy.Timestamp = inPacket.Timestamp;
 				CurrentElement_Enemy.NextElement = inPacket.NextElement;
 				CurrentElement_Enemy.NextColor = inPacket.NextColor;
-			} else if( inPacket.event === 'collision' ) {
+			} else if( inPacket.event === 'server_collision' ) {
 				//console.log( "Colission recieved" );
 				CurrentElement_Enemy.Shape = inPacket.Shape;
 				CurrentElement_Enemy.Rotation = inPacket.Rotation;
@@ -234,59 +230,35 @@ function launchKetris( inIPAddress, inGameID ) {
 				CurrentElement_Enemy.YPos = inPacket.YPos;
 				CurrentElement_Enemy.Timestamp = inPacket.Timestamp;
 				doTransposeElement_Enemy();
-			} else if( inPacket.event === 'movement' ) {
+			} else if( inPacket.event === 'server_movement' ) {
 				//console.log( "Movement recieved" );
 				if( inPacket.direction == 'left' ) {
 					CurrentElement_Enemy.XPos--;
 				} else if( inPacket.direction == 'right' ) {
 					CurrentElement_Enemy.XPos++;
 				}
-			} else if( inPacket.event === 'score' ) {
+			} else if( inPacket.event === 'server_score' ) {
 				//console.log( "Score recieved." );
 				myGameState.myEnemyScore = inPacket.score;
-			} else if( inPacket.event === 'rotation' ) {
+			} else if( inPacket.event === 'server_rotation' ) {
 				//console.log( "Rotation recieved" );
 				CurrentElement_Enemy.Rotation = inPacket.rotation;
-			//(A)
-			} else if( inPacket.event === 'pause' ) {
+			} else if( inPacket.event === 'server_pause' ) {
 				console.log( "pause recieved" );
 				doReceivePause();
-				/*if( myGameState.Paused == false ) {
-					myGameState.PausedTimestamp = Date.now();
-					myGameState.Paused = true;
-				}*/
-			} else if( inPacket.event === 'unpause' ) {
+			} else if( inPacket.event === 'server_unpause' ) {
 				console.log( "unpause recieved" );
 				doReceiveUnpause();
-				//if( document.visibilityState == "visible" ) {
-					/*myGameState.Paused = false;
-					CurrentElement.Timestamp +=
-						Date.now()-myGameState.PausedTimestamp;
-					CurrentElement_Enemy.Timestamp +=
-						Date.now()-myGameState.PausedTimestamp;*/
 				doUnpause();
-				//}
-			} else if ( inPacket.event === 'visible' ) {
+			} else if ( inPacket.event === 'server_visible' ) {
 				console.log( "Recieved visible" );
 				doReceieveVisible();
-				//myGameState.enemy_visibility = true;
-				/*if( document.visibilityState == "visible" ) {
-					console.log( "Enemy and us visible, remdining enemy." );
-					connection.send( JSON.stringify({
-						type: "game_event",
-						event: "visible"
-					}));
-					doUnpause();
-				}*/
-				//doUnpause();
-			} else if ( inPacket.event === 'hidden' ) {
+			} else if ( inPacket.event === 'server_hidden' ) {
 				console.log( "Recieved hidden" );
 				doReceiveHidden();
-				//myGameState.enemy_visibility = false;
-				//doPause();
-			} else if( inPacket.event === 'restart' ) {
+			} else if( inPacket.event === 'server_restart' ) {
 				doStartNewGame();
-			} else if( inPacket.event === 'disconnect' ) {
+			} else if( inPacket.event === 'server_disconnect' ) {
 				let game_interface = document.getElementById('game_interface');
 				let chat_interface = document.getElementById('chat_interface');
 				game_interface.style.display = "none";
@@ -360,67 +332,61 @@ function launchKetris( inIPAddress, inGameID ) {
 	function doSendMovementLeft() {
 		if( myGameState.GlobalPlay == true ) {
 			//console.log( "Do sending move left event." );
-			let doMoveElementLeft = JSON.stringify(
-				{ type: "event",
+			let doMoveElementLeft = JSON.stringify({
+				type: "event",
 				event: "movement",
-				direction: "left" }
-			);
+				direction: "left"
+			});
 			connection.send( doMoveElementLeft );
 		}
 	}
 	function doSendMovementRight() {
 		if( myGameState.GlobalPlay == true ) {
 			//console.log( "Do sending move right event." );
-			let doMoveElementRight = JSON.stringify(
-				{ type: "event",
+			let doMoveElementRight = JSON.stringify({
+				type: "event",
 				event: "movement",
-				direction: "right" }
-			);
+				direction: "right"
+			});
 			connection.send( doMoveElementRight );
 		}
 	}
 	function doSendRotation( inRotation ) {
 		if( myGameState.GlobalPlay == true ) {
-			let newRotation = JSON.stringify(
-				{ type: "event",
+			let newRotation = JSON.stringify({
+				type: "event",
 				event: "rotation",
-				rotation: inRotation }
-			);
+				rotation: inRotation
+			});
 			connection.send( newRotation );
 		}
 	}
 	function doSendCollisionEvent( inYOffset ) {
 		if( myGameState.GlobalPlay == true ) {
-			/*console.log(
-				"Do sending collision event with yoffset of " +
-				inYOffset
-			);*/
-			let newElementCollision = JSON.stringify(
-				{ type: "event",
+			let newElementCollision = JSON.stringify({
+				type: "event",
 				event: "collision",
 				Shape: CurrentElement.Shape,
 				Rotation: CurrentElement.Rotation,
 				Color: CurrentElement.Color,
 				Timestamp: CurrentElement.Timtamp,
 				XPos: CurrentElement.XPos,
-				YPos: (CurrentElement.YPos+inYOffset) }
-			);
+				YPos: (CurrentElement.YPos+inYOffset)
+			});
 			connection.send( newElementCollision );
 		}
 	}
 	function doSendNewElement() {
-		let newElementOut = JSON.stringify(
-			{
-				type: "event",
-				event: "new_shape",
-				Shape: CurrentElement.Shape,
-				Rotation: CurrentElement.Rotation,
-				Color: CurrentElement.Color,
-				Timestamp: CurrentElement.Timestamp,
-				XPos: CurrentElement.XPos,
-				YPos: CurrentElement.YPos
-			}
-		);
+		let newElementOut = JSON.stringify({
+			type: "event",
+			event: "new_shape",
+			Shape: CurrentElement.Shape,
+			Rotation: CurrentElement.Rotation,
+			Color: CurrentElement.Color,
+			Timestamp: CurrentElement.Timestamp,
+			XPos: CurrentElement.XPos,
+			YPos: CurrentElement.YPos
+		});
 		connection.send( newElementOut );
 	}
 	function doGenerateNextElement() {
@@ -550,11 +516,9 @@ function launchKetris( inIPAddress, inGameID ) {
 				}
 			}
 		}
-
 		doCheckForLineElimination();
 		doGenerateNextElement();
 		doCheckForCollision();
-
 		return true;
 	}
 	function doTransposeElement_Enemy() {
@@ -600,7 +564,6 @@ function launchKetris( inIPAddress, inGameID ) {
 			) == false ) {
 				yOffset += 1;
 			}
-	
 			doSendCollisionEvent( yOffset );
 			for( let y=0; y<4; y++ ) {
 				for( let x=0; x<4; x++ ) {
@@ -826,7 +789,7 @@ function launchKetris( inIPAddress, inGameID ) {
 			313, 621,
 			313, 128,
 			313, 621
-		);	
+		);
 	}
 	function doDrawGhostblock() {
 		let myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
@@ -988,8 +951,6 @@ function launchKetris( inIPAddress, inGameID ) {
 	function doDrawScore() {
 		if( myGameState.myLastScore != myGameState.myScore ) {
 			myGameState.myLastScore = myGameState.myScore;
-			//console.log( "Score update: " + myGameState.myScore + "." );
-
 			doSendScoreUpdate();//TODO: Implement enemy scoring
 
 			let myScoreCanvasContext =
@@ -1001,14 +962,11 @@ function launchKetris( inIPAddress, inGameID ) {
 
 			let myScore = myGameState.myScore.toString();
 			for( let myDigitKey in myScore ) {
-				/*console.log( "doDrawScore " + myScore[myDigitKey] +
-					" in " + myDigitKey + "th place." );*/
 				doComposeScore( myScore[myDigitKey], myDigitKey );
 			}
 		}
 		let myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
 		let myScoreCanvasContext = myDOMHandles.myScoreCanvas.getContext( "2d" );
-//console.log( myScoreCanvas.width );
 		myPlayCanvasContext.drawImage(
 			myDOMHandles.myScoreCanvas,
 			0, 0,
@@ -1031,7 +989,6 @@ function launchKetris( inIPAddress, inGameID ) {
 	function doDrawEnemyScore() {
 		if( myGameState.myEnemyLastScore != myGameState.myEnemyScore ) {
 			myGameState.myEnemyLastScore = myGameState.myEnemyScore;
-			//console.log( "Enemy score update: " + myGameState.myEnemyScore + "." );
 
 			let myEnemyScoreCanvasContext =
 				myDOMHandles.myEnemyScoreCanvas.getContext( "2d" );
@@ -1042,14 +999,10 @@ function launchKetris( inIPAddress, inGameID ) {
 
 			let myEnemyScore = myGameState.myEnemyScore.toString();
 			for( let myDigitKey in myEnemyScore ) {
-				/*console.log( "doDrawScore " + myEnemyScore[myDigitKey] +
-					" in " + myDigitKey + "th place." );*/
 				doComposeEnemyScore( myEnemyScore[myDigitKey], myDigitKey );
 			}
 		}
 		let myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
-		//let myEnemyScoreCanvasContext = myDOMHandles.myEnemyScoreCanvas.getContext( "2d" );
-//console.log( myDOMHandles.myEnemyScoreCanvas.width );
 		myPlayCanvasContext.drawImage(
 			myDOMHandles.myEnemyScoreCanvas,
 			0, 0,
@@ -1062,9 +1015,6 @@ function launchKetris( inIPAddress, inGameID ) {
 		let toDrawShape = CurrentElement.NextElement;
 		let toDrawColor = CurrentElement.NextColor;
 		let myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
-		//myPlayCanvasContext.drawImage(
-			//myDOMHandles.KetrisImage
-		//);
 		for( let x=0; x<4; x++ ) {
 			for( let y=0; y<4; y++ ) {
 				if( Shapes[toDrawShape][0][x][y] == 1 ) {
@@ -1257,7 +1207,6 @@ function launchKetris( inIPAddress, inGameID ) {
 		doElementDrop();
 	}
 
-	//Pausing functions (A)
 	function doReceivePause() {
 		console.log( "doReceivePause()" );
 		doPause();
@@ -1437,10 +1386,10 @@ function launchKetris( inIPAddress, inGameID ) {
 			console.log( "Click on Restart Game." );
 			if( out[0] > 80 && out[0] < 240 ) {
 				if( out[1] > 296 && out[1] < 344 ) {
-					let restart = JSON.stringify(
-						{ type: 'event', //TODO: Gameplay type
-						event: 'restart' }
-					);
+					let restart = JSON.stringify({
+						type: 'chat_event',
+						event: 'client_restart'
+					});
 					connection.send( restart );
 					doStartNewGame();
 				}
@@ -1474,11 +1423,10 @@ function launchKetris( inIPAddress, inGameID ) {
 							console.log( "Game over B!" );
 							myGameState.GlobalPlay = false;
 							myGameState.GameOver = true;
-						
-							let end_game = JSON.stringify(
-								{ type: 'event',
-								event: 'end_game' }
-							);
+							let end_game = JSON.stringify({
+								type: 'chat_event',
+								event: 'client_end_game'
+							});
 							connection.send( end_game );
 
 							doComposeMenu( 10, 3, 0 );
@@ -1486,7 +1434,7 @@ function launchKetris( inIPAddress, inGameID ) {
 						}
 						return;
 					}
-				} 
+				}
 			}
 		}
 		return;
