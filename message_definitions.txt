@@ -1,0 +1,60 @@
+JSON Messages
+
+====================================================
+=====  FROM CHAT_CLIENT to CHAT_BACKEND (all have type="chat_event"
+-client_enter_game
+-client_chat_message
+-client_login
+-client_new_game
+	Causes game to be listed.
+-client_enter_game
+
+
+====================================================
+=====  FROM KETRIS_CLIENT to KETRIS_BACKEND (all have type="game_event")
+-client_start_ketris
+	Sent on successful opening of WebSocket to KETRIS_BACKEND
+-client_movement
+-client_rotation
+-client_collision
+-client_new_shape
+-client_score
+-client_pause
+-client_unpause
+-client_visible
+-client_hidden
+-client_restart
+-client_end_game
+
+
+====================================================
+=====  FROM CHAT_BACKEND to CHAT_CLIENT (all have type="chat_event")
+-server_user_list
+-server_new_user
+-server_game_list
+-server_remove_user
+-server_remove_game
+	TODO: Change to remove game completely, only on game ending or user disconnecting.
+-server_chat_message
+-server_new_game
+-server_enter_game
+-server_enter_game_approval
+	Sends OK to two clients to begin game. Sends game_id.
+	Needs to unlist game.
+-server_unlist_game
+	TODO: Implement as result of game starting or being deleted.
+
+====================================================
+=====  FROM KETRIS_BACKEND to CHAT_CLIENT (all have type="game_event")
+-server_new_shape
+-server_movement
+-server_score
+-server_rotation
+-server_freeze
+-server_unfreeze
+-server_restart
+-server_endgame
+-server_visible
+-server_hidden
+-server_commence_gameplay
+	In response to start_ketris
