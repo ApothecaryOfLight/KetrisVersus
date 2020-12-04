@@ -28,9 +28,29 @@ function load_files() {
 			if( error ) {
 				throw error;
 			}
-			requests[request] = data;
-			file_counter++;
-			isLoaded( file_counter );
+			if( files[request].slice(-2) == "js" ) {
+				babelCore.transform(
+					data,
+					{
+						presets: [
+							"@babel/preset-env",
+							"@babel/preset-react"
+						],
+					},
+					function(error,result) {
+						if( error ) {
+							console.log( error );
+						}
+						requests[request] = result.code;
+						file_counter++;
+						isLoaded( file_counter );
+					}
+				);
+			} else {
+				requests[request] = data;
+				file_counter++;
+				isLoaded( file_counter );
+			}
 		});
 	}
 	for( const request in images ) {
@@ -58,15 +78,14 @@ function doLaunch() {
 		res.send( requests['/'] );
 	});
 	app.get( '/style.css', function(req,res) {
-		
 		console.log( "style.css" );
 		res.contentType('.css');
 		res.send( requests['/style.css'] );
 	});
 	app.get( '/script.js', function(req,res) {
 		console.log( "script.js" );
-		//res.send( requests['/script.js'] );
-		babelCore.transform(
+		res.send( requests['/script.js'] );
+		/*babelCore.transform(
 			requests['/script.js'],
 			{
 				presets: [
@@ -80,7 +99,7 @@ function doLaunch() {
 				}
 				res.send( result.code );
 			}
-		);
+		);*/
 	});
 	app.get( '/script-ketris.js', function(req,res) {
 		res.send( requests['/script-ketris.js'] );
