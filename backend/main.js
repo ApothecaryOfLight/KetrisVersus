@@ -341,6 +341,11 @@ wsServer.on('request', function(request) {
 	myConnection.on( 'close', function( reasonCode, desc ) {
 		console.log( "Closed connection!" );
 
+		//If user hasn't logged in yet simply return.
+		if( new_user.user_id == -1 ) {
+			return;
+		}
+
 		//Send notice to all users that this user has disconencted.
 		if( users[ new_user.user_id ].username != "unlogged" ) {
 			console.log( "Logging out username: " + users[ new_user.user_id ].username );
