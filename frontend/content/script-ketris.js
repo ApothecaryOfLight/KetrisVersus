@@ -1361,13 +1361,15 @@ function launchKetris( inIPAddress, inGameID ) {
 	}
 	function getCursorPosition( canvas, event ) {
 		let x, y;
-		let canoffset = $(myKetrisCanvas).offset();
+		let myCanvas = document.getElementById('myKetrisCanvas');
+		let canvasOffsetLeft = myCanvas.offsetLeft;
+		let canvasOffsetTop = myCanvas.offsetTop;$
 		x = event.clientX + document.body.scrollLeft +
 			document.documentElement.scrollLeft -
-			Math.floor(canoffset.left);
+			Math.floor(canvasOffsetLeft);
 		y = event.clientY + document.body.scrollTop +
 			document.documentElement.scrollTop -
-			Math.floor(canoffset.top) + 1;
+			Math.floor(canvasOffsetTop) + 1;
 		return [x,y];
 	}
 	window.onclick = function(e) {
