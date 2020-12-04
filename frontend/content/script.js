@@ -182,26 +182,27 @@ class AvailGames extends React.Component {
     let parent = this;
     this.state.websocket.addEventListener('message', function(event) {
       const inMessage = JSON.parse( event.data );
-	console.dir( event.data );
-      if( inMessage.event === "server_new_game" ) {
+      console.log( "AvailGames message check: " );
+      console.log( event.data );
+      console.dir( inMessage );
+      console.log( inMessage.event );
+      if( inMessage.event === "server_list_game" ) {
+        console.log( "server_list_game event!" );
         parent.state.inGames.push({
           game_name: inMessage.game_name,
           game_icon: inMessage.game_name.charAt(0).toUpperCase(),
           game_color: getColor( inMessage.game_name.charAt(0).toUpperCase() ),
           game_id: inMessage.game_id,
-          UID: parent.UID.generateUID('games')
+          UID: inMessage.game_id //guaranteed unique by server
         });
         parent.setState( parent.state.inGames );
-      } else if( inMessage.event === "server_remove_game" ) {
-        let held_index;
-        parent.state.inGames.forEach( (element,index) => {
-          if( element.game_name === inMessage.game_name ) {
-            held_index = element.UID;
+      } else if( inMessage.event === "server_delist_game" ) {
+        parent.state.inGames.forEach( ( element, index ) => {
+          if( element.game_id === inMessage.game_id ) {
             parent.state.inGames.splice( index, 1 );
           }
         });
         parent.setState( parent.state.inGames );
-        parent.UID.retireUID( 'games', held_index );
       } else if( inMessage.event === "server_game_list" ) {
         parent.state.inGames = [];
         inMessage.game_list.map( (game) => {
@@ -210,7 +211,7 @@ class AvailGames extends React.Component {
             game_icon: game.game_name.charAt(0).toUpperCase(),
             game_color: getColor( game.game_name.charAt(0).toUpperCase() ),
             game_id: game.game_id,
-            UID: parent.UID.generateUID('games')
+            UID: game.game_id
           });
         });
         parent.setState( parent.state.inGames );
@@ -317,7 +318,7 @@ function launchChatInterface( ws ) {
 	ws.addEventListener( 'message', function(event) {
 		const inMessage = JSON.parse( event.data );
 		console.dir( inMessage );
-		if( inMessage.event === "server_enter_game_approval" ) {
+		if( inMessage.event === "server_enter_game" ) {
 			launchGameInterface( inMessage.ip, inMessage.game_id );
 		}
 	});
@@ -380,7 +381,12 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 	let chat_interface = document.getElementById('chat_interface');
 	chat_interface.style.display = "none";
 
-	var ws = new WebSocket( 'ws://34.222.250.86:3000' );
+	var ws;
+	try{
+		ws = new WebSocket( 'ws://34.222.250.86:3000' );
+	} catch( error ) {
+		console.error( error );
+	}
 	ws.addEventListener( 'open', function(event) {
 		console.log( "WebSocket opened!" );
 	});

@@ -333,8 +333,8 @@ function launchKetris( inIPAddress, inGameID ) {
 		if( myGameState.GlobalPlay == true ) {
 			//console.log( "Do sending move left event." );
 			let doMoveElementLeft = JSON.stringify({
-				type: "event",
-				event: "movement",
+				type: "game_event",
+				event: "client_movement",
 				direction: "left"
 			});
 			connection.send( doMoveElementLeft );
@@ -344,8 +344,8 @@ function launchKetris( inIPAddress, inGameID ) {
 		if( myGameState.GlobalPlay == true ) {
 			//console.log( "Do sending move right event." );
 			let doMoveElementRight = JSON.stringify({
-				type: "event",
-				event: "movement",
+				type: "game_event",
+				event: "client_movement",
 				direction: "right"
 			});
 			connection.send( doMoveElementRight );
@@ -354,8 +354,8 @@ function launchKetris( inIPAddress, inGameID ) {
 	function doSendRotation( inRotation ) {
 		if( myGameState.GlobalPlay == true ) {
 			let newRotation = JSON.stringify({
-				type: "event",
-				event: "rotation",
+				type: "game_event",
+				event: "client_rotation",
 				rotation: inRotation
 			});
 			connection.send( newRotation );
@@ -364,8 +364,8 @@ function launchKetris( inIPAddress, inGameID ) {
 	function doSendCollisionEvent( inYOffset ) {
 		if( myGameState.GlobalPlay == true ) {
 			let newElementCollision = JSON.stringify({
-				type: "event",
-				event: "collision",
+				type: "game_event",
+				event: "client_collision",
 				Shape: CurrentElement.Shape,
 				Rotation: CurrentElement.Rotation,
 				Color: CurrentElement.Color,
@@ -378,8 +378,8 @@ function launchKetris( inIPAddress, inGameID ) {
 	}
 	function doSendNewElement() {
 		let newElementOut = JSON.stringify({
-			type: "event",
-			event: "new_shape",
+			type: "game_event",
+			event: "client_new_shape",
 			Shape: CurrentElement.Shape,
 			Rotation: CurrentElement.Rotation,
 			Color: CurrentElement.Color,
@@ -941,11 +941,11 @@ function launchKetris( inIPAddress, inGameID ) {
 		);
 	}
 	function doSendScoreUpdate() { //bookmark
-		let score = JSON.stringify(
-			{ type: "event",
-			event: "score",
-			score: myGameState.myScore }
-		);
+		let score = JSON.stringify({
+			type: "game_event",
+			event: "client_score",
+			score: myGameState.myScore
+		});
 		connection.send( score );
 	}
 	function doDrawScore() {
@@ -1228,7 +1228,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		console.log( "doSendPause()" );
 		let pause = JSON.stringify({
 			type: 'game_event',
-			event: 'pause'
+			event: 'client_pause'
 		});
 		connection.send( pause );
 	}
@@ -1236,7 +1236,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		console.log( "doSendUnpause" );
 		let unpause = JSON.stringify({
 			type: 'game_event',
-			event: 'unpause'
+			event: 'client_unpause'
 		});
 		connection.send( unpause );
 	}
@@ -1244,14 +1244,14 @@ function launchKetris( inIPAddress, inGameID ) {
 		console.log( "doSendVisible." );
 		connection.send( JSON.stringify({
 			type: "game_event",
-			event: "visible"
+			event: "client_visible"
 		}));
 	}
 	function doSendHidden() {
 		console.log( "doSendHidden." );
 		connection.send( JSON.stringify({
 			type: "game_event",
-			event: "hidden"
+			event: "client_hidden"
 		}));
 	}
 
@@ -1387,7 +1387,7 @@ function launchKetris( inIPAddress, inGameID ) {
 			if( out[0] > 80 && out[0] < 240 ) {
 				if( out[1] > 296 && out[1] < 344 ) {
 					let restart = JSON.stringify({
-						type: 'chat_event',
+						type: 'game_event',
 						event: 'client_restart'
 					});
 					connection.send( restart );
@@ -1420,11 +1420,11 @@ function launchKetris( inIPAddress, inGameID ) {
 						//console.log("Collision!");
 						doSendCollisionEvent( yOffset );
 						if( doTransposeElement() == false ) {
-							console.log( "Game over B!" );
+							console.log( "Game over!" );
 							myGameState.GlobalPlay = false;
 							myGameState.GameOver = true;
 							let end_game = JSON.stringify({
-								type: 'chat_event',
+								type: 'game_event',
 								event: 'client_end_game'
 							});
 							connection.send( end_game );

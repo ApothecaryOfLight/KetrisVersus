@@ -73,13 +73,11 @@ wsServer.on('request', function(request) {
 			sendToEnemy( game_id, connection, out );
 		} else if( json.event === "client_score" ) {
 			console.log( "Score" );
-			var out = JSON.stringify(
-				{
-					type: 'server_game_event',
-					event: 'score',
-					score: json.score
-				}
-			);
+			var out = JSON.stringify({
+				type: 'game_event',
+				event: 'server_score',
+				score: json.score
+			});
 			sendToEnemy( game_id, connection, out );
 		} else if( json.event === "client_collision" ) {
 			console.log( "Collision");
@@ -199,5 +197,6 @@ wsServer.on('request', function(request) {
 			type: 'game_event',
 			event: 'server_disconnect'
 		}));
+		myGames[game_id] = [];
 	});
 });

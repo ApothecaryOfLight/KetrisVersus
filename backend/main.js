@@ -14,65 +14,101 @@ wsServer = new WebSocketServer({
 	httpServer: server
 });
 
-const clients = [];
-const avail_games = [];
+const users = [];
+const games = [];
 
-class game_id_generator {
-	constructor() {
-		this.game_ids = [];
-		this.game_ids.counter = 0;
-		this.game_ids.retiredIDs = [];
-		console.log( this.game_ids.retiredIDs.length );
-	}
-	generateUID() {
-		console.log( "Generating Game ID." );
-		if( !this.game_ids.retiredIDs.length ) {
-			console.log( this.game_ids.counter+1 );
-			return this.game_ids.counter++;
-		} else if( this.game_ids.retiredIDs.length > 0 ) {
-			console.log( this.back_ids.retiredIDs.slice(-1)[0] );
-			return this.game_ids.retiredIDs.pop();
-		} else {
-			return this.game_ids.counter++;
-		}
-	}
-	retireUID( inUID ) {
-		this.game_ids.retiredIDs.push( inUID );
-	}
+class unique_id_generator {
+    constructor() {
+      this.UIDs = [];
+    }
+    generate_uid( inField ) {
+      console.log( "Generating first UID of field " + inField + "." );
+      if( !this.UIDs[inField] ) {
+        this.UIDs[inField] = {
+        counter: 1,
+        retiredIDs : []
+      };
+      return 0;
+    } else if( this.UIDs[inField].retiredIDs.length > 0 ) {
+      console.log( "Issuing retired UID of field " + inField + "." );
+      return this.UIDs[inField].retiredIDs.pop();
+    } else {
+      console.log( "Generating new UID of field " + inField + "." );
+      return this.UIDs[inField].counter++;
+    }
+  }
+  retireUID( inField, inUID ) {
+    console.log( "reitiring UID " + inUID + " of " + inField );
+    this.UIDs[inField].retiredIDs.push( inUID );
+  }
 }
 
-function doesUserExist( inUsername ) {
-	clients.forEach( client => {
-		if( client.username === inUsername ) {
+
+function send_MessageToAll( in_message ) {
+  users.forEach( user=> {
+    if( Object.keys( user ).length != 0 ) {
+      user.connection.send( JSON.stringify( in_message ) );
+    }
+  });
+}
+
+function send_MessageToAllExcept( in_message, except_id ) {
+  users.forEach( user=>{
+    if( Object.keys( user ).length != 0 && user.user_id != except_id ) {
+      user.connection.send( JSON.stringify( in_message ) );
+    }
+
+  });
+}
+
+function send_MessageToUser( in_message, in_user_id ) {
+  users[in_user_id].connection.send( JSON.stringify( in_message ) );
+}
+
+/*
+Used to ensure that each user will have a unqiue name.
+Will be replaced with RDBM check.
+*/
+function doesUsernameExist( in_username ) {
+	users.forEach( user => {
+		if( Object.keys(user).length != 0 &&user.username == in_username ) {
 			return true;
 		}
 	});
 	return false;
 }
 
-function sendNewUserNotification( inUsername, connection ) {
+function send_NewUserNotification( in_user_id ) {
 	console.log( "Sending new user notification to all logged-in clients." );
 	const newUser = {
 		type: "chat_event",
 		event: "server_new_user",
-		username: inUsername
+		username: users[in_user_id].username
 	};
 	const out = JSON.stringify( newUser );
 	console.dir( newUser );
-	clients.forEach( client => {
-		if( connection != client.conn && client.username != "placeholder" ) {
-			client.conn.sendUTF( out );
+	users.forEach( user => {
+		if( Object.keys(user).length != 0 ) {
+			if( user.user_id != in_user_id ) {
+				user.connection.send( out );
+			}
 		}
 	});
 }
 
-function sendUserList(conn) {
+
+/*
+This is sent to new users, to give them a full list of connected users.
+*/
+function send_UserList( conn ) {
 	console.log( "Sending UserList" );
 	const userList = [];
-	clients.forEach( client=> {
-		userList.push({
-			username: client.username
-		});
+	users.forEach( user=> {
+		if( Object.keys(user).length != 0 ) {
+			userList.push({
+				username: user.username
+			});
+		}
 	});
 	console.dir( userList );
 	const out = {
@@ -83,12 +119,19 @@ function sendUserList(conn) {
 	conn.sendUTF( JSON.stringify( out ) );
 }
 
-function sendGameList(conn) {
+
+/*
+This is sent to new users, to give them a full list of listed games.
+*/
+function send_GameList(conn) {
 	const avail_gamesList = [];
-	avail_games.forEach( game=> {
-		avail_gamesList.push({
-			game_name: game.game_name
-		});
+	games.forEach( game=> {
+		if( Object.keys(game).length != 0 && game.is_listed == true ) {
+			avail_gamesList.push({
+				game_name: game.game_name,
+				game_id: game.game_id
+			});
+		}
 	});
 	const out = {
 		type: "chat_event",
@@ -98,63 +141,129 @@ function sendGameList(conn) {
 	conn.sendUTF( JSON.stringify( out ) );
 }
 
-function sendLists(conn) {
-	sendUserList(conn);
-	sendGameList(conn);
+
+/*
+This sends a full list of connected users and listed games to new users.
+*/
+function send_Lists(conn) {
+	send_UserList(conn);
+	send_GameList(conn);
 }
 
-function sendLogoutUserNotification( inUsername ) {
+
+/*
+This is sent to all users to notify them that a user has disconnected.
+*/
+function send_LogoutUserNotification( inUsername ) {
 	const oldUser = {
 		type: "chat_event",
 		event: "server_remove_user",
 		username: inUsername
 	};
 	const out = JSON.stringify( oldUser );
-	clients.forEach( client => {
-		client.conn.sendUTF( out );
+	users.forEach( user => {
+		if( Object.keys(user).length != 0 ) {
+			user.connection.send( out );
+		}
 	});
 }
 
-function remove_game(connection,in_game_name) {
-  console.log( "remove_game" );
-  clients.forEach( (client) => {
-    console.log( "removing game " + in_game_name + "." );
-      client.conn.sendUTF( JSON.stringify({
-        game_name: in_game_name,
-        event: "server_remove_game"
-      }));
-  });
+
+/*
+Deletes game serverside.
+*/
+function remove_game( in_game_id ) {
+  console.log( "remove_game " + in_game_id );
+
+  //If game is listed, send delisting to all connected users.
+  if( games[ in_game_id ].is_listed == true ) {
+    send_delist_game( in_game_id );
+  }
+
+  //Delete game.
+  games[ in_game_id ] = {};
+  myUIDGen.retireUID( "games", in_game_id );
 }
 
-const myGameIDGen = new game_id_generator;
+
+/*
+This is sent to all connected users to notify them that a game is no longer available.
+*/
+function send_delist_game( in_game_id ) {
+	send_MessageToAll( {
+		type: "chat_event",
+		event: "server_delist_game",
+		game_id: in_game_id
+	});
+}
+
+
+/*
+This is sent to all connected users to notify them that a game is available.
+*/
+function send_list_game( in_starting_user_id, in_starting_username, in_game_id, in_game_name ) {
+	send_MessageToAllExcept(
+		{
+			type: "chat_event",
+			event: "server_list_game",
+			game_id: in_game_id,
+			starting_user: in_starting_username,
+			game_name: in_starting_username //placeholder
+		},
+		in_starting_user_id
+	);
+}
+
+
+function send_launch_game( in_game_id ) {
+	const message = {
+		type: "chat_event",
+		event: "server_enter_game",
+		game_id: in_game_id
+	};
+	//const message_json = JSON.stringify( message_object );
+	console.log( "send_launch_game" );
+	console.log( games[in_game_id].game_name );
+	send_MessageToUser( message, games[in_game_id].posting_user_id );
+	send_MessageToUser( message, games[in_game_id].accepting_user_id );
+}
+
+const myUIDGen = new unique_id_generator;
 
 wsServer.on('request', function(request) {
 	//console.dir( request );
-	var connection = request.accept( null, request.origin );
-	console.log( "Connection!" );
+
+	var myConnection = request.accept( null, request.origin );
+	console.log( "New connection!" );
+
 	const new_user = {
-		conn : connection,
+		connection : myConnection,
 		username : "unlogged",
 		password : "unlogged",
-		isLogged : false
+		isLogged : false,
+		user_id : -1
 	}
-	//clients.push( new_user );
-	connection.on('message', function( message ) {
+
+	myConnection.on('message', function( message ) {
 		console.log( "Recieved message!" );
 		const inMessage = JSON.parse( message.utf8Data );
 		console.dir( inMessage );
 		if( inMessage.event === "client_login" ) {
 			console.log( "Attempting login!" );
-			if( doesUserExist( inMessage.username ) == false ) {
+			if( doesUsernameExist( inMessage.username ) == false ) {
+				console.log( "Login approved!" );
 				new_user.username = inMessage.username;
 				new_user.password = inMessage.password;
-				console.log( "Login approved!" );
-				clients.push( new_user );
-				connection.sendUTF( "server_login_approved" );
-				sendLists(connection);
-				sendNewUserNotification( new_user.username, connection );
+				new_user.user_id = myUIDGen.generate_uid( "users" );
+				new_user.has_game = false;
+				new_user.game_id = -1;
+				users[new_user.user_id] = new_user;
+
+				myConnection.sendUTF( "server_login_approved" );
+				send_Lists( myConnection );
+				send_NewUserNotification( new_user.user_id );
 			} else {
-				connection.sendUTF( "login_rejected" );
+				myConnection.sendUTF( "login_rejected" );
 			}
 		} else if( inMessage.event === "client_chat_message" ) {
 			const chat_message = {
@@ -165,73 +274,80 @@ wsServer.on('request', function(request) {
 				event: "server_chat_message"
 			}
 			const chat_message_string = JSON.stringify( chat_message );
-			clients.forEach( client => {
-				client.conn.sendUTF( chat_message_string );
+			users.forEach( user => {
+				if( Object.keys( user ).length != 0 ) {
+					user.connection.sendUTF( chat_message_string );
+				}
 			});
 		} else if( inMessage.event === "client_new_game" ) {
 			console.log( "New game" );
+
+			//Add game to available games.
 			const new_game = {
-				type: "chat_event",
-				event : "server_new_game",
-				game_name : new_user.username,
-				game_id: myGameIDGen.generateUID()
+				game_name: new_user.username,
+				game_id: myUIDGen.generate_uid( "games" ),
+				is_listed: true,
+				posting_user_id: new_user.user_id
 			}
-			const new_game_text = JSON.stringify( new_game );
-			clients.forEach( client => {
-				if( client.username != new_user.username ) {
-					client.conn.sendUTF( new_game_text );
-				}
-			});
-			new_game.user = connection;
-			avail_games.push( new_game );
+			games[ new_game.game_id ] = new_game;
+
+			//Add game_id to current user.
+			users[ new_user.user_id ].game_id = new_game.game_id;
+			users[ new_user.user_id ].has_game = true;
+
+			//Send list event to connected users.
+			send_list_game(
+				new_user.user_id,
+				users[new_user.user_id].username,
+				new_game.game_id,
+				users[new_user.user_id].username
+			);
 		} else if( inMessage.event === "client_enter_game" ) {
 			console.log( "enter_game" );
 			console.log( "game_id: " + inMessage.game_id );
-			//1) Send ip of ketris server to both users, along with game id.
 
-			const enter_game_approval = {
-				type: "chat_event",
-				event: "server_enter_game_approval",
-				ip: "todo_loadbalancing",
-				game_id: inMessage.game_id
-			};
-			console.log( "Remove games due to enter game." );
-			const enter_game_approval_json = JSON.stringify( enter_game_approval );
-			connection.send( enter_game_approval_json );
-			avail_games.forEach( (game) => {
-				if( game.game_id == inMessage.game_id ) {
-					game.user.send( enter_game_approval_json );
-				}
-			});
-			avail_games.forEach( (game,index) => {
-				if( game.game_id == inMessage.game_id ) {
-					avail_games.splice( index, 1 );
-				}
-			});
-			remove_game( connection, inMessage.game_name );
+			//Mark game as no longer listed.
+			games[ inMessage.game_id ].is_listed = false;
+
+			//Add second user to game
+			games[ inMessage.game_id ].accepting_user_id = new_user.user_id;
+
+			//Add game_id to both users.
+			users[ games[inMessage.game_id].accepting_user_id ].has_game = true;
+			users[ games[inMessage.game_id].accepting_user_id ].game_id = inMessage.game_id;
+
+			//Update user profile to reflect that game is delisted.
+			users[ new_user.user_id ].has_listed_game = false;
+
+			//Send notice to all users that game has been delisted.
+			send_delist_game( inMessage.game_id );
+
+			//Send message to both participants that Ketris should be launched.
+			send_launch_game( inMessage.game_id );
+		} else if( inMessage.event === "client_completed_game" ) {
+			console.log( "Game completed." );
+			remove_game( inMessage.game_id );
 		} else {
 			console.log( "Unrecognized object!" );
 			console.dir( inMessage );
 		}
 	});
-	connection.on( 'close', function( reasonCode, desc ) {
+	myConnection.on( 'close', function( reasonCode, desc ) {
 		console.log( "Closed connection!" );
-		clients.forEach( (client, index) => {
-			if( client.conn === connection ) {
-				console.log( "Loggin out user" );
-				if( client.username != "unlogged" ) {
-					console.log( "Logged out username: " + client.username );
-					sendLogoutUserNotification( client.username );
-				}
-				avail_games.forEach( (game,index) => {
-					if( game.game_name === client.username ) {
-						myGameIDGen.retireUID( game.game_id );
-						avail_games.splice( index, 1 );
-						remove_game(connection,game.game_name);
-					}
-				});
-				clients.splice( index, 1 );
+
+		//Send notice to all users that this user has disconencted.
+		if( users[ new_user.user_id ].username != "unlogged" ) {
+			console.log( "Logging out username: " + users[ new_user.user_id ].username );
+			send_LogoutUserNotification( users[ new_user.user_id ].username );
+
+			//Delete game.
+			if( users[ new_user.user_id ].has_game == true ) {
+				console.log( "Removing game." );
+				remove_game( new_user.game_id );
 			}
-		});
+		}
+
+		//Delete user.
+		users[new_user.user_id] = {};
 	});
 });
