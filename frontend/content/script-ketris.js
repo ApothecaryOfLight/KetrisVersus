@@ -263,10 +263,13 @@ function launchKetris( inIPAddress, inGameID ) {
 				let chat_interface = document.getElementById('chat_interface');
 				game_interface.style.display = "none";
 				chat_interface.style.display = "flex";
+				//TODO: Remove event listeners
+				//TODO: Stop timer.
+				//TODO: Close websocket.
 				return;
 			}
 		} else {
-			console.log(
+			console.dir(
 				'Illegal json data recieved:',
 				inPacket
 			);

@@ -306,6 +306,12 @@ wsServer.on('request', function(request) {
 			console.log( "enter_game" );
 			console.log( "game_id: " + inMessage.game_id );
 
+			//Make sure accepting user doesn't have a game posted.
+			if( users[ new_user.user_id ].has_game == true ) {
+				send_delist_game( users[new_user.user_id].game_id );
+				remove_game( users[new_user.user_id].game_id );
+			}
+
 			//Mark game as no longer listed.
 			games[ inMessage.game_id ].is_listed = false;
 
@@ -317,7 +323,7 @@ wsServer.on('request', function(request) {
 			users[ games[inMessage.game_id].accepting_user_id ].game_id = inMessage.game_id;
 
 			//Update user profile to reflect that game is delisted.
-			users[ new_user.user_id ].has_listed_game = false;
+			users[ games[inMessage.game_id].posting_user_id ].has_listed_game = false;
 
 			//Send notice to all users that game has been delisted.
 			send_delist_game( inMessage.game_id );
