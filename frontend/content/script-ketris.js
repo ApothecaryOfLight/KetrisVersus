@@ -1363,7 +1363,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		let x, y;
 		let myCanvas = document.getElementById('myKetrisCanvas');
 		let canvasOffsetLeft = myCanvas.offsetLeft;
-		let canvasOffsetTop = myCanvas.offsetTop;$
+		let canvasOffsetTop = myCanvas.offsetTop;
 		x = event.clientX + document.body.scrollLeft +
 			document.documentElement.scrollLeft -
 			Math.floor(canvasOffsetLeft);
