@@ -276,6 +276,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		}
 	};
 	setInterval( function() {
+		//console.log( "setInterval" );
 		if( connection.readyState !== 1 ) {
 			myDOMHandles.input.attr( 'disabled', 'disabled' ).val(
 				'Unable to communicate with the server.'
@@ -283,6 +284,8 @@ function launchKetris( inIPAddress, inGameID ) {
 		}
 	}, 3000 );
 	function doManageDrawing( inTimestamp ) {
+		//console.log( "animationframe" );
+		//if( myGameState.Paused == true ) { return; }
 		let progress;
 		if( myAnimationValues.last != null ) {
 			progress = inTimestamp - myAnimationValues.last;
@@ -365,6 +368,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		}
 	}
 	function doSendCollisionEvent( inYOffset ) {
+		console.log( "doSendCollisionEvent" );
 		if( myGameState.GlobalPlay == true ) {
 			let newElementCollision = JSON.stringify({
 				type: "game_event",
@@ -499,6 +503,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		}
 	}
 	function doTransposeElement() {
+		console.log( "doTransposeElement" );
 		let Shape = CurrentElement.Shape;
 		let Rotation = CurrentElement.Rotation;
 		let Color = CurrentElement.Color;
@@ -1278,18 +1283,23 @@ function launchKetris( inIPAddress, inGameID ) {
 			console.log( "Someone is minimized/on another tab." );
 			return;
 		}
-		console.log( "Successfully unpaused." );
+		console.log( "Successfully unpaused @: " + myGameState.PausedTimestamp );
+		console.log( "Was paused for " + (Date.now()-myGameState.PausedTimestamp) );
 		myGameState.Paused = false;
 		CurrentElement.Timestamp += Date.now()-myGameState.PausedTimestamp;
 		CurrentElement_Enemy.Timestamp += Date.now()-myGameState.PausedTimestamp
+		//myAnimationValues.AnimationFrameHandle = window.requestAnimationFrame( doManageDrawing );
 	}
 
 	document.addEventListener("visibilitychange", function() {
 		console.log( "Docuemnt visibility change: " + document.visibilityState );
 		if( document.visibilityState == "hidden" ) {
+			cancelAnimationFrame( myAnimationValues.AnimationFrameHandle );
 			doPause();
 			doSendPause();
 		} else if( document.visibilityState == "visible" ) {
+			myAnimationValues.AnimationFrameHandle =
+				window.requestAnimationFrame( doManageDrawing);
 			doUnpause();
 			doSendUnpause();
 		}
