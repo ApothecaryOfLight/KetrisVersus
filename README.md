@@ -1,7 +1,8 @@
 # KetrisVS
-Implementation of Tetris using Javscript, HTML, CSS, Flex, NodeJS and Babel.
+Implementation of Tetris using HTML5, Javascript, CSS, and Flex for frontend; and using NodeJS, Express, Nodemon, Websocket, HTTP and Babel for backend.
 
 TODO:
+
 Use Docker to ease installation.
 
 Implement timestamps.
