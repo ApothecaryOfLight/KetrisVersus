@@ -1,0 +1,16 @@
+{
+  "name": "testing_mysql",
+  "version": "0.0.2",
+  "dependencies": {
+    "mysql2": "2.x"
+  }
+}
+
+
+
+
+
+
+
+
+
