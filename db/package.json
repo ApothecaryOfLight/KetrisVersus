@@ -1,7 +1,10 @@
 {
-  "name": "testing_mysql",
-  "version": "0.0.2",
+  "name": "ketris_mysql_backend",
+  "version": "0.0.3",
   "dependencies": {
-    "mysql2": "2.x"
+    "mysql2": "2.x",
+    "nodemon": "2.x",
+    "http": "0.x",
+    "websocket": "1.x"
   }
 }
