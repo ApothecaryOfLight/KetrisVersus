@@ -8,3 +8,8 @@ mysql --user=root -s < ketris_sql_init.sql
 rm ketris_sql_init.sql
 curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
 sudo apt-get install nodejs -y
+sudo iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 8080
+screen -d -m -S chat_backend bash -c 'cd backend && npm i && ./run.sh'
+screen -d -m -S content bash -c 'cd frontend && npm i && ./run.sh'
+screen -d -m -S ketris_backend bash -c 'cd ketris-backend && npm i && ./run.sh'
+echo "Setup complete!"
