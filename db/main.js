@@ -1,4 +1,3 @@
-  GNU nano 4.8                                  main.js
 const mysql = require('mysql2');
 
 const mysqlConnection = mysql.createConnection({
