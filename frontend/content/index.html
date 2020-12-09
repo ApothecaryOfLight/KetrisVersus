@@ -17,7 +17,7 @@
 <body>
 <div id='login_interface' class='login_interface_class'>
   <div id='login_box' class='login_box_class'>
-    <div id='login_top' class='login_top_class'>
+    <div id='login_top' class='login_top_class unselectable'>
       Login
     </div>
     <div id='login_mid' class='login_mid_class'>
@@ -25,8 +25,8 @@
       <input id='login_password' class='login_password_class' placeholder="Password"/>
     </div>
     <div id='login_bot' class='login_bot_class'>
-      <button id='login_button' class='login_button_class button_class'>Login</button>
-      <button id='create_account_button' class='create_account_button_class button_class'>Create Account</button>
+      <button id='login_button' class='login_button_class button_class unselectable'>Login</button>
+      <button id='create_account_button' class='create_account_button_class button_class unselectable'>Create Account</button>
     </div>
   </div>  
 </div>
@@ -34,7 +34,7 @@
 <div id='chat_interface' class='chat_interface_class'>
 
   <div id='top_pane' class='top_pane_class'>
-    <div id='banner' class='banner_class'>KETRIS</div>
+    <div id='banner' class='banner_class unselectable'>KETRIS</div>
   </div>
 
   <div id='bottom_pane' class='bottom_pane_class'>
@@ -43,7 +43,7 @@
       <div id='column_user_area' class='column_user_area_class'>
         <div id='user_area' class='user_area_class'></div>
       </div>
-      <button id='contact_dev_button' class='contact_dev_button_class button_class'>Contact Developer!</button>
+      <button id='contact_dev_button' class='contact_dev_button_class button_class unselectable'>Contact Developer!</button>
     </div>
 
     <div id='middle_pane' class='middle_pane_class'>
@@ -64,13 +64,48 @@
       <div id='column_avail_games_area' class='column_avail_games_area_class'>
         <div id='avail_games_area' class='avail_games_area_class'></div>
       </div>
-      <button id='start_new_game_button' class='start_new_game_button_class button_class'>Start New Game</buton>
+      <button id='start_new_game_button' class='start_new_game_button_class button_class unselectable'>Start New Game</buton>
     </div>
   </div>
 </div>
 
 <div id='game_interface' class='game_interface_class'>
   <canvas id='myKetrisCanvas' width="626px" height="749px"'></canvas>
+</div>
+
+<div id='contact_dev_popup_overlay' class='contact_dev_popup_overlay_class'>
+  <div id='contact_dev_popup' class='contact_dev_popup_class'>
+
+    <div id='contact_dev_popup_title_bar' class='contact_dev_popup_title_bar_class'>
+      <div id='contact_dev_popup_title_bar_text' class='contact_dev_popup_title_bar_text_class unselectable'>
+        Contact dev!
+      </div>
+      <div id='contact_dev_popup_exit_button' class='contact_dev_popup_exit_button_class unselectable'>
+        &times;
+      </div>
+    </div>
+
+    <div id='contact_dev_popup_nameorg_bar' class='contact_dev_popup_nameorg_bar_class'>
+      <div id='contact_dev_popup_nameorg_text' class='contact_dev_popup_nameorg_text_class unselectable'>
+        Name/Organization:
+      </div>
+      <textarea id='contact_dev_popup_nameorg_field' class='contact_dev_popup_nameorg_field_class'></textarea>
+    </div>
+
+    <div id='contact_dev_popup_message_bar' class='contact_dev_popup_message_bar_class'>
+      <div id='contact_dev_popup_message_text' class='contact_dev_popup_message_text_class unselectable'>
+        Message:
+      </div>
+      <textarea id='contact_dev_popup_message_field' class='contact_dev_popup_message_field_class'></textarea>
+    </div>
+
+    <div id='contact_dev_popup_send_bar' class='contact_dev_popup_send_bar_class'>
+      <button id='contact_dev_popup_send_button' class='contact_dev_popup_send_button_class button_class unselectable'>
+        Send
+      </button>
+    </div>
+
+  </div>
 </div>
 
 </body>

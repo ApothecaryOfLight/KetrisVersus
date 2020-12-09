@@ -285,12 +285,58 @@ function doLogObject( inObj ) {
   });
 }
 
+function doShowContactDevPopup( event ) {
+
+}
+
+function doHideContactDevPopup( event ) {
+
+}
+
+function doSendMessageToDev( ws, inAuthor, inMessage ) {
+  console.log( "Sending..." + inAuthor + "/" + inMessage );
+  if( inAuthor == "" || inMessage == "" ) {
+    console.log( "Please fill out both fields" );
+    return;
+  }
+  ws.send( JSON.stringify({
+    event: "client_dev_message",
+    author: inAuthor,
+    message: inMessage
+  }));
+}
+
 function launchChatInterface( ws ) {
 	console.log( "Launching chat interface!" );
 	let login_interface = document.getElementById('login_interface');
 	let chat_interface = document.getElementById('chat_interface');
 	login_interface.style.display = "none";
 	chat_interface.style.display = "flex";
+
+	let contact_dev_popup_overlay = document.getElementById('contact_dev_popup_overlay');
+	let contact_dev_popup = document.getElementById('contact_dev_popup');
+	let contact_dev_button = document.getElementById('contact_dev_button');
+	contact_dev_button.addEventListener( 'click', (event) => {
+		console.log( "Contact dev!" );
+		contact_dev_popup_overlay.style.display = "flex";
+	});
+	let contact_dev_popup_exit_button = document.getElementById('contact_dev_popup_exit_button');
+	contact_dev_popup_exit_button.addEventListener( 'click', (event) => {
+		console.log( "Close contact dev popup!" );
+		contact_dev_popup_overlay.style.display = "none";
+	});
+	let contact_dev_popup_nameorg_field = document.getElementById('contact_dev_popup_nameorg_field');
+	let contact_dev_popup_message_field = document.getElementById('contact_dev_popup_message_field');
+	let contact_dev_popup_send_button = document.getElementById('contact_dev_popup_send_button');
+	contact_dev_popup_send_button.addEventListener( 'click', (event) => {
+		console.log( "Sending message to dev!" );
+		const author = contact_dev_popup_nameorg_field.value;
+		const message = contact_dev_popup_message_field.value;
+		doSendMessageToDev( ws, author, message );
+		contact_dev_popup_nameorg_field = "";
+		contact_dev_popup_message_field = "";
+		contact_dev_popup_overlay.style.display = "none";
+	});
 
 	let body = document.body;
 	console.dir( body );
@@ -389,6 +435,7 @@ function doCreateAccount( websocket, username, password ) {
 document.addEventListener( "DOMContentLoaded", function(event) {
 	let login_interface = document.getElementById('login_interface');
 	let chat_interface = document.getElementById('chat_interface');
+	let contact_dev_popup = document.getElementById('contact_dev_popup');
 	chat_interface.style.display = "none";
 
 	var ws;

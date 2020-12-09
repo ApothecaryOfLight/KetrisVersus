@@ -9,6 +9,18 @@ const mysqlConnection = mysql.createConnection({
 	password: 'ketris_node_user_password'
 });
 
+function log_dev_message ( inAuthor, inMessage, inTimestamp ) {
+  mysqlConnection.query(
+    'INSERT INTO ketris_messages ( author_name, message_body, timestamp ) VALUES ' +
+    '(\"' + inAuthor + '\", \"' + inMessage + '\", \'' + inTimestamp + '\');',
+    function( error, results, fields ) {
+      if( error ) { console.log( error ); return; }
+      console.log( "Logged dev message!" )
+      console.log( inAuthor + "@" + inTimestamp + ": " + inMessage );
+    }
+  );
+}
+
 function attempt_login ( inUsername, inPassword, connection, doApprove, doDeny ) {
   mysqlConnection.query(
     'SELECT * FROM ketris_users ' +
@@ -446,6 +458,9 @@ wsServer.on('request', function(request) {
 		} else if( inMessage.event === "client_completed_game" ) {
 			console.log( "Game completed." );
 			remove_game( inMessage.game_id );
+		} else if( inMessage.event == "client_dev_message" ) {
+			console.log( "Recieved dev message!" );
+			log_dev_message( inMessage.author, inMessage.message, "1999-01-01 12:12:12" );
 		} else {
 			console.log( "Unrecognized object!" );
 			console.dir( inMessage );
