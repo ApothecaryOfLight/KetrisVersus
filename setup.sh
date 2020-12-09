@@ -1,3 +1,4 @@
+#!/bin/bash
 #Update system.
 sudo apt-get update -y && sudo apt-get upgrade -y
 
@@ -19,6 +20,11 @@ rm ketris_sql_init.sql
 screen -d -m -S chat_backend bash -c 'cd backend && npm i && ./run.sh'
 screen -d -m -S content bash -c 'cd frontend && npm i && ./run.sh'
 screen -d -m -S ketris_backend bash -c 'cd ketris-backend && npm i && ./run.sh'
+
+#Replace IP in client-side scripts with this server's IP.
+IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+cd frontend/content && sed -i "s/54.149.165.92/$IP/g" script.js
+cd frontend/content && sed -i "s/54.149.165.92/$IP/g" script-ketris.js
 
 #Done!
 echo "Setup complete!"
