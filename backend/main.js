@@ -1,5 +1,72 @@
 const WebSocketServer = require('websocket').server;
 const http = require('http');
+const mysql = require('mysql2');
+
+const mysqlConnection = mysql.createConnection({
+	host: 'localhost',
+	user: 'ketris_node_user',
+	database: 'ketris_db',
+	password: 'ketris_node_user_password'
+});
+
+function attempt_login ( inUsername, inPassword, connection, doApprove, doDeny ) {
+  mysqlConnection.query(
+    'SELECT * FROM ketris_users ' +
+    'WHERE password_hash=UNHEX(MD5(\"' + inPassword + '\")) AND ' +
+    'username_hash=UNHEX(MD5(\"'+inUsername+'\"));',
+    function( error, results, fields ) {
+      if( error ) { console.log( error ); }
+      if( results.length > 0 ) {
+        console.log( "Login of " + inUsername + " approved!" );
+        doApprove( connection );
+      } else {
+        doDeny( connection );
+      }
+    }
+  );
+}
+
+function does_username_exist( inUsername, inPassword, doCreateAccount ) {
+  console.log( "does_username_exist" );
+  mysqlConnection.query(
+    'SELECT * FROM ketris_users ' +
+    'WHERE username_hash=UNHEX(MD5(\"' + inUsername + '\"));',
+    function( error, results, fields ) {
+      if( error ) { console.log( error ); }
+      if( results.length > 0 ) {
+        console.log( "Username exists!" );
+        return true;
+      } else {
+        console.log( "Username doesn't exist!" );
+        doCreateAccount( inUsername, inPassword );
+        return false;
+      }
+    }
+  );
+}
+
+function create_user ( inUsername, inPassword ) {
+  console.log( "create_user" );
+  const username_unavailable = does_username_exist( inUsername, inPassword, ( inUsername, inPassword ) => {
+    console.log( "Username available! Creating user..." );
+    mysqlConnection.query(
+      'INSERT INTO ketris_users ' +
+      '(username_hash,password_hash,username_plaintext,account_creation) VALUES (' +
+      'UNHEX(MD5(\"' + inUsername + '\")), ' +
+      'UNHEX(MD5(\"' + inPassword + '\")), ' +
+      '\"' + inUsername + '\", ' +
+      '\'1999-01-01 01:01:01\' );',
+      function( error, results, fields ) {
+        if( error ) { console.log( error ); }
+        console.log( "User created!" );
+        return true; //TODO: Make this more robust.
+      }
+    );
+  });
+}
+
+//const webSocketClient = require('websocket').client;
+//const DB_Client = new webSocketClient();
 
 const server = http.createServer( function(request, response) {
 	console.log( "Recieved request." );
@@ -13,6 +80,20 @@ server.listen( 3000, function() {
 wsServer = new WebSocketServer({
 	httpServer: server
 });
+
+
+/*let db_backend;
+DB_Client.on('connect', function(connection) {
+  console.log( "Connected to mySQL backend!" );
+  connection.sendUTF( JSON.stringify({
+    type: "chat",
+    event: "connection"
+  }));
+  db_backend = connection;
+  //db_backend.sendUTF( "testing" );
+});
+DB_Client.connect('ws://localhost:8989/');*/
+
 
 const users = [];
 const games = [];
@@ -250,7 +331,25 @@ wsServer.on('request', function(request) {
 		console.dir( inMessage );
 		if( inMessage.event === "client_login" ) {
 			console.log( "Attempting login!" );
-			if( doesUsernameExist( inMessage.username ) == false ) {
+			attempt_login( inMessage.username, inMessage.password, myConnection,
+				(myConnection) => {
+					console.log( "Login approved!" );
+					new_user.username = inMessage.username;
+					new_user.password = inMessage.password;
+					new_user.user_id = myUIDGen.generate_uid( "users" );
+					new_user.has_game = false;
+					new_user.game_id = -1;
+					users[new_user.user_id] = new_user;
+					myConnection.sendUTF( "server_login_approved" );
+					send_Lists( myConnection );
+					send_NewUserNotification( new_user.user_id );
+				},
+				(myConnection) => {
+					console.log( "Login denied!" );
+					myConnection.sendUTF( "login_rejected" );
+				}
+			);
+/*			if( attempt_login( inMessage.username, inMessage.password ) == true ) {
 				console.log( "Login approved!" );
 				new_user.username = inMessage.username;
 				new_user.password = inMessage.password;
@@ -263,7 +362,21 @@ wsServer.on('request', function(request) {
 				send_Lists( myConnection );
 				send_NewUserNotification( new_user.user_id );
 			} else {
+				console.log( "Login denied!" );
 				myConnection.sendUTF( "login_rejected" );
+			}*/
+/*			if( doesUsernameExist( inMessage.username ) == false ) {
+				console.log( "Login approved!" );
+
+			} else {
+				myConnection.sendUTF( "login_rejected" );
+			}*/
+		} else if( inMessage.event === "client_account_creation" ) {
+			console.log( "Attempting to create account!" );
+			if( create_user( inMessage.username, inMessage.password ) == true ) {
+				myConnection.sendUTF( "account_creation_approve" );
+			} else {
+				myConnection.sendUTF( "account_creation_disapprove" );
 			}
 		} else if( inMessage.event === "client_chat_message" ) {
 			const chat_message = {

@@ -2,6 +2,10 @@
 process.title = 'node-ketrisvs';
 var myPort = 1337;
 var webSocketServer = require('websocket').server;
+
+const webSocketClient = require('websocket').client;
+const DB_Client = new webSocketClient();
+
 var http = require('http');
 var myClients = {};
 var myButtons = [];
@@ -15,6 +19,17 @@ console.file_log = function( inMsg ) {
 	console.log( "Log write." );
   });
 }
+
+
+let db_backend;
+DB_Client.on('connect', function(connection) {
+  console.log( "Connected to mySQL backend!" );
+  db_backend = connection;
+  //db_backend.sendUTF( "testing" );
+});
+DB_Client.connect('ws://localhost:8989/');
+
+
 
 var server = http.createServer( function( request, response ) {  } );
 server.listen( myPort, function() {
@@ -38,7 +53,7 @@ wsServer.on('request', function(request) {
 		(new Date()) + ' Connection from origin '
 		+ request.origin + '.'
 	);
-	var connection = request.accept( null, request.origin ); 
+	var connection = request.accept( null, request.origin );
 	let game_id = -1;
 	console.log( (new Date()) + ' Connection accepted.' );
 	connection.on( 'message', function( message ) {

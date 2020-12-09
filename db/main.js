@@ -18,6 +18,9 @@ function attempt_login ( inUsername, inPassword ) {
       if( error ) { console.log( error ); }
       if( results.length > 0 ) {
         console.log( "Login of " + inUsername + " approved!" );
+        return true;
+      } else {
+        return false;
       }
     }
   );
@@ -107,16 +110,43 @@ myServer.listen( 8989, function() {
   console.log( "Now listening on 8989" );
 });
 const myWSServer = new wsServer({
-  httpServer: server
+  httpServer: myServer
 });
 
 myWSServer.on('request', function( request ) {
   console.log( "Connection!" );
-  var ketris_backend = request.accept( null, request.origin );
-  ketris_backend.on( 'message', function( message ) {
+  isChatClient = false;
+  isKetrisClient = false;
+  var connection = request.accept( null, request.origin );
+  connection.on( 'message', function( message ) {
     const inMessage = JSON.parse( message.utf8Data );
-    console.log( "Recieved message." );
-    console.dir( inMessage );
-    ketris_backend.send( 'yepuruni' );
+    if( inMessage.type == "chat" ) {
+      if( inMessage.event == "connection" ) {
+        console.log( "Chat client connected!" );
+        isChatClient = true;
+      } else if( inMessage.event == "attempt_login" ) {
+        const logged = attempt_login( inMessage.username, inMessage.password );
+        if( logged == true ) {
+          connection.send(JSON.stringify({
+            type: "db",
+            event: "login_approved",
+            db_request_id: inMessage.db_request_id
+          }));
+        } else if( logged == false ) {
+          connection.send(JSON.stringify({
+            type: "db",
+            event: "login_denied",
+            db_request_id: inMessage.db_request_id
+          }));
+        }
+      } else if( inMessage.event == "create_account" ) {
+        
+      }
+    } else if( inMessage.type == "keris" ) {
+      if( inMessage.event == "connection" ) {
+        console.log( "Ketris client connected!" );
+        isKetrisClient = true;
+      }
+    }
   });
 });
