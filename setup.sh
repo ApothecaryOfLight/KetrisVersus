@@ -17,7 +17,7 @@ sudo mysql -s < ketris_sql_init.sql
 rm ketris_sql_init.sql
 
 #Run detached screens for each NodeJS.
-screen -d -m -S chat_backend bash -c 'cd backend && npm i && ./run.sh'
+screen -d -m -S chat_backend bash -c 'cd chat-backend && npm i && ./run.sh'
 screen -d -m -S content bash -c 'cd frontend && npm i && ./run.sh'
 screen -d -m -S ketris_backend bash -c 'cd ketris-backend && npm i && ./run.sh'
 
