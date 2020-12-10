@@ -431,8 +431,9 @@ function doCreateAccount( websocket, username, password ) {
 	const account_creation_text = JSON.stringify( account_creation );
 	websocket.send( account_creation_text );
 }
-
+console.log("?");
 document.addEventListener( "DOMContentLoaded", function(event) {
+	console.log( "DOMContentLoaded" );
 	let login_interface = document.getElementById('login_interface');
 	let chat_interface = document.getElementById('chat_interface');
 	let contact_dev_popup = document.getElementById('contact_dev_popup');

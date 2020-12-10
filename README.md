@@ -10,11 +10,9 @@ Implementation of Tetris using:
 
 **TODO**  
 -) Add certificate for HTTPS.  
--) Docker/containerd
 -) mySQL for Match results.  
 -) Dashboard  
 -) User history interface.  
--) NGinx Content Server  
 -) Programmatically minify and concatenate javascript files.  
 -) Compression  
 -) Async Library  
@@ -22,13 +20,11 @@ Implementation of Tetris using:
 -) Functionalize Event Listeners  
 -) Add/Remove Event Listeners as is appropriate.  
 -) Warp up Ketris function cleanly at end of match.  
--) Kubernetes  
 -) CSS Scroll Bars  
 -) Borders on Game Interface (inner and outer)  
 -) Break game interface canvas into 2.  
 -) More styling on game interface.  
 -) Mobile.  
--) NGinx set IP for client scripts.  
 -) Enter for Login  
 -) Enter for send text in chat.  
 -) Enter for send dev info.  
@@ -41,3 +37,7 @@ Implementation of Tetris using:
 -) User match history popup interface.  
 -) Grid.  
 -) Refactor CSS.  
+-) NGinx Content Server
+-) NGinx set IP for client scripts.  
+-) Kubernetes  
+-) Docker/containerd  
