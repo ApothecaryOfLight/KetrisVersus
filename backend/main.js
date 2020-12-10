@@ -77,9 +77,6 @@ function create_user ( inUsername, inPassword ) {
   });
 }
 
-//const webSocketClient = require('websocket').client;
-//const DB_Client = new webSocketClient();
-
 const server = http.createServer( function(request, response) {
 	console.log( "Recieved request." );
 	response.writeHead(404);
@@ -92,20 +89,6 @@ server.listen( 3000, function() {
 wsServer = new WebSocketServer({
 	httpServer: server
 });
-
-
-/*let db_backend;
-DB_Client.on('connect', function(connection) {
-  console.log( "Connected to mySQL backend!" );
-  connection.sendUTF( JSON.stringify({
-    type: "chat",
-    event: "connection"
-  }));
-  db_backend = connection;
-  //db_backend.sendUTF( "testing" );
-});
-DB_Client.connect('ws://localhost:8989/');*/
-
 
 const users = [];
 const games = [];
@@ -361,28 +344,6 @@ wsServer.on('request', function(request) {
 					myConnection.sendUTF( "login_rejected" );
 				}
 			);
-/*			if( attempt_login( inMessage.username, inMessage.password ) == true ) {
-				console.log( "Login approved!" );
-				new_user.username = inMessage.username;
-				new_user.password = inMessage.password;
-				new_user.user_id = myUIDGen.generate_uid( "users" );
-				new_user.has_game = false;
-				new_user.game_id = -1;
-				users[new_user.user_id] = new_user;
-
-				myConnection.sendUTF( "server_login_approved" );
-				send_Lists( myConnection );
-				send_NewUserNotification( new_user.user_id );
-			} else {
-				console.log( "Login denied!" );
-				myConnection.sendUTF( "login_rejected" );
-			}*/
-/*			if( doesUsernameExist( inMessage.username ) == false ) {
-				console.log( "Login approved!" );
-
-			} else {
-				myConnection.sendUTF( "login_rejected" );
-			}*/
 		} else if( inMessage.event === "client_account_creation" ) {
 			console.log( "Attempting to create account!" );
 			if( create_user( inMessage.username, inMessage.password ) == true ) {
