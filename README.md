@@ -1,5 +1,5 @@
 # KetrisVS
-**Version 0.1.3**
+**Version 0.1.4**
 
 Implementation of Tetris using:
 
@@ -10,7 +10,7 @@ Implementation of Tetris using:
 
 **TODO**  
 -) Add certificate for HTTPS.  
--) Dockerize  
+-) Docker/containerd
 -) mySQL for Match results.  
 -) Dashboard  
 -) User history interface.  
@@ -24,7 +24,6 @@ Implementation of Tetris using:
 -) Warp up Ketris function cleanly at end of match.  
 -) Kubernetes  
 -) CSS Scroll Bars  
--) New URL  
 -) Borders on Game Interface (inner and outer)  
 -) Break game interface canvas into 2.  
 -) More styling on game interface.  
