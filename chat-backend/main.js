@@ -2,15 +2,44 @@ const WebSocketServer = require('websocket').server;
 const http = require('http');
 const mysql = require('mysql2');
 
-const mysqlConnection = mysql.createConnection({
-	host: 'localhost',
-	user: 'ketris_node_user',
-	database: 'ketris_db',
-	password: 'ketris_node_user_password'
-});
+let mysql_pool;
+function init_mysql_pool() {
+  mysql_pool = mysql.createPool({
+    connectionLimmit: 50,
+    host: 'localhost',
+    user: 'ketris_node_user',
+    password: 'ketris_node_user_password',
+    database: 'ketris_db'
+  });
+}
+
+
+/*function open_mysql_connection() {
+  console.log( "open_mysql_conenction" );
+  try{
+    mysqlConnection = mysql.createConnection({
+      host: 'localhost',
+      user: 'ketris_node_user',
+      database: 'ketris_db',
+      password: 'ketris_node_user_password'
+    });
+    mysqlConnection.on( 'error', function( error ) {
+      console.log( "ERROR!!!!" );
+      console.error( error );
+    });
+    mysqlConnection.connect( (error)=> {
+      if( error ) { console.log( "ErrorB"); return; }
+      console.log( "Connection established!" );
+    });
+  } catch ( error ) {
+    console.log( "Error creating mySQL connection." );
+    console.error( error );
+  }
+}*/
 
 function log_dev_message ( inAuthor, inMessage, inTimestamp ) {
-  mysqlConnection.query(
+  console.log( "log_dev_message" );
+  mysql_pool.query(
     'INSERT INTO ketris_messages ( author_name, message_body, timestamp ) VALUES ' +
     '(\"' + inAuthor + '\", \"' + inMessage + '\", \'' + inTimestamp + '\');',
     function( error, results, fields ) {
@@ -22,12 +51,13 @@ function log_dev_message ( inAuthor, inMessage, inTimestamp ) {
 }
 
 function attempt_login ( inUsername, inPassword, connection, doApprove, doDeny ) {
-  mysqlConnection.query(
+  console.log( "attempt_login" );
+  mysql_pool.query(
     'SELECT * FROM ketris_users ' +
     'WHERE password_hash=UNHEX(MD5(\"' + inPassword + '\")) AND ' +
     'username_hash=UNHEX(MD5(\"'+inUsername+'\"));',
     function( error, results, fields ) {
-      if( error ) { console.log( error ); }
+      if( error ) { console.log( error ); return; }
       if( results.length > 0 ) {
         console.log( "Login of " + inUsername + " approved!" );
         doApprove( connection );
@@ -40,11 +70,11 @@ function attempt_login ( inUsername, inPassword, connection, doApprove, doDeny )
 
 function does_username_exist( inUsername, inPassword, doCreateAccount ) {
   console.log( "does_username_exist" );
-  mysqlConnection.query(
+  mysql_pool.query(
     'SELECT * FROM ketris_users ' +
     'WHERE username_hash=UNHEX(MD5(\"' + inUsername + '\"));',
     function( error, results, fields ) {
-      if( error ) { console.log( error ); }
+      if( error ) { console.log( error ); return; }
       if( results.length > 0 ) {
         console.log( "Username exists!" );
         return true;
@@ -61,7 +91,7 @@ function create_user ( inUsername, inPassword ) {
   console.log( "create_user" );
   const username_unavailable = does_username_exist( inUsername, inPassword, ( inUsername, inPassword ) => {
     console.log( "Username available! Creating user..." );
-    mysqlConnection.query(
+    mysql_pool.query(
       'INSERT INTO ketris_users ' +
       '(username_hash,password_hash,username_plaintext,account_creation) VALUES (' +
       'UNHEX(MD5(\"' + inUsername + '\")), ' +
@@ -69,7 +99,7 @@ function create_user ( inUsername, inPassword ) {
       '\"' + inUsername + '\", ' +
       '\'1999-01-01 01:01:01\' );',
       function( error, results, fields ) {
-        if( error ) { console.log( error ); }
+        if( error ) { console.log( error ); return; }
         console.log( "User created!" );
         return true; //TODO: Make this more robust.
       }
@@ -308,6 +338,9 @@ const myUIDGen = new unique_id_generator;
 
 wsServer.on('request', function(request) {
 	//console.dir( request );
+
+	//open_mysql_connection();
+	init_mysql_pool();
 
 	var myConnection = request.accept( null, request.origin );
 	console.log( "New connection!" );

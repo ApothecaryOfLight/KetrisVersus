@@ -413,25 +413,49 @@ function launchChatInterface( ws ) {
 }
 
 function doLogin( websocket, username, password ) {
-	const login = {
-		"event" : "client_login",
-		"username" : username,
-		"password" : password
-	}
-	const login_text = JSON.stringify( login );
-	websocket.send( login_text );
+  const login = {
+    "event" : "client_login",
+    "username" : username,
+    "password" : password
+  }
+  const login_text = JSON.stringify( login );
+  websocket.send( login_text );
 }
 
 function doCreateAccount( websocket, username, password ) {
-	const account_creation = {
-		"event": "client_account_creation",
-		"username": username,
-		"password": password
-	}
-	const account_creation_text = JSON.stringify( account_creation );
-	websocket.send( account_creation_text );
+  const account_creation = {
+    "event": "client_account_creation",
+    "username": username,
+    "password": password
+  }
+  const account_creation_text = JSON.stringify( account_creation );
+  websocket.send( account_creation_text );
 }
-console.log("?");
+
+let event_listener_array = [];
+
+let event_listener_dictionary = {};
+
+function event_websocket_opened( event, ws ) {
+  console.dir( this );
+  console.dir( ws );
+  console.dir( event );
+  console.log( "Websocket opened!" );
+  //event.srcElement.removeEventListener( 'click', event_listener_array[0] );
+  event.srcElement.removeEventListener( 'click', event_listener_dictionary["event_websocket_opened"] );
+}
+
+function event_login( event ) {
+  let username_box = document.getElementById('login_username');
+  let password_box = document.getElementById('login_password');
+  let username = username_box.value;
+  let password = password_box.value;
+  if( username != "" && password != "" ) {
+    console.log( "Attempting login!" );
+    doLogin( this, username, password );
+  }
+}
+
 document.addEventListener( "DOMContentLoaded", function(event) {
 	console.log( "DOMContentLoaded" );
 	let login_interface = document.getElementById('login_interface');
@@ -439,18 +463,27 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 	let contact_dev_popup = document.getElementById('contact_dev_popup');
 	chat_interface.style.display = "none";
 
+	//const event_websocket_opened_pointer = event_websocket_opened.bind( ws );
+	//event_listener_array[0] = event_websocket_opened.bind( ws );
+	event_listener_dictionary["event_websocket_opened"] = event_login.bind( ws );
+
 	var ws;
 	try{
 		ws = new WebSocket( 'ws://54.149.165.92:3000' );
 	} catch( error ) {
 		console.error( error );
 	}
-	ws.addEventListener( 'open', function(event) {
-		console.log( "WebSocket opened!" );
-	});
+	//ws.addEventListener( 'open', event_listener_array[0] );
+	ws.addEventListener( 'open', event_listener_dictionary["event_websocket_opened"] );
 
+	/*function(event) {
+		console.log( "WebSocket opened!" );
+	});*/
+
+	event_listener_array[1] = event_login.bind( ws );
 	let login_button = document.getElementById('login_button');
-	login_button.addEventListener( 'click', function() {
+	login_button.addEventListener( 'click', event_listener_array[1] );
+	/*login_button.addEventListener( 'click', function() {
 		let username_box = document.getElementById('login_username');
 		let password_box = document.getElementById('login_password');
 		let username = username_box.value;
@@ -459,7 +492,7 @@ document.addEventListener( "DOMContentLoaded", function(event) {
 			console.log( "Attempting login!" );
 			doLogin( ws, username, password );
 		}
-	});
+	});*/
 
 	let account_creation_button = document.getElementById('create_account_button');
 	account_creation_button.addEventListener( 'click', function() {
