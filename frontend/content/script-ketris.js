@@ -211,6 +211,11 @@ function launchKetris( inIPAddress, inGameID ) {
 				DrawMenu = true;
 			} else if( inPacket.event === 'server_commence_gameplay' ) {
 				doLaunchKetrisGameplayer();
+				if( document.visibilityState == "hidden" ) {
+					console.log( "Game hidden at initialization" );
+					doSendHidden();
+					doPause();
+				}
 			} else if( inPacket.event === 'server_new_shape' ) {
 				//console.log( "New shape event from opponent." );
 				CurrentElement_Enemy.Shape = inPacket.Shape;
@@ -249,10 +254,10 @@ function launchKetris( inIPAddress, inGameID ) {
 			} else if( inPacket.event === 'server_unpause' ) {
 				console.log( "unpause recieved" );
 				doReceiveUnpause();
-				doUnpause();
+				//doUnpause();
 			} else if ( inPacket.event === 'server_visible' ) {
 				console.log( "Recieved visible" );
-				doReceieveVisible();
+				doReceiveVisible();
 			} else if ( inPacket.event === 'server_hidden' ) {
 				console.log( "Recieved hidden" );
 				doReceiveHidden();
@@ -1224,11 +1229,13 @@ function launchKetris( inIPAddress, inGameID ) {
 	}
 	function doReceiveHidden() {
 		console.log( "doReceiveHidden()" );
-		myGameState.enemy_visiblity = false;
+		myGameState.enemy_visibility = false;
+		doPause();
 	}
 	function doReceiveVisible() {
 		console.log( "doReceiveVisible()" );
 		myGameState.enemy_visibility = true;
+		doUnpause();
 	}
 
 	function doSendPause() {
@@ -1293,11 +1300,13 @@ function launchKetris( inIPAddress, inGameID ) {
 		console.log( "Docuemnt visibility change: " + document.visibilityState );
 		if( document.visibilityState == "hidden" ) {
 			cancelAnimationFrame( myAnimationValues.AnimationFrameHandle );
+			doSendHidden();
 			doPause();
 			doSendPause();
 		} else if( document.visibilityState == "visible" ) {
 			myAnimationValues.AnimationFrameHandle =
 				window.requestAnimationFrame( doManageDrawing);
+			doSendVisible();
 			doUnpause();
 			doSendUnpause();
 		}
@@ -1307,6 +1316,8 @@ function launchKetris( inIPAddress, inGameID ) {
 		console.log( "Checking visibility: " );
 		console.log( "enemy_visibility:" + myGameState.enemy_visibility );
 		console.log( "doc: " + document.visibilityState );
+		let booleanTest = myGameState.enemy_visibility && document.visiblityState=="visible";
+		console.log( "boolean: " + booleanTest );
 		return( myGameState.enemy_visibility && document.visibilityState=="visible" );
 	}
 	function doSpaceKeyPress() {
