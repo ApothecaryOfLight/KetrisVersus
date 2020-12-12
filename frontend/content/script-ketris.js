@@ -263,8 +263,7 @@ function launchKetris( inIPAddress, inGameID ) {
 				let chat_interface = document.getElementById('chat_interface');
 				game_interface.style.display = "none";
 				chat_interface.style.display = "flex";
-				//TODO: Remove event listeners
-				//TODO: Stop timer.
+				document.removeEventListener( 'visibilitychange', on_visibility_change );
 				//TODO: Close websocket.
 				return;
 			}
@@ -1290,8 +1289,7 @@ function launchKetris( inIPAddress, inGameID ) {
 		CurrentElement_Enemy.Timestamp += Date.now()-myGameState.PausedTimestamp
 		//myAnimationValues.AnimationFrameHandle = window.requestAnimationFrame( doManageDrawing );
 	}
-
-	document.addEventListener("visibilitychange", function() {
+	function on_visibility_change() {
 		console.log( "Docuemnt visibility change: " + document.visibilityState );
 		if( document.visibilityState == "hidden" ) {
 			cancelAnimationFrame( myAnimationValues.AnimationFrameHandle );
@@ -1303,7 +1301,8 @@ function launchKetris( inIPAddress, inGameID ) {
 			doUnpause();
 			doSendUnpause();
 		}
-	});
+	}
+	document.addEventListener("visibilitychange", on_visibility_change);
 	function areBothVisible() {
 		console.log( "Checking visibility: " );
 		console.log( "enemy_visibility:" + myGameState.enemy_visibility );
