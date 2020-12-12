@@ -4,6 +4,7 @@ const mysql = require('mysql2');
 
 let mysql_pool;
 function init_mysql_pool() {
+  console.log( "init_mysql_pool" );
   mysql_pool = mysql.createPool({
     connectionLimmit: 50,
     host: 'localhost',
@@ -313,8 +314,6 @@ const myUIDGen = new unique_id_generator;
 
 function init_websocket() {
   wsServer.on('request', function(request) {
-    init_mysql_pool();
-
     var myConnection = request.accept( null, request.origin );
     console.log( "New connection!" );
 
@@ -459,6 +458,7 @@ function init_websocket() {
   });
 }
 function do_launch_chat_server() {
+  console.log( "do_launch_chat_server" );
   init_mysql_pool( init_websocket );
 }
 

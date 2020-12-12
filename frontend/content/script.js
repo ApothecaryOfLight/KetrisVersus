@@ -1,8 +1,7 @@
 'use strict';
 
 /*
-TODO:
-1) Make all attache event listeners into functions, and remove as appropriate (login).
+React
 */
 
 const e = React.createElement;
@@ -18,20 +17,20 @@ const colors = {
 }
 
 function getColor( inLetter ) {
-  console.log( "background:" + colors[inLetter] );
+  //console.log( "background:" + colors[inLetter] );
   return {background: colors[inLetter]};
 }
 
 class UID {
-    constructor() {
-      this.UIDs = [];
-    }
-    generateUID( inField ) {
-      console.log( "Generating first UID of field " + inField + "." );
-      if( !this.UIDs[inField] ) {
-        this.UIDs[inField] = {
-        counter: 1,
-        retiredIDs : []
+  constructor() {
+    this.UIDs = [];
+  }
+  generateUID( inField ) {
+    console.log( "Generating first UID of field " + inField + "." );
+    if( !this.UIDs[inField] ) {
+      this.UIDs[inField] = {
+      counter: 1,
+      retiredIDs : []
       };
       return 0;
     } else if( this.UIDs[inField].retiredIDs.length ) {
@@ -182,10 +181,10 @@ class AvailGames extends React.Component {
     let parent = this;
     this.state.websocket.addEventListener('message', function(event) {
       const inMessage = JSON.parse( event.data );
-      console.log( "AvailGames message check: " );
-      console.log( event.data );
-      console.dir( inMessage );
-      console.log( inMessage.event );
+      //console.log( "AvailGames message check: " );
+      //console.log( event.data );
+      //console.dir( inMessage );
+      //console.log( inMessage.event );
       if( inMessage.event === "server_list_game" ) {
         console.log( "server_list_game event!" );
         parent.state.inGames.push({
@@ -220,9 +219,6 @@ class AvailGames extends React.Component {
   };
   join_game( inGameID, inGameName ) {
     console.log( "Joining game ID: " + inGameID + " GameName: " + inGameName + "." );
-    //console.dir( inGameID );
-    //console.dir( inGameName );
-    //console.dir( this );
     this.state.websocket.send(JSON.stringify({
       event: "client_enter_game",
       game_id: inGameID,
@@ -260,6 +256,11 @@ class AvailGames extends React.Component {
   }
 }
 
+
+
+/*
+Game interface
+*/
 function launchGameInterface( inIPAddress, inGameID ) {
   console.log( "Launching game interface!" );
   let login_interface = document.getElementById('login_interface');
@@ -271,14 +272,6 @@ function launchGameInterface( inIPAddress, inGameID ) {
   launchKetris( inIPAddress, inGameID );
 }
 
-function remove_game_id( inGameID ) {
-
-}
-
-function launchLoginInterface( inWebsocket ) {
-  
-}
-
 function doLogObject( inObj ) {
   inObj.forEach( (element) => {
     console.log( element );
@@ -286,11 +279,11 @@ function doLogObject( inObj ) {
 }
 
 function doShowContactDevPopup( event ) {
-
+  
 }
 
 function doHideContactDevPopup( event ) {
-
+  
 }
 
 function doSendMessageToDev( ws, inAuthor, inMessage ) {
@@ -306,112 +299,145 @@ function doSendMessageToDev( ws, inAuthor, inMessage ) {
   }));
 }
 
-function launchChatInterface( ws ) {
-	console.log( "Launching chat interface!" );
-	let login_interface = document.getElementById('login_interface');
-	let chat_interface = document.getElementById('chat_interface');
-	login_interface.style.display = "none";
-	chat_interface.style.display = "flex";
 
-	let contact_dev_popup_overlay = document.getElementById('contact_dev_popup_overlay');
-	let contact_dev_popup = document.getElementById('contact_dev_popup');
-	let contact_dev_button = document.getElementById('contact_dev_button');
-	contact_dev_button.addEventListener( 'click', (event) => {
-		console.log( "Contact dev!" );
-		contact_dev_popup_overlay.style.display = "flex";
-	});
-	let contact_dev_popup_exit_button = document.getElementById('contact_dev_popup_exit_button');
-	contact_dev_popup_exit_button.addEventListener( 'click', (event) => {
-		console.log( "Close contact dev popup!" );
-		contact_dev_popup_overlay.style.display = "none";
-	});
-	let contact_dev_popup_nameorg_field = document.getElementById('contact_dev_popup_nameorg_field');
-	let contact_dev_popup_message_field = document.getElementById('contact_dev_popup_message_field');
-	let contact_dev_popup_send_button = document.getElementById('contact_dev_popup_send_button');
-	contact_dev_popup_send_button.addEventListener( 'click', (event) => {
-		console.log( "Sending message to dev!" );
-		const author = contact_dev_popup_nameorg_field.value;
-		const message = contact_dev_popup_message_field.value;
-		doSendMessageToDev( ws, author, message );
-		contact_dev_popup_nameorg_field = "";
-		contact_dev_popup_message_field = "";
-		contact_dev_popup_overlay.style.display = "none";
-	});
 
-	let body = document.body;
-	console.dir( body );
-	body.style["background"] = "white";
-
-	let chatLog = [];
-	const userList = [];
-	let gameList = [];
-	const myUID = new UID();
-	//ws.removeEventListener( 'message' );
-
-	ReactDOM.render(
-		<CurrentUsers userlist={userList} websocket={ws} />,
-		document.getElementById('column_user_area')
-	);
-        ReactDOM.render(
-		<AvailGames inGames={gameList} websocket={ws} />,
-		document.getElementById('column_avail_games_area')
-        );
-	ReactDOM.render(
-		<ChatRoom chatmessages={chatLog} websocket={ws} />,
-		document.getElementById('column_chat_area')
-	);
-
-	ws.addEventListener( 'message', function(event) {
-		const inMessage = JSON.parse( event.data );
-		console.dir( inMessage );
-		if( inMessage.event === "server_enter_game" ) {
-			launchGameInterface( inMessage.ip, inMessage.game_id );
-		}
-	});
-
-	function send_chat_message( inMessage ) {
-		const send_message = {
-			event : "client_chat_message",
-			text : inMessage
-		}
-		const send_message_json = JSON.stringify( send_message );
-		ws.send( send_message_json );
-	}
-
-	let mySendButton = document.getElementById("send_button");
-	mySendButton.addEventListener( 'click', doSend );
-
-	let myInputText = document.getElementById("input_text");
-	myInputText.addEventListener( 'keydown', keypress_event => {
-		//console.dir( keypress_event.key );
-		if( keypress_event.key === "Enter" ) {
-			keypress_event.preventDefault();
-			console.log( "enter!" );
-			const textfield = myInputText.value;
-			if( textfield != "" ) {
-				send_chat_message( textfield );
-			}
-			myInputText.value = "";
-		}
-	});
-
-	let myNewGameButton = document.getElementById("start_new_game_button");
-	myNewGameButton.addEventListener( 'click', () => {
-		ws.send( JSON.stringify({
-			event: "client_new_game"
-		}));
-	});
-
-	function doSend() {
-		const input_text = myInputText.value;
-		if( input_text != "" ) {
-			send_chat_message( input_text );
-		}
-		myInputText.value = "";
-		myInputText.focus()
-	}
+/*
+Chat Interface
+*/
+function send_chat_message( ws, inMessage ) {
+  const send_message = {
+    event : "client_chat_message",
+    text : inMessage
+  }
+  const send_message_json = JSON.stringify( send_message );
+  ws.send( send_message_json );
 }
 
+function ws_event_server_enter_game( event ) {
+  console.log( "ws_event_server_enter_game" );
+  const inMessage = JSON.parse( event.data );
+  console.dir( inMessage );
+  if( inMessage.event === "server_enter_game" ) {
+    launchGameInterface( inMessage.ip, inMessage.game_id );
+  }
+}
+
+function event_send_button( event ) {
+  console.log( "event_send_button" );
+
+  //let mySendButton = document.getElementById("send_button");
+  let myInputText = document.getElementById( "input_text" );
+  const input_text = myInputText.value;
+  if( input_text != "" ) {
+    send_chat_message( this, input_text );
+  }
+  myInputText.value = "";
+  myInputText.focus()
+}
+
+function event_enter_send_message( event ) {
+  console.log( "event_enter_send_message" );
+
+  let myInputText = document.getElementById("input_text");
+  if( event.key === "Enter" ) {
+    event.preventDefault();
+    console.log( "enter!" );
+    const textfield = myInputText.value;
+    if( textfield != "" ) {
+      send_chat_message( this, textfield );
+    }
+    myInputText.value = "";
+  }
+}
+
+function event_start_new_game_button( event ) {
+  console.log( "event_start_new_game_button" );
+  let myNewGameButton = document.getElementById("start_new_game_button");
+  this.send( JSON.stringify({
+    event: "client_new_game"
+  }));
+}
+
+/*
+Chat interface Contact dev events
+*/
+function event_launch_contact_dev_popup( event ) {
+  console.log( "event_launch_contact_dev_popup" );
+
+  let contact_dev_popup_overlay = document.getElementById('contact_dev_popup_overlay');
+  contact_dev_popup_overlay.style.display = "flex";
+}
+
+function event_close_contact_dev_popup( event ) {
+  console.log( "event_close_contact_dev_popup" );
+
+  let contact_dev_popup_exit_button = document.getElementById('contact_dev_popup_exit_button');
+  contact_dev_popup_overlay.style.display = "none";
+}
+
+function event_send_contact_dev_message( event ) {
+  console.log( "event_send_contact_dev_message" );
+
+  let contact_dev_popup_nameorg_field = document.getElementById('contact_dev_popup_nameorg_field');
+  let contact_dev_popup_message_field = document.getElementById('contact_dev_popup_message_field');
+  const author = contact_dev_popup_nameorg_field.value;
+  const message = contact_dev_popup_message_field.value;
+  doSendMessageToDev( this, author, message );
+  contact_dev_popup_nameorg_field = "";
+  contact_dev_popup_message_field = "";
+  contact_dev_popup_overlay.style.display = "none";
+}
+
+function launch_ChatInterface( ws ) {
+  console.log( "Launching chat interface!" );
+
+  let login_interface = document.getElementById('login_interface');
+  let chat_interface = document.getElementById('chat_interface');
+  login_interface.style.display = "none";
+  chat_interface.style.display = "flex";
+
+  attach_event( 'contact_dev_button', 'click', "event_launch_contact_dev_popup" );
+  attach_event( 'contact_dev_popup_exit_button', 'click', "event_close_contact_dev_popup" );
+  attach_event( 'contact_dev_popup_send_button', 'click', "event_send_contact_dev_message" );
+  attach_ws_event( ws, 'message', "ws_event_server_enter_game" );
+  attach_key_event( 'input_text', 'keydown', "Enter", "event_enter_send_message" );
+  attach_event( 'start_new_game_button', 'click', 'event_start_new_game_button' );
+  attach_event( 'send_button', 'click', 'event_send_button' );
+
+  let chatLog = [];
+  const userList = [];
+  let gameList = [];
+  const myUID = new UID();
+  ReactDOM.render(
+    <CurrentUsers userlist={userList} websocket={ws} />,
+    document.getElementById('column_user_area')
+  );
+  ReactDOM.render(
+    <AvailGames inGames={gameList} websocket={ws} />,
+    document.getElementById('column_avail_games_area')
+  );
+  ReactDOM.render(
+    <ChatRoom chatmessages={chatLog} websocket={ws} />,
+    document.getElementById('column_chat_area')
+  );
+}
+
+function cleanup_ChatInterface() {
+  console.log( "cleanup_ChatInterface" );
+  detach_event( 'contact_dev_button', 'click', "event_launch_contact_dev_popup" );
+  detach_event( 'contact_dev_popup_exit_button', 'click', "event_close_contact_dev_popup" );
+  detach_event( 'contact_dev_popup_send_button', 'click', "event_send_contact_dev_message" );
+  detach_ws_event( ws, 'message', "ws_event_server_enter_game" );
+  detach_key_event( 'input_text', 'keydown', "Enter", "event_enter_send_message" );
+  detach_event( 'start_new_game_button', 'click', 'event_start_new_game_button' );
+  detach_event( 'send_button', 'click', 'event_send_button' );
+}
+
+
+
+/*
+Login interface
+*/
 function doLogin( websocket, username, password ) {
   const login = {
     "event" : "client_login",
@@ -432,20 +458,12 @@ function doCreateAccount( websocket, username, password ) {
   websocket.send( account_creation_text );
 }
 
-let event_listener_array = [];
-
-let event_listener_dictionary = {};
-
-function event_websocket_opened( event, ws ) {
-  console.dir( this );
-  console.dir( ws );
-  console.dir( event );
+function ws_event_websocket_opened( event ) {
   console.log( "Websocket opened!" );
-  //event.srcElement.removeEventListener( 'click', event_listener_array[0] );
   event.srcElement.removeEventListener( 'click', event_listener_dictionary["event_websocket_opened"] );
 }
 
-function event_login( event ) {
+function event_login_click( event ) {
   let username_box = document.getElementById('login_username');
   let password_box = document.getElementById('login_password');
   let username = username_box.value;
@@ -456,60 +474,175 @@ function event_login( event ) {
   }
 }
 
+function event_account_creation_click( event ) {
+  let username_box = document.getElementById('login_username');
+  let password_box = document.getElementById('login_password');
+  let username = username_box.value;
+  let password = password_box.value;
+  if( username != "" && password != "" ) {
+    console.log( "Attempting account creation!" );
+    doCreateAccount( this, username, password );
+  }
+}
+
+function ws_event_server_login_approval( event ) {
+  if( event.data === "server_login_approved" ) {
+    console.log( "Login approved!" );
+    cleanup_LoginInterface( this );
+    launch_ChatInterface( this );
+  }
+}
+
+function launch_LoginInterface( ws ) {
+  console.log( "Launching login interface." );
+
+  attach_event( "login_button", 'click', "event_login_click" );
+  attach_event( "create_account_button", 'click', "event_account_creation_click" );
+  attach_ws_event( ws, 'open', "ws_event_websocket_opened" );
+  attach_ws_event( ws, 'message', "ws_event_server_login_approval" );
+
+  let login_interface = document.getElementById('login_interface');
+  let chat_interface = document.getElementById('chat_interface');
+  let contact_dev_popup = document.getElementById('contact_dev_popup');
+
+  chat_interface.style.display = "none";
+}
+
+function cleanup_LoginInterface( ws ) {
+  console.log( "Cleaning up login interface." );
+
+  detach_event( "login_button", 'click', "event_login_click" );
+  detach_event( "create_account_button", 'click', "event_account_creation_click" );
+  detach_ws_event( ws, 'open', "ws_event_websocket_opened" );
+  detach_ws_event( ws, 'message', "ws_event_server_login_approval" );
+}
+
+function launch_GameInterface() {
+
+}
+
+function cleanup_GameInterface() {
+
+}
+
+
+
+/*
+Core functionality
+*/
+let event_listener_dictionary = {};
+
+function build_event_listener_dictionary( ws ) {
+  /* Login events */
+  event_listener_dictionary["ws_event_websocket_opened"] = ws_event_websocket_opened.bind( ws );
+  event_listener_dictionary["event_login_click"] = event_login_click.bind( ws );
+  event_listener_dictionary["event_account_creation_click"] = event_account_creation_click.bind( ws );
+  event_listener_dictionary["ws_event_server_login_approval"] = ws_event_server_login_approval.bind( ws );
+
+  /* Chat events */
+  event_listener_dictionary["ws_event_server_enter_game"] = ws_event_server_enter_game.bind( ws );
+  event_listener_dictionary["event_send_button"] = event_send_button.bind( ws );
+  event_listener_dictionary["event_enter_send_message"] = event_enter_send_message.bind( ws );
+  event_listener_dictionary["event_start_new_game_button"] = event_start_new_game_button.bind( ws );
+
+  /* Chat events: Contact dev popup*/
+  event_listener_dictionary["event_launch_contact_dev_popup"] = event_launch_contact_dev_popup.bind( ws );
+  event_listener_dictionary["event_close_contact_dev_popup"] = event_close_contact_dev_popup.bind( ws );
+  event_listener_dictionary["event_send_contact_dev_message"] = event_send_contact_dev_message.bind( ws );
+}
+
+function attach_event( DOM_ID, event, function_name ) {
+  console.log( "Attaching to object " + DOM_ID + " on " + event + " with " + function_name );
+  try {
+    if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
+    if( event === "undefined" ) { throw "Event undefined!"; }
+    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    let dom_element_handle = document.getElementById( DOM_ID );
+    dom_element_handle.addEventListener( event, event_listener_dictionary[ function_name ] );
+  } catch ( error ) {
+    console.error( error );
+  }
+}
+
+function detach_event( DOM_ID, event, function_name ) {
+  console.log( "Detaching from object " + DOM_ID + " on " + event + " with " + function_name );
+  try {
+    if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
+    if( event === "undefined" ) { throw "Event undefined!"; }
+    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    let dom_element_handle = document.getElementById( DOM_ID );
+    dom_element_handle.removeEventListener( event, event_listener_dictionary[ function_name ] );
+  } catch ( error ) {
+    console.error( error );
+  }
+}
+
+function attach_key_event( DOM_ID, event, key, function_name ) {
+  console.log(
+    "Attaching keypress to object " + DOM_ID + " on " +
+    event + " key " + key + " with " + function_name
+  );
+  try {
+    if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
+    if( event === "undefined" ) { throw "Event undefined!"; }
+    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    if( key === "undefined" ) { throw "Key undefined!"; }
+    let dom_element_handle = document.getElementById( DOM_ID );
+    dom_element_handle.addEventListener( event, event_listener_dictionary[ function_name ] );
+  } catch ( error ) {
+    console.error( error );
+  }
+}
+
+function detach_key_event( DOM_ID, event, key, function_name ) {
+  console.log(
+    "Detaching keypress from object " + DOM_ID + " on " +
+    event + " key " + key + " with " + function_name
+  );
+  try {
+    if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
+    if( event === "undefined" ) { throw "Event undefined!"; }
+    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    if( key === "undefined" ) { throw "Key undefined!"; }
+    let dom_element_handle = document.getElementById( DOM_ID );
+    dom_element_handle.removeEventListener( event, event_listener_dictionary[ function_name ] );
+  } catch ( error ) {
+    console.error( error );
+  }
+}
+
+function attach_ws_event( ws, event, function_name ) {
+  console.log( "Attaching to websocket event on " + event + " with " + function_name );
+  try {
+    if( ws === "undefined" ) { throw "Websocket undefined!"; }
+    if( event === "undefined" ) { throw "Event undefined!"; }
+    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    ws.addEventListener( event, event_listener_dictionary[ function_name ] );
+  } catch ( error ) {
+    console.error( error );
+  }
+}
+
+function detach_ws_event( ws, event, function_name ) {
+  console.log( "Detaching from websocket event on " + event + " with " + function_name );
+  try {
+    if( ws === "undefined" ) { throw "Websocket undefined!"; }
+    if( event === "undefined" ) { throw "Event undefined!"; }
+    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    ws.removeEventListener( event, event_listener_dictionary[ function_name ] );
+  } catch ( error ) {
+    console.error( error );
+  }
+}
+
 document.addEventListener( "DOMContentLoaded", function(event) {
-	console.log( "DOMContentLoaded" );
-	let login_interface = document.getElementById('login_interface');
-	let chat_interface = document.getElementById('chat_interface');
-	let contact_dev_popup = document.getElementById('contact_dev_popup');
-	chat_interface.style.display = "none";
-
-	//const event_websocket_opened_pointer = event_websocket_opened.bind( ws );
-	//event_listener_array[0] = event_websocket_opened.bind( ws );
-	event_listener_dictionary["event_websocket_opened"] = event_login.bind( ws );
-
-	var ws;
-	try{
-		ws = new WebSocket( 'ws://54.149.165.92:3000' );
-	} catch( error ) {
-		console.error( error );
-	}
-	//ws.addEventListener( 'open', event_listener_array[0] );
-	ws.addEventListener( 'open', event_listener_dictionary["event_websocket_opened"] );
-
-	/*function(event) {
-		console.log( "WebSocket opened!" );
-	});*/
-
-	event_listener_array[1] = event_login.bind( ws );
-	let login_button = document.getElementById('login_button');
-	login_button.addEventListener( 'click', event_listener_array[1] );
-	/*login_button.addEventListener( 'click', function() {
-		let username_box = document.getElementById('login_username');
-		let password_box = document.getElementById('login_password');
-		let username = username_box.value;
-		let password = password_box.value;
-		if( username != "" && password != "" ) {
-			console.log( "Attempting login!" );
-			doLogin( ws, username, password );
-		}
-	});*/
-
-	let account_creation_button = document.getElementById('create_account_button');
-	account_creation_button.addEventListener( 'click', function() {
-		let username_box = document.getElementById('login_username');
-		let password_box = document.getElementById('login_password');
-		let username = username_box.value;
-		let password = password_box.value;
-		if( username != "" && password != "" ) {
-			console.log( "Attempting account creation!" );
-			doCreateAccount( ws, username, password );
-		}
-	});
-
-	ws.addEventListener( 'message', function(event) {
-		if( event.data === "server_login_approved" ) {
-			console.log( "Login approved!" );
-			launchChatInterface( ws );
-		}
-	});
+  console.log( "DOMContentLoaded" );
+  var ws;
+  try{
+    ws = new WebSocket( 'ws://54.149.165.92:3000' );
+  } catch( error ) {
+    console.error( error );
+  }
+  build_event_listener_dictionary( ws );
+  launch_LoginInterface( ws );
 });
