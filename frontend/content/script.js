@@ -639,7 +639,7 @@ document.addEventListener( "DOMContentLoaded", function(event) {
   console.log( "DOMContentLoaded" );
   var ws;
   try{
-    ws = new WebSocket( 'ws://54.149.165.92:3000' );
+    ws = new WebSocket( 'ws://54.218.125.110:3000' );
   } catch( error ) {
     console.error( error );
   }

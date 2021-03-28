@@ -20,7 +20,8 @@ function load_files() {
 	}
 	let images = {
 		'/border.png' : './content/border.png',
-		'/spritesheet_mod.png' : './content/spritesheet_mod.png'
+		'/spritesheet_mod.png' : './content/spritesheet_mod.png',
+                '/favicon.ico' : './content/favicon.ico'
 	}
 	let file_counter = 0;
 	for( const request in files ) {
@@ -65,7 +66,7 @@ function load_files() {
 load_files();
 
 function isLoaded( inCount ) {
-	if( inCount >= 6 ) {
+	if( inCount >= 7 ) {
 		doLaunch();
 	}
 }
@@ -110,6 +111,9 @@ function doLaunch() {
 	});
 	app.get( '/spritesheet_mod.png', function(req,res) {
 		res.send( requests['/spritesheet_mod.png'] );
+	});
+	app.get( '/favicon.ico', function(req,res) {
+		res.send( requests['/favicon.ico'] );
 	});
 	app.listen(8080, function() {
 		console.log( 'HTTP Server listening!' );
