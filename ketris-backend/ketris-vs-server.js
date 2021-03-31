@@ -7,6 +7,15 @@ const webSocketClient = require('websocket').client;
 const DB_Client = new webSocketClient();
 
 var http = require('http');
+
+/*HTTPS*/
+var fs = require('fs');
+var https = require('https');
+var privateKey = fs.readFileSync('/home/ubuntu/KetrisVersus/privkey.pem');
+var certificate = fs.readFileSync('/home/ubuntu/KetrisVersus/fullchain.pem');
+var credentials = {key: privateKey, cert: certificate};
+//var server = https.createServer( credentials, app );
+
 var myClients = {};
 var myButtons = [];
 
@@ -31,7 +40,8 @@ DB_Client.connect('ws://localhost:8989/');
 
 
 
-var server = http.createServer( function( request, response ) {  } );
+//var server = http.createServer( function( request, response ) {  } );
+var server = https.createServer( credentials, function( req, res ) { } );
 server.listen( myPort, function() {
 	console.log( "@:" + (new Date()) +
 		" Server listening on port " + myPort );

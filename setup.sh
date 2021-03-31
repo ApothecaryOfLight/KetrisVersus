@@ -5,7 +5,8 @@ sudo apt-get update -y && sudo apt-get upgrade -y
 #Install NodeJS
 curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
 sudo apt-get install nodejs -y
-sudo iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 8080
+sudo iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 8081
+sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8080
 
 #Install MySQL
 sudo apt install mysql-server -y

@@ -2,6 +2,18 @@ const WebSocketServer = require('websocket').server;
 const http = require('http');
 const mysql = require('mysql2');
 
+/*HTTPS*/
+var fs = require('fs');
+var https = require('https');
+var privateKey = fs.readFileSync('/home/ubuntu/KetrisVersus/privkey.pem');
+var certificate = fs.readFileSync('/home/ubuntu/KetrisVersus/fullchain.pem');
+var credentials = {key: privateKey, cert: certificate};
+var server = https.createServer( credentials, function(request, response) {
+	console.log( "Recieved request." );
+	response.writeHead(404);
+	response.end();
+});
+
 let mysql_pool;
 function init_mysql_pool() {
   console.log( "init_mysql_pool" );
@@ -85,14 +97,16 @@ function create_user ( inUsername, inPassword ) {
   });
 }
 
-const server = http.createServer( function(request, response) {
+/*const server = http.createServer( function(request, response) {
 	console.log( "Recieved request." );
 	response.writeHead(404);
 	response.end();
 });
 server.listen( 3000, function() {
 	console.log( "Listening on port 3000" );
-});
+});*/
+server.listen( 3000 );
+
 
 wsServer = new WebSocketServer({
 	httpServer: server

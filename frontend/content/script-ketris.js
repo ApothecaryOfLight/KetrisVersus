@@ -178,7 +178,7 @@ function launchKetris( inIPAddress, inGameID ) {
 	};
 
 	window.WebSocket = window.WebSocket || window.MozWebSocket;
-	let connection = new WebSocket( 'ws://54.218.125.110:1337' );
+	let connection = new WebSocket( 'wss://ketris.net:1337' );
 	connection.onopen = function () {
 		console.log( "Connected to Ketris server!" );
 		connection.send( JSON.stringify({

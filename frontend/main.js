@@ -11,6 +11,23 @@ const babelReact = require("@babel/preset-react");
 
 let requests = {};
 
+/*HTTP Redirect*/
+const redirect_app = express();
+const redirect_server = require('http').createServer( redirect_app );
+redirect_server.listen( '8081', function() {
+  console.log( "Redirect listeneing..." );
+});
+redirect_app.get( '/', function(req,res) {
+  res.redirect( 'https://ketris.net' );
+});
+
+/*HTTPS*/
+var https = require('https');
+var privateKey = fs.readFileSync('/home/ubuntu/KetrisVersus/privkey.pem');
+var certificate = fs.readFileSync('/home/ubuntu/KetrisVersus/fullchain.pem');
+var credentials = {key: privateKey, cert: certificate};
+var server = https.createServer( credentials, app );
+
 function load_files() {
 	let files = {
 		'/' : './content/index.html',
@@ -78,6 +95,10 @@ function doLaunch() {
 		console.log( req.useragent.browser + ' === ' + req.useragent.version  );
 		res.send( requests['/'] );
 	});
+        app.get( '/.well-known/acme-challenge/I0Cc550LmIzJvrykmVidXpCAiiB9X_5OCYVgrvJHH54',
+          function(req,res) {
+          res.send('I0Cc550LmIzJvrykmVidXpCAiiB9X_5OCYVgrvJHH54.q8CYs8KUtJ2KzQJfOEOVvaCW5_uvHjoFtaDYLhGhWlE');
+        });
 	app.get( '/style.css', function(req,res) {
 		console.log( "style.css" );
 		res.contentType('.css');
@@ -115,7 +136,11 @@ function doLaunch() {
 	app.get( '/favicon.ico', function(req,res) {
 		res.send( requests['/favicon.ico'] );
 	});
-	app.listen(8080, function() {
+        server.listen( 8080, function() {
+          console.log( "Listening!" );
+        });
+        
+/*	app.listen(8080, function() {
 		console.log( 'HTTP Server listening!' );
-	});
+	});*/
 }
