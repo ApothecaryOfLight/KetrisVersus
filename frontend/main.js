@@ -11,22 +11,31 @@ const babelReact = require("@babel/preset-react");
 
 let requests = {};
 
-/*HTTP Redirect*/
-const redirect_app = express();
-const redirect_server = require('http').createServer( redirect_app );
-redirect_server.listen( '8081', function() {
-  console.log( "Redirect listeneing..." );
-});
-redirect_app.get( '/', function(req,res) {
-  res.redirect( 'https://ketris.net' );
-});
 
 /*HTTPS*/
-var https = require('https');
-var privateKey = fs.readFileSync('/home/ubuntu/KetrisVersus/privkey.pem');
-var certificate = fs.readFileSync('/home/ubuntu/KetrisVersus/fullchain.pem');
-var credentials = {key: privateKey, cert: certificate};
-var server = https.createServer( credentials, app );
+var https;;
+var privateKey;;
+var certificate;
+var credentials;
+var server;
+
+if( process.argv[2] == "https" ) {
+  /*HTTP Redirect*/
+  const redirect_app = express();
+  const redirect_server = require('http').createServer( redirect_app );
+  redirect_server.listen( '8081', function() {
+    console.log( "Redirect listeneing..." );
+  });
+  redirect_app.get( '/', function(req,res) {
+    res.redirect( 'https://ketris.net' );
+  });
+
+  https = require('https');
+  privateKey = fs.readFileSync('/home/ubuntu/KetrisVersus/privkey.pem');
+  certificate = fs.readFileSync('/home/ubuntu/KetrisVersus/fullchain.pem');
+  credentials = {key: privateKey, cert: certificate};
+  server = https.createServer( credentials, app );
+}
 
 function load_files() {
 	let files = {
@@ -136,11 +145,14 @@ function doLaunch() {
 	app.get( '/favicon.ico', function(req,res) {
 		res.send( requests['/favicon.ico'] );
 	});
-        server.listen( 8080, function() {
-          console.log( "Listening!" );
-        });
-        
-/*	app.listen(8080, function() {
-		console.log( 'HTTP Server listening!' );
-	});*/
+
+  if( process.argv[2] == "HTTPS" ) {
+    server.listen( 8080, function() {
+      console.log( "HTTPS server listening!" );
+    });
+  } else {
+    app.listen(8080, function() {
+      console.log( "HTTP server listening!" );
+    });
+  }
 }
