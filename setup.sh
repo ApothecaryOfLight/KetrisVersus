@@ -20,15 +20,27 @@ echo -e "CREATE DATABASE ketris_db;\nCREATE USER 'ketris_node_user'@'localhost' 
 sudo mysql -s < ketris_sql_init.sql
 rm ketris_sql_init.sql
 
-#Run detached screens for each NodeJS.
-screen -d -m -S chat_backend bash -c 'cd chat-backend && npm i && ./run.sh'
-screen -d -m -S content bash -c 'cd frontend && npm i && ./run.sh'
-screen -d -m -S ketris_backend bash -c 'cd ketris-backend && npm i && ./run.sh'
-
 #Replace IP in client-side scripts with this server's IP.
 IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
-cd frontend/content && sed -i "s/54.149.165.92/$IP/g" script.js
-cd frontend/content && sed -i "s/54.149.165.92/$IP/g" script-ketris.js
+cd ./frontend/content && sed -i "s/54.149.165.92/$IP/g" script.js
+cd ./frontend/content && sed -i "s/54.149.165.92/$IP/g" script-ketris.js
+
+echo -n "Prod or dev? (p/d)"
+read prompt
+
+if [ "$prompt" != "${prompt#[Pp]}" ] ;then
+  echo "Setting up HTTPS for prod."
+
+  #Run detached screens for each NodeJS.
+  screen -d -m -S chat_backend bash -c 'cd chat-backend && npm i && ./run-https.sh'
+  screen -d -m -S content bash -c 'cd frontend && npm i && ./run-https.sh'
+  screen -d -m -S ketris_backend bash -c 'cd ketris-backend && npm i && ./run-https.sh'
+else
+  echo "Setting up HTTP for dev"
+  screen -d -m -S chat_backend bash -c 'cd chat-backend && npm i && ./run-http.sh'
+  screen -d -m -S content bash -c 'cd frontend && npm i && ./run-http.sh'
+  screen -d -m -S ketris_backend bash -c 'cd ketris-backend && npm i && ./run-http.sh'
+fi
 
 #Done!
 echo "Setup complete!"
