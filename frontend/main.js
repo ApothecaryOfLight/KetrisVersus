@@ -38,113 +38,98 @@ if( process.argv[2] == "https" ) {
 }
 
 function load_files() {
-	let files = {
-		'/' : './content/index.html',
-		'/script.js' : './content/script.js',
-		'/style.css' : './content/style.css',
-		'/script-ketris.js' : './content/script-ketris.js'
-	}
-	let images = {
-		'/border.png' : './content/border.png',
-		'/spritesheet_mod.png' : './content/spritesheet_mod.png',
-                '/favicon.ico' : './content/favicon.ico'
-	}
-	let file_counter = 0;
-	for( const request in files ) {
-		fs.readFile( files[request], 'utf8', function read(error, data ) {
-			if( error ) {
-				throw error;
-			}
-			if( files[request].slice(-2) == "js" ) {
-				babelCore.transform(
-					data,
-					{
-						presets: [
-							"@babel/preset-env",
-							"@babel/preset-react"
-						],
-					},
-					function(error,result) {
-						if( error ) {
-							console.log( error );
-						}
-						requests[request] = result.code;
-						file_counter++;
-						isLoaded( file_counter );
-					}
-				);
-			} else {
-				requests[request] = data;
-				file_counter++;
-				isLoaded( file_counter );
-			}
-		});
-	}
-	for( const request in images ) {
-		fs.readFile( images[request], function read( error, data ) {
-			if( error ) { throw error; }
-			requests[request] = data;
-			file_counter++;
-			isLoaded( file_counter );
-		});
-	}
+  let files = {
+    '/' : './content/index.html',
+    '/script.js' : './content/script.js',
+    '/style.css' : './content/style.css',
+    '/script-ketris.js' : './content/script-ketris.js'
+  }
+  let images = {
+    '/border.png' : './content/border.png',
+    '/spritesheet_mod.png' : './content/spritesheet_mod.png',
+    '/favicon.ico' : './content/favicon.ico'
+  }
+  let file_counter = 0;
+  for( const request in files ) {
+    fs.readFile( files[request], 'utf8', function read(error, data ) {
+      if( error ) {
+        throw error;
+      }
+      if( files[request].slice(-2) == "js" ) {
+        babelCore.transform(
+          data,
+          {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react"
+            ],
+          },
+          function(error,result) {
+            if( error ) {
+              console.log( error );
+            }
+            requests[request] = result.code;
+            file_counter++;
+            isLoaded( file_counter );
+          }
+        );
+      } else {
+        requests[request] = data;
+        file_counter++;
+        isLoaded( file_counter );
+      }
+    });
+  }
+  for( const request in images ) {
+    fs.readFile( images[request], function read( error, data ) {
+      if( error ) { throw error; }
+      requests[request] = data;
+      file_counter++;
+      isLoaded( file_counter );
+    });
+  }
 }
 load_files();
 
 function isLoaded( inCount ) {
-	if( inCount >= 7 ) {
-		doLaunch();
-	}
+  if( inCount >= 7 ) {
+    doLaunch();
+  }
 }
 
 function doLaunch() {
-	app.get( '/', function(req,res) {
-		console.log( "get/" );
-		console.log( "isMobile: " + req.useragent.isMobile );
-		console.log( req.useragent.browser + ' === ' + req.useragent.version  );
-		res.send( requests['/'] );
-	});
-        app.get( '/.well-known/acme-challenge/I0Cc550LmIzJvrykmVidXpCAiiB9X_5OCYVgrvJHH54',
-          function(req,res) {
-          res.send('I0Cc550LmIzJvrykmVidXpCAiiB9X_5OCYVgrvJHH54.q8CYs8KUtJ2KzQJfOEOVvaCW5_uvHjoFtaDYLhGhWlE');
-        });
-	app.get( '/style.css', function(req,res) {
-		console.log( "style.css" );
-		res.contentType('.css');
-		res.send( requests['/style.css'] );
-	});
-	app.get( '/script.js', function(req,res) {
-		console.log( "script.js" );
-		res.send( requests['/script.js'] );
-		/*babelCore.transform(
-			requests['/script.js'],
-			{
-				presets: [
-					"@babel/preset-env",
-					"@babel/preset-react"
-				],
-			},
-			function(error,result) {
-				if( error ) {
-					console.log( error );
-				}
-				res.send( result.code );
-			}
-		);*/
-	});
-	app.get( '/script-ketris.js', function(req,res) {
-		res.send( requests['/script-ketris.js'] );
-	});
-	app.get( '/border.png', function(req,res) {
-		console.log( "Border request!" );
-		res.send( requests['/border.png'] );
-	});
-	app.get( '/spritesheet_mod.png', function(req,res) {
-		res.send( requests['/spritesheet_mod.png'] );
-	});
-	app.get( '/favicon.ico', function(req,res) {
-		res.send( requests['/favicon.ico'] );
-	});
+  app.get( '/', function(req,res) {
+    console.log( "get/" );
+    console.log( "isMobile: " + req.useragent.isMobile );
+    console.log( req.useragent.browser + ' === ' + req.useragent.version  );
+    res.send( requests['/'] );
+  });
+  app.get( '/.well-known/acme-challenge/I0Cc550LmIzJvrykmVidXpCAiiB9X_5OCYVgrvJHH54',
+    function(req,res) {
+      res.send('I0Cc550LmIzJvrykmVidXpCAiiB9X_5OCYVgrvJHH54.q8CYs8KUtJ2KzQJfOEOVvaCW5_uvHjoFtaDYLhGhWlE');
+  });
+  app.get( '/style.css', function(req,res) {
+    console.log( "style.css" );
+    res.contentType('.css');
+    res.send( requests['/style.css'] );
+  });
+  app.get( '/script.js', function(req,res) {
+    console.log( "script.js" );
+    res.send( requests['/script.js'] );
+  });
+  app.get( '/script-ketris.js', function(req,res) {
+    res.send( requests['/script-ketris.js'] );
+  });
+  app.get( '/border.png', function(req,res) {
+    console.log( "Border request!" );
+    res.send( requests['/border.png'] );
+  });
+  app.get( '/spritesheet_mod.png', function(req,res) {
+    res.send( requests['/spritesheet_mod.png'] );
+  });
+  app.get( '/favicon.ico', function(req,res) {
+    res.send( requests['/favicon.ico'] );
+  });
 
   if( process.argv[2] == "HTTPS" ) {
     server.listen( 8080, function() {
