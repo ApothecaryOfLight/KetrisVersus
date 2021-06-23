@@ -493,6 +493,22 @@ function ws_event_server_login_approval( event ) {
   }
 }
 
+function ws_event_server_login_failure( event ) {
+  if( event.data === "server_login_failed" ) {
+    console.log( "Login failed!" );
+    launch_modal(
+      "Login failed.",
+      "Failed to authenticate login credentials!",
+      [
+        {
+          text: "Close",
+          func: "close_modal()"
+        }
+      ]
+    );
+  }
+}
+
 function launch_LoginInterface( ws ) {
   console.log( "Launching login interface." );
 
@@ -500,6 +516,7 @@ function launch_LoginInterface( ws ) {
   attach_event( "create_account_button", 'click', "event_account_creation_click" );
   attach_ws_event( ws, 'open', "ws_event_websocket_opened" );
   attach_ws_event( ws, 'message', "ws_event_server_login_approval" );
+  attach_ws_event( ws, 'message', "ws_event_server_login_failure" );
 
   let login_interface = document.getElementById('login_interface');
   let chat_interface = document.getElementById('chat_interface');
@@ -538,6 +555,7 @@ function build_event_listener_dictionary( ws ) {
   event_listener_dictionary["event_login_click"] = event_login_click.bind( ws );
   event_listener_dictionary["event_account_creation_click"] = event_account_creation_click.bind( ws );
   event_listener_dictionary["ws_event_server_login_approval"] = ws_event_server_login_approval.bind( ws );
+  event_listener_dictionary["ws_event_server_login_failure"] = ws_event_server_login_failure.bind( ws );
 
   /* Chat events */
   event_listener_dictionary["ws_event_server_enter_game"] = ws_event_server_enter_game.bind( ws );
@@ -639,10 +657,38 @@ document.addEventListener( "DOMContentLoaded", function(event) {
   console.log( "DOMContentLoaded" );
   var ws;
   try{
-    ws = new WebSocket( 'wss://ketris.net:3000' );
+    ws = new WebSocket( 'ws://54.245.37.116:3000' );
   } catch( error ) {
     console.error( error );
   }
   build_event_listener_dictionary( ws );
   launch_LoginInterface( ws );
 });
+
+/*
+Modal Interface
+*/
+function launch_modal( title, message, buttons ) {
+  const modal_interface = document.getElementById("modal_overlay");
+  const modal_title = document.getElementById("modal_title");
+  const modal_content = document.getElementById("modal_content");
+  const modal_buttons = document.getElementById("modal_buttons");
+
+  modal_interface.style.display = "flex";
+  modal_title.innerHTML = title;
+  modal_content.innerHTML = message;
+
+  let buttons_div = "";
+  buttons.forEach( button => {
+    buttons_div += "<button class='button_class' onclick=" +
+      button.func + ">" +
+      button.text + "</button>";
+  });
+  console.log( buttons_div );
+  modal_buttons.innerHTML = buttons_div;
+}
+
+function close_modal() {
+  const modal_interface = document.getElementById("modal_overlay");
+  modal_interface.style.display = "none";
+}

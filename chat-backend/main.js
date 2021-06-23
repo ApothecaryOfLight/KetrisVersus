@@ -67,6 +67,7 @@ function attempt_login ( inUsername, inPassword, connection, doApprove, doDeny )
         console.log( "Login of " + inUsername + " approved!" );
         doApprove( connection );
       } else {
+        console.log( "Login failure." );
         doDeny( connection );
       }
     }
@@ -333,6 +334,7 @@ function send_launch_game( in_game_id ) {
 const myUIDGen = new unique_id_generator;
 
 function init_websocket() {
+  console.log( "Initing websocket" );
   wsServer.on('request', function(request) {
     var myConnection = request.accept( null, request.origin );
     console.log( "New connection!" );
@@ -366,7 +368,7 @@ function init_websocket() {
           },
           (myConnection) => {
             console.log( "Login denied!" );
-            myConnection.sendUTF( "login_rejected" );
+            myConnection.sendUTF( "server_login_failed" );
           }
         );
       } else if( inMessage.event === "client_account_creation" ) {

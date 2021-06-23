@@ -9,6 +9,7 @@ sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-po
 sudo ufw allow 22
 sudo ufw allow 80
 sudo ufw allow 8080
+sudo ufw allow 3000 #login/chat port.
 sudo ufw enable
 
 #Install MySQL
