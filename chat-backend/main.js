@@ -66,6 +66,8 @@ async function attempt_login ( inUsername, inPassword, connection, doApprove, do
     console.log( rows.length );
     if( rows.length > 0 ) {
       doApprove( connection );
+    } else {
+      doDeny( connection );
     }
   } catch( error ) {
     doDeny( connection );
