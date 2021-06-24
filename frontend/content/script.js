@@ -509,6 +509,22 @@ function ws_event_server_login_failure( event ) {
   }
 }
 
+function ws_event_server_account_creation_failure( event ) {
+  if( event.data === "server_account_creation_failure" ) {
+    console.log( "Account creation failure!" );
+    launch_modal(
+      "Account creation failed.",
+      "Failed to create user account!",
+      [
+        {
+          text: "Close",
+          func: "close_modal()"
+        }
+      ]
+    );
+  }
+}
+
 function launch_LoginInterface( ws ) {
   console.log( "Launching login interface." );
 
@@ -517,6 +533,7 @@ function launch_LoginInterface( ws ) {
   attach_ws_event( ws, 'open', "ws_event_websocket_opened" );
   attach_ws_event( ws, 'message', "ws_event_server_login_approval" );
   attach_ws_event( ws, 'message', "ws_event_server_login_failure" );
+  attach_ws_event( ws, 'message', "ws_event_server_account_creation_failure" );
 
   let login_interface = document.getElementById('login_interface');
   let chat_interface = document.getElementById('chat_interface');
@@ -551,11 +568,18 @@ let event_listener_dictionary = {};
 
 function build_event_listener_dictionary( ws ) {
   /* Login events */
-  event_listener_dictionary["ws_event_websocket_opened"] = ws_event_websocket_opened.bind( ws );
-  event_listener_dictionary["event_login_click"] = event_login_click.bind( ws );
-  event_listener_dictionary["event_account_creation_click"] = event_account_creation_click.bind( ws );
-  event_listener_dictionary["ws_event_server_login_approval"] = ws_event_server_login_approval.bind( ws );
-  event_listener_dictionary["ws_event_server_login_failure"] = ws_event_server_login_failure.bind( ws );
+  event_listener_dictionary["ws_event_websocket_opened"] =
+    ws_event_websocket_opened.bind( ws );
+  event_listener_dictionary["event_login_click"] =
+    event_login_click.bind( ws );
+  event_listener_dictionary["event_account_creation_click"] =
+    event_account_creation_click.bind( ws );
+  event_listener_dictionary["ws_event_server_login_approval"] =
+    ws_event_server_login_approval.bind( ws );
+  event_listener_dictionary["ws_event_server_login_failure"] =
+    ws_event_server_login_failure.bind( ws );
+  event_listener_dictionary["ws_event_server_account_creation_failure"] =
+    ws_event_server_account_creation_failure.bind( ws );
 
   /* Chat events */
   event_listener_dictionary["ws_event_server_enter_game"] = ws_event_server_enter_game.bind( ws );

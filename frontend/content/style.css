@@ -536,13 +536,14 @@ width: 100%;
   align-self: center;
   display: flex;
   justify-content: space-around;
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: bold;
 }
 #modal_content {
   grid-row: 2;
   align-self: center;
   font-size: 2rem;
+  text-align: center;
 }
 #modal_buttons {
   grid-row: 3;

@@ -32,7 +32,7 @@ if( process.argv[2] == "https" ) {
 let mysql_pool;
 function init_mysql_pool() {
   console.log( "init_mysql_pool" );
-  mysql_pool = mysql.createPool({
+  mysql_pool = mysql.createPoolPromise({
     connectionLimmit: 50,
     host: 'localhost',
     user: 'ketris_node_user',
@@ -55,62 +55,38 @@ function log_dev_message ( inAuthor, inMessage, inTimestamp ) {
   );
 }
 
-function attempt_login ( inUsername, inPassword, connection, doApprove, doDeny ) {
+async function attempt_login ( inUsername, inPassword, connection, doApprove, doDeny ) {
   console.log( "attempt_login" );
-  mysql_pool.query(
-    'SELECT * FROM ketris_users ' +
-    'WHERE password_hash=UNHEX(MD5(\"' + inPassword + '\")) AND ' +
-    'username_hash=UNHEX(MD5(\"'+inUsername+'\"));',
-    function( error, results, fields ) {
-      if( error ) { console.log( error ); return; }
-      if( results.length > 0 ) {
-        console.log( "Login of " + inUsername + " approved!" );
-        doApprove( connection );
-      } else {
-        console.log( "Login failure." );
-        doDeny( connection );
-      }
+  try {
+    const [rows,fields] = await mysql_pool.query(
+      'SELECT * FROM ketris_users ' +
+      'WHERE password_hash=UNHEX(MD5(\"' + inPassword + '\")) AND ' +
+      'username_hash=UNHEX(MD5(\"'+inUsername+'\"));' );
+    console.dir( rows );
+    console.log( rows.length );
+    if( rows.length > 0 ) {
+      doApprove( connection );
     }
-  );
+  } catch( error ) {
+    doDeny( connection );
+  }
 }
 
-function does_username_exist( inUsername, inPassword, doCreateAccount ) {
-  console.log( "does_username_exist" );
-  mysql_pool.query(
-    'SELECT * FROM ketris_users ' +
-    'WHERE username_hash=UNHEX(MD5(\"' + inUsername + '\"));',
-    function( error, results, fields ) {
-      if( error ) { console.log( error ); return; }
-      if( results.length > 0 ) {
-        console.log( "Username exists!" );
-        return true;
-      } else {
-        console.log( "Username doesn't exist!" );
-        doCreateAccount( inUsername, inPassword );
-        return false;
-      }
-    }
-  );
-}
-
-function create_user ( inUsername, inPassword ) {
-  console.log( "create_user" );
-  const username_unavailable = does_username_exist( inUsername, inPassword, ( inUsername, inPassword ) => {
-    console.log( "Username available! Creating user..." );
-    mysql_pool.query(
-      'INSERT INTO ketris_users ' +
-      '(username_hash,password_hash,username_plaintext,account_creation) VALUES (' +
-      'UNHEX(MD5(\"' + inUsername + '\")), ' +
-      'UNHEX(MD5(\"' + inPassword + '\")), ' +
-      '\"' + inUsername + '\", ' +
-      '\'1999-01-01 01:01:01\' );',
-      function( error, results, fields ) {
-        if( error ) { console.log( error ); return; }
-        console.log( "User created!" );
-        return true; //TODO: Make this more robust.
-      }
-    );
-  });
+async function attempt_create_user( user, pass, conn ) {
+  try {
+    const insert_query = 'INSERT INTO ketris_users ' +
+        '(username_hash, password_hash, ' +
+        'username_plaintext, account_creation) VALUES (' +
+        'UNHEX(MD5(\"' + user + '\")), ' +
+        'UNHEX(MD5(\"' + pass + '\")), ' +
+        '\"' + user + '\", ' +
+        '\'1999-01-01 01:01:01\' );';
+    const [rows,fields] =  await mysql_pool.query( insert_query );
+    console.dir( rows );
+    conn.sendUTF( 'server_account_creation_success' );
+  } catch( error ) {
+    conn.sendUTF( 'server_account_creation_failure' );
+  }
 }
 
 server.listen( 3000 );
@@ -373,11 +349,11 @@ function init_websocket() {
         );
       } else if( inMessage.event === "client_account_creation" ) {
         console.log( "Attempting to create account!" );
-        if( create_user( inMessage.username, inMessage.password ) == true ) {
-          myConnection.sendUTF( "account_creation_approve" );
-        } else {
-          myConnection.sendUTF( "account_creation_disapprove" );
-        }
+        attempt_create_user(
+          inMessage.username,
+          inMessage.password,
+          myConnection
+        );
       } else if( inMessage.event === "client_chat_message" ) {
         const chat_message = {
           type: "chat_event",
