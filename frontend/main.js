@@ -49,6 +49,8 @@ function load_files() {
     '/spritesheet_mod.png' : './content/spritesheet_mod.png',
     '/favicon.ico' : './content/favicon.ico'
   }
+  const number_of_files =
+    Object.keys(files).length + Object.keys(images).length;
   let file_counter = 0;
   for( const request in files ) {
     fs.readFile( files[request], 'utf8', function read(error, data ) {
@@ -70,13 +72,17 @@ function load_files() {
             }
             requests[request] = result.code;
             file_counter++;
-            isLoaded( file_counter );
+            if( file_counter >= number_of_files ) {
+              doLaunch();
+            }
           }
         );
       } else {
         requests[request] = data;
         file_counter++;
-        isLoaded( file_counter );
+        if( file_counter >= number_of_files ) {
+          doLaunch();
+        }
       }
     });
   }
@@ -85,17 +91,13 @@ function load_files() {
       if( error ) { throw error; }
       requests[request] = data;
       file_counter++;
-      isLoaded( file_counter );
+      if( file_counter >= number_of_files ) {
+        doLaunch();
+      }
     });
   }
 }
 load_files();
-
-function isLoaded( inCount ) {
-  if( inCount >= 7 ) {
-    doLaunch();
-  }
-}
 
 function doLaunch() {
   app.get( '/', function(req,res) {
