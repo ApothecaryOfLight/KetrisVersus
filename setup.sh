@@ -5,7 +5,6 @@ sudo apt-get update -y && sudo apt-get upgrade -y
 #Install NodeJS
 curl -sL https://deb.nodesource.com/setup_15.x | sudo -E bash -
 sudo apt-get install nodejs -y
-sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
 sudo ufw allow 22
 sudo ufw allow 80
 sudo ufw allow 8080
@@ -32,6 +31,11 @@ read prompt
 if [ "$prompt" != "${prompt#[Pp]}" ] ;then
   echo "Setting up HTTPS for prod."
 
+  sudo snap install --classic certbot
+  sudo certbot certonly --standalone
+  cp /etc/letsencrypt/live/ketris.net/fullchain.pem /home/ubuntu/KetrisVersus/fullchain.pem
+  cp /etc/letsencrypt/live/ketris.net/privkey.pem /home/ubuntu/KetrisVersus/privkey.pem
+
   #Run detached screens for each NodeJS.
   screen -d -m -S chat_backend bash -c 'cd chat-backend && npm i && ./run-https.sh'
   screen -d -m -S content bash -c 'cd frontend && npm i && ./run-https.sh'
@@ -42,6 +46,8 @@ else
   screen -d -m -S content bash -c 'cd frontend && npm i && ./run-http.sh'
   screen -d -m -S ketris_backend bash -c 'cd ketris-backend && npm i && ./run-http.sh'
 fi
+
+sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
 
 #Done!
 echo "Setup complete!"
