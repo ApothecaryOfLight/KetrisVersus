@@ -106,6 +106,10 @@ function doLaunch() {
     res.contentType('.css');
     res.send( requests['/style.css'] );
   });
+  app.get( '/ip_file.js', function(req,res) {
+    console.log( "ip_file.js" );
+    res.send( requests['/ip_file.js'] );
+  });
   app.get( '/script.js', function(req,res) {
     console.log( "script.js" );
     res.send( requests['/script.js'] );
