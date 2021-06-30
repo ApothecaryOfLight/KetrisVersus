@@ -133,12 +133,12 @@ function doLaunch() {
     res.send( requests['/favicon.ico'] );
   });
 
-  if( process.argv[2] == "HTTPS" ) {
+  if( process.argv[2] == "https" ) {
     server.listen( 8080, function() {
       console.log( "HTTPS server listening!" );
     });
   } else {
-    app.listen(8080, function() {
+    app.listen( 8080, function() {
       console.log( "HTTP server listening!" );
     });
   }
