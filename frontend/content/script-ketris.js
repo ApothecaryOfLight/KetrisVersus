@@ -178,7 +178,8 @@ function launchKetris( inIPAddress, inGameID ) {
   };
 
   window.WebSocket = window.WebSocket || window.MozWebSocket;
-  let connection = new WebSocket( 'wss://ketris.net:1337' );
+//  let connection = new WebSocket( 'ws://54.245.37.116:1337' );
+  let connection = new WebSocket( inIPAddress + ":1337" );
   connection.onopen = function () {
     console.log( "Connected to Ketris server!" );
     connection.send( JSON.stringify({
@@ -282,9 +283,9 @@ function launchKetris( inIPAddress, inGameID ) {
   setInterval( function() {
     //console.log( "setInterval" );
     if( connection.readyState !== 1 ) {
-      myDOMHandles.input.attr( 'disabled', 'disabled' ).val(
+      /*myDOMHandles.input.attr( 'disabled', 'disabled' ).val(
         'Unable to communicate with the server.'
-      );
+      );*/
     }
   }, 3000 );
   function doManageDrawing( inTimestamp ) {
