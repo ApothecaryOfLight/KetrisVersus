@@ -37,6 +37,8 @@ if [ "$prompt" != "${prompt#[Pp]}" ] ;then
   cp /etc/letsencrypt/live/ketris.net/fullchain.pem /home/ubuntu/KetrisVersus/fullchain.pem
   cp /etc/letsencrypt/live/ketris.net/privkey.pem /home/ubuntu/KetrisVersus/privkey.pem
 
+  echo "const ip = \"wss://ketris.net:3000\";" > ./frontend/content/ip_file.js
+
   #Run detached screens for each NodeJS.
   screen -d -m -S chat_backend bash -c 'cd chat-backend && npm i && ./run-https.sh'
   screen -d -m -S content bash -c 'cd frontend && npm i && ./run-https.sh'
@@ -46,6 +48,8 @@ else
   screen -d -m -S chat_backend bash -c 'cd chat-backend && npm i && ./run-http.sh'
   screen -d -m -S content bash -c 'cd frontend && npm i && ./run-http.sh'
   screen -d -m -S ketris_backend bash -c 'cd ketris-backend && npm i && ./run-http.sh'
+
+  echo "const ip = \"ws://54.245.37.116:3000\";" >> ./frontend/content/ip_file.js
 fi
 
 sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080

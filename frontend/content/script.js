@@ -677,7 +677,7 @@ document.addEventListener( "DOMContentLoaded", function(event) {
   console.log( "DOMContentLoaded" );
   var ws;
   try{
-    ws = new WebSocket( 'ws://54.245.37.116:3000' );
+    ws = new WebSocket( ip );
   } catch( error ) {
     console.error( error );
   }
