@@ -30,6 +30,7 @@ if( process.argv[2] == "https" ) {
 function load_files() {
   let files = {
     '/' : './content/index.html',
+    '/ip_file.js' : './content/ip_file.js',
     '/script.js' : './content/script.js',
     '/style.css' : './content/style.css',
     '/script-ketris.js' : './content/script-ketris.js'
