@@ -381,7 +381,7 @@
   display: none;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: calc( 100% - 64px );
   width: 100%;
   border: 32px solid;
   border-image-repeat: repeat;
