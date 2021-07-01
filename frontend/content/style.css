@@ -556,3 +556,8 @@ width: 100%;
   border-radius: 15px;
   color: blue;
 }
+
+
+#myKetrisCanvas {
+  height: 100%;
+}
