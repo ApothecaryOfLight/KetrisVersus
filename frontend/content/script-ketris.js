@@ -707,6 +707,18 @@ function launchKetris( inIPAddress, inGameID ) {
     let TimeElapsed = Date.now() - myGameState.StartGameTimestamp;
     //Config.Speed = 0.001 + ( TimeElapsed/50000000 );
   }
+
+  function doBlit() {
+    var myPlayerCanvas = document.getElementById( "myPlayerCanvas" );
+    var myPlayerCanvasContext = myPlayerContext.getContext( "2d" );
+    var myEnemyCanvas = document.getElementById( "myEnemyCanvas" );
+    var myEnemyCanvasContext = myEnemyCanvas.getContext( "2d" );
+    var myCanvas = document.getElementById( "myKetrisCanvas" );
+    var myCanvasContext = myCanvas.getContext( "2d" );
+    myCanvasContext.drawImage( myPlayerCanvas, 0, 0 );
+    myCanvasContext.drawImage( myEnemyCanvas, 320, 0 );
+  }
+
   function doDrawBackgroundTile( inX, inY, inCanvasContext ) {
     let BackgroundColor = 0;
     let XOffset = -8;
@@ -787,6 +799,7 @@ function launchKetris( inIPAddress, inGameID ) {
     );
     return;
   }
+
   function doComposeBackground() {
     for( let x=0; x<=19; x++ ) {
       for( let y=0; y<=38; y++ ) {
@@ -798,22 +811,25 @@ function launchKetris( inIPAddress, inGameID ) {
       }
     }
   }
+
   function doDrawBackground() {
     let myPlayCanvasContext =
       myDOMHandles.myPlayCanvas.getContext( "2d" );
+
+    //Draw player's background
     myPlayCanvasContext.drawImage(
       myDOMHandles.myBackgroundCanvas,
       0,
       128
     );
+
+    //Draw enemy's background
     myPlayCanvasContext.drawImage(
       myDOMHandles.myBackgroundCanvas,
-      0, 0,
-      313, 621,
-      313, 128,
-      313, 621
+      313, 128
     );
   }
+
   function doDrawGhostblock() {
     let myPlayCanvasContext =
       myDOMHandles.myPlayCanvas.getContext( "2d" );
@@ -842,6 +858,7 @@ function launchKetris( inIPAddress, inGameID ) {
       }
     }
   }
+
   function doDrawCurrentElement() {
     let myPlayCanvasContext =
       myDOMHandles.myPlayCanvas.getContext( "2d" );
@@ -904,6 +921,7 @@ function launchKetris( inIPAddress, inGameID ) {
       }
     }
   }
+
   function doDrawKetrisBlocks() {
     let myPlayCanvasContext =
       myDOMHandles.myPlayCanvas.getContext( "2d" );
@@ -969,6 +987,7 @@ function launchKetris( inIPAddress, inGameID ) {
       10, 16
     );
   }
+
   function doSendScoreUpdate() { //bookmark
     let score = JSON.stringify({
       type: "game_event",
@@ -977,6 +996,7 @@ function launchKetris( inIPAddress, inGameID ) {
     });
     connection.send( score );
   }
+
   function doDrawScore() {
     if( myGameState.myLastScore != myGameState.myScore ) {
       myGameState.myLastScore = myGameState.myScore;
@@ -1009,6 +1029,7 @@ function launchKetris( inIPAddress, inGameID ) {
       myDOMHandles.myScoreCanvas.height
     );
   }
+
   function doComposeEnemyScore( inNumber, inPlace ) {
     //console.log( "Do compose enemy score." );
     let myEnemyScoreCanvasContext =
@@ -1021,6 +1042,7 @@ function launchKetris( inIPAddress, inGameID ) {
       10, 16
     );
   }
+
   function doDrawEnemyScore() {
     if( myGameState.myEnemyLastScore != myGameState.myEnemyScore ) {
       myGameState.myEnemyLastScore = myGameState.myEnemyScore;
@@ -1050,6 +1072,7 @@ function launchKetris( inIPAddress, inGameID ) {
       myDOMHandles.myEnemyScoreCanvas.height
     );
   }
+
   function doDrawPreviewBlock() {
     let toDrawShape = CurrentElement.NextElement;
     let toDrawColor = CurrentElement.NextColor;
