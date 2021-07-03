@@ -329,6 +329,14 @@ function launchKetris( inIPAddress, inGameID ) {
       myDOMHandles.myEnemyScoreCanvas.width = 10*15;
       myDOMHandles.myEnemyScoreCanvas.height = 16;
 
+      myDOMHandles.myPlayerCanvas = document.createElement("canvas");
+      myDOMHandles.myPlayerCanvas.width = 313;
+      myDOMHandles.myPlayerCanvas.height = 749;
+
+      myDOMHandles.myEnemyCanvas = document.createElement("canvas");
+      myDOMHandles.myEnemyCanvas.width = 313;
+      myDOMHandles.myEnemyCanvas.height = 749;
+
       doComposeBackground();
 
       //TODO: Put in an initial start button.
@@ -685,22 +693,29 @@ function launchKetris( inIPAddress, inGameID ) {
 
     let myPlayCanvasContext =
       myDOMHandles.myPlayCanvas.getContext( "2d" );
+
     myPlayCanvasContext.clearRect(
       0,
       0,
       myDOMHandles.myPlayCanvas.width,
       myDOMHandles.myPlayCanvas.height
     );
+
     doDrawBackground();
     doDrawKetrisBlocks();
     doDrawScore();
     doDrawEnemyScore();
     doDrawPreviewBlock();
+
     if( myGameState.GlobalPlay == true && myGameState.GameOver == false ) {
       if( myGameState.Falling == false ) { doDrawGhostblock(); }
       doDrawCurrentElement();
     }
+
+    doBlit();
+
     myCanvasContext.drawImage( myDOMHandles.myPlayCanvas, 0, 0 );
+
     if( DrawMenu == true ) {
       doDrawMenu();
     }
@@ -709,14 +724,13 @@ function launchKetris( inIPAddress, inGameID ) {
   }
 
   function doBlit() {
-    var myPlayerCanvas = document.getElementById( "myPlayerCanvas" );
-    var myPlayerCanvasContext = myPlayerContext.getContext( "2d" );
-    var myEnemyCanvas = document.getElementById( "myEnemyCanvas" );
-    var myEnemyCanvasContext = myEnemyCanvas.getContext( "2d" );
-    var myCanvas = document.getElementById( "myKetrisCanvas" );
-    var myCanvasContext = myCanvas.getContext( "2d" );
-    myCanvasContext.drawImage( myPlayerCanvas, 0, 0 );
-    myCanvasContext.drawImage( myEnemyCanvas, 320, 0 );
+    var myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
+    myPlayCanvasContext.drawImage( myDOMHandles.myPlayerCanvas, 0, 0 );
+    myPlayCanvasContext.drawImage(
+      myDOMHandles.myEnemyCanvas,
+      320, 0/*,
+      39.125, 93.625*/
+    );
   }
 
   function doDrawBackgroundTile( inX, inY, inCanvasContext ) {
@@ -813,20 +827,20 @@ function launchKetris( inIPAddress, inGameID ) {
   }
 
   function doDrawBackground() {
-    let myPlayCanvasContext =
-      myDOMHandles.myPlayCanvas.getContext( "2d" );
-
     //Draw player's background
-    myPlayCanvasContext.drawImage(
+    let myPlayerCanvasContext =
+      myDOMHandles.myPlayerCanvas.getContext( "2d" );
+    myPlayerCanvasContext.drawImage(
       myDOMHandles.myBackgroundCanvas,
-      0,
-      128
+      0, 128
     );
 
     //Draw enemy's background
-    myPlayCanvasContext.drawImage(
+    let myEnemyCanvasContext =
+      myDOMHandles.myEnemyCanvas.getContext( "2d" );
+    myEnemyCanvasContext.drawImage(
       myDOMHandles.myBackgroundCanvas,
-      313, 128
+      0, 128
     );
   }
 
@@ -860,8 +874,10 @@ function launchKetris( inIPAddress, inGameID ) {
   }
 
   function doDrawCurrentElement() {
-    let myPlayCanvasContext =
-      myDOMHandles.myPlayCanvas.getContext( "2d" );
+    let myPlayerCanvasContext =
+      myDOMHandles.myPlayerCanvas.getContext( "2d" );
+    const myEnemyCanvasContext =
+      myDOMHandles.myEnemyCanvas.getContext( "2d" );
     let Shape = CurrentElement.Shape;
     let Rotation = CurrentElement.Rotation;
     let Color = CurrentElement.Color;
@@ -894,7 +910,7 @@ function launchKetris( inIPAddress, inGameID ) {
       for( let x=0; x<4; x++ ) {
         for( let y=0; y<4; y++ ) {
           if( Shapes[Shape][Rotation][x][y] == 1 ) {
-            myPlayCanvasContext.drawImage(
+            myPlayerCanvasContext.drawImage(
               myDOMHandles.KetrisImage,
               (Color-1)*32, 0, 32, 32,
               (xOffset+x)*31, ((yOffset+y)*31)+128,
@@ -907,11 +923,11 @@ function launchKetris( inIPAddress, inGameID ) {
               [CurrentElement_Enemy.Rotation]
               [x][y] == 1
             ) {
-              myPlayCanvasContext.drawImage(
+              myEnemyCanvasContext.drawImage(
                 myDOMHandles.KetrisImage,
                 (CurrentElement_Enemy.Color-
                   1)*32, 0, 32, 32,
-                ((xOffset_Enemy+x)*31)+313,
+                ((xOffset_Enemy+x)*31),
                 ((yOffset_Enemy+y)*31)+128,
                 32, 32
               );
@@ -923,14 +939,17 @@ function launchKetris( inIPAddress, inGameID ) {
   }
 
   function doDrawKetrisBlocks() {
-    let myPlayCanvasContext =
-      myDOMHandles.myPlayCanvas.getContext( "2d" );
+    let myPlayerCanvasContext =
+      myDOMHandles.myPlayerCanvas.getContext( "2d" );
+    let myEnemyCanvasContext =
+      myDOMHandles.myEnemyCanvas.getContext( "2d" );
     doFallingBlocksLogic();
     doFallingBlocksLogic_Enemy();
     for( let x=0; x<10; x++ ) {
       for( let y=0; y<20; y++ ) {
+
         if( KetrisGrid[y][x] != 0  && FallingGrid[y][x] == 0 ) {
-          myPlayCanvasContext.drawImage(
+          myPlayerCanvasContext.drawImage(
             myDOMHandles.KetrisImage,
             (KetrisGrid[y][x]-1)*32, 0,
             32, 32,
@@ -941,7 +960,7 @@ function launchKetris( inIPAddress, inGameID ) {
         if( FallingGrid[y][x] != 0 ) {
           let RealPosition = ( Config.CollapsingSpeed *
             (Date.now()-FallingGrid[y][x]))+y;
-          myPlayCanvasContext.drawImage(
+          myPlayerCanvasContext.drawImage(
             myDOMHandles.KetrisImage,
             (FallingColorGrid[y][x]-1)*32, 0,
             32, 32,
@@ -949,32 +968,34 @@ function launchKetris( inIPAddress, inGameID ) {
             32, 32
           );
         }
+
         if(
           KetrisGrid_Enemy[y][x] != 0 &&
           FallingGrid_Enemy[y][x] == 0
         ) {
-          myPlayCanvasContext.drawImage(
+          myEnemyCanvasContext.drawImage(
             myDOMHandles.KetrisImage,
             (KetrisGrid_Enemy[y][x]-1)*32, 0,
             32, 32,
-            (x*31)+313, (y*31)+128,
+            (x*31), (y*31)+128,
             32, 32
           );
         }
         if( FallingGrid_Enemy[y][x] != 0 ) {
           let RealPosition = ( Config.CollapsingSpeed *
             (Date.now()-FallingGrid_Enemy[y][x]))+y;
-          myPlayCanvasContext.drawImage(
+          myEnemyCanvasContext.drawImage(
             myDOMHandles.KetrisImage,
             (FallingColorGrid_Enemy[y][x]-1)*32, 0,
             32, 32,
-            (x*31)+313, ((RealPosition)*31)+128,
+            (x*31), ((RealPosition)*31)+128,
             32, 32
           );
         }
       }
     }
   }
+
   function doComposeScore( inNumber, inPlace ) {
     //console.log( "Do compose score." );
     let myScoreCanvasContext =
