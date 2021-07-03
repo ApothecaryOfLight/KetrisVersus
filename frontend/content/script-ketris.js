@@ -1509,14 +1509,28 @@ function launchKetris( inIPAddress, inGameID ) {
     }
     if( myGameState.GameOver == true ) {
       console.log( "Click on Restart Game." );
-      if( out[0] > 80 && out[0] < 240 ) {
-        if( out[1] > 296 && out[1] < 344 ) {
-          let restart = JSON.stringify({
-            type: 'game_event',
-            event: 'client_restart'
-          });
-          connection.send( restart );
-          doStartNewGame();
+      console.log( out[0] + "/" + out[1] );
+      if( isMobile ) {
+        if( out[0] > 42 && out[0] < 149 ) {
+          if( out[1] > 188 && out[1] < 220 ) {
+            let restart = JSON.stringify({
+              type: 'game_event',
+              event: 'client_restart'
+            });
+            connection.send( restart );
+            doStartNewGame();
+          }
+        }
+      } else {
+        if( out[0] > 59 && out[0] < 178 ) {
+          if( out[1] > 221 && out[1] < 256 ) {
+            let restart = JSON.stringify({
+              type: 'game_event',
+              event: 'client_restart'
+            });
+            connection.send( restart );
+            doStartNewGame();
+          }
         }
       }
     }
