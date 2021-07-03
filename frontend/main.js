@@ -30,9 +30,11 @@ if( process.argv[2] == "https" ) {
 function load_files() {
   let files = {
     '/' : './content/index.html',
+    '/mobile.html' : './content/mobile.html',
     '/ip_file.js' : './content/ip_file.js',
     '/script.js' : './content/script.js',
     '/style.css' : './content/style.css',
+    '/style-mobile.css' : './content/style-mobile.css',
     '/script-ketris.js' : './content/script-ketris.js'
   }
   let images = {
@@ -95,7 +97,11 @@ function doLaunch() {
     console.log( "get/" );
     console.log( "isMobile: " + req.useragent.isMobile );
     console.log( req.useragent.browser + ' === ' + req.useragent.version  );
-    res.send( requests['/'] );
+    if( req.useragent.isMobile == true ) {
+      res.send( requests['/mobile.html'] );
+    } else {
+      res.send( requests['/'] );
+    }
   });
   app.get( '/.well-known/acme-challenge/I0Cc550LmIzJvrykmVidXpCAiiB9X_5OCYVgrvJHH54',
     function(req,res) {
@@ -105,6 +111,11 @@ function doLaunch() {
     console.log( "style.css" );
     res.contentType('.css');
     res.send( requests['/style.css'] );
+  });
+  app.get( '/style-mobile.css', function(req,res) {
+    console.log( "style-mobile.css" );
+    res.contentType('.css');
+    res.send( requests['/style-mobile.css'] );
   });
   app.get( '/ip_file.js', function(req,res) {
     console.log( "ip_file.js" );

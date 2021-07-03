@@ -5,6 +5,7 @@
 
 function launchKetris( inIPAddress, inGameID ) {
   console.log( "Connection to server " + inIPAddress + " for game " + inGameID + "." );
+  console.log( "isMobile: " + isMobile );
   console.log( "Launching Ketris." );
 
 ///////////////////////////////////////////////////////////////////////////
@@ -306,19 +307,27 @@ function launchKetris( inIPAddress, inGameID ) {
   }
   function doLaunchKetrisGameplayer() {
     console.log( "Launching Ketris Gameplayer." );
+    let playCanvasWidth = 313;
+    if( isMobile == false ) {
+      playCanvasWidth = 313*2;
+    } else {
+      const myKetrisCanvas = document.getElementById("myKetrisCanvas");
+      const myKetrisCanvasContext = myKetrisCanvas.getContext("2d");
+      myKetrisCanvasContext.canvas.width = 313;
+    }
     myDOMHandles.KetrisImage.src = "spritesheet_mod.png";
     myDOMHandles.KetrisImage.onload = function() {
       console.log( "Images loaded.");
       myDOMHandles.myBackgroundCanvas = document.createElement("canvas");
-      myDOMHandles.myBackgroundCanvas.width = 313*2;
+      myDOMHandles.myBackgroundCanvas.width = playCanvasWidth;
       myDOMHandles.myBackgroundCanvas.height = 749;
 
       myDOMHandles.myPlayCanvas = document.createElement("canvas");
-      myDOMHandles.myPlayCanvas.width = 313*2;
+      myDOMHandles.myPlayCanvas.width = playCanvasWidth;
       myDOMHandles.myPlayCanvas.height = 749;
 
       myDOMHandles.myMenuCanvas = document.createElement("canvas");
-      myDOMHandles.myMenuCanvas.width = 313*2;
+      myDOMHandles.myMenuCanvas.width = playCanvasWidth;
       myDOMHandles.myMenuCanvas.height = 749;
 
       myDOMHandles.myScoreCanvas = document.createElement("canvas");
@@ -701,6 +710,9 @@ function launchKetris( inIPAddress, inGameID ) {
       myDOMHandles.myPlayCanvas.height
     );
 
+    doClearCanvas( myDOMHandles.myEnemyCanvas );
+    doClearCanvas( myDOMHandles.myPlayerCanvas );
+
     doDrawBackground();
     doDrawKetrisBlocks();
     doDrawScore();
@@ -723,14 +735,30 @@ function launchKetris( inIPAddress, inGameID ) {
     //Config.Speed = 0.001 + ( TimeElapsed/50000000 );
   }
 
+  function doClearCanvas( inCanvas ) {
+//    let myCanvas = document.getElementById( inCanvas );
+    let myCanvasContext = inCanvas.getContext( "2d" );
+    myCanvasContext.clearRect(
+      0, 0, inCanvas.width, inCanvas.height
+    );
+  }
+
   function doBlit() {
     var myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
     myPlayCanvasContext.drawImage( myDOMHandles.myPlayerCanvas, 0, 0 );
-    myPlayCanvasContext.drawImage(
-      myDOMHandles.myEnemyCanvas,
-      320, 0/*,
-      39.125, 93.625*/
-    );
+    if( isMobile == false ) {
+      myPlayCanvasContext.drawImage(
+        myDOMHandles.myEnemyCanvas,
+        320, 0/*,
+        39.125, 93.625*/
+      );
+    } else {
+      myPlayCanvasContext.drawImage(
+        myDOMHandles.myEnemyCanvas,
+        260, 0,
+        52.16, 124.83
+      );
+    }
   }
 
   function doDrawBackgroundTile( inX, inY, inCanvasContext ) {
@@ -928,7 +956,7 @@ function launchKetris( inIPAddress, inGameID ) {
                 (CurrentElement_Enemy.Color-
                   1)*32, 0, 32, 32,
                 ((xOffset_Enemy+x)*31),
-                ((yOffset_Enemy+y)*31)+128,
+                ((yOffset_Enemy+y)*31)+146,
                 32, 32
               );
             }
