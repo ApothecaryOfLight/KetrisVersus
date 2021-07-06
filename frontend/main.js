@@ -29,7 +29,7 @@ if( process.argv[2] == "https" ) {
   /*HTTP Redirect*/
   const redirect_app = express();
   const redirect_server = require('http').createServer( redirect_app );
-  redirect_server.listen( '8080', function() {
+  redirect_server.listen( '8081', function() {
     console.log( "Redirect listeneing..." );
   });
   redirect_app.get( '/', function(req,res) {
