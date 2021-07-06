@@ -13,7 +13,7 @@ let requests = {};
 
 
 /*HTTPS*/
-var https;;
+var https;
 var privateKey;;
 var certificate;
 var credentials;
@@ -25,6 +25,16 @@ if( process.argv[2] == "https" ) {
   certificate = fs.readFileSync('/home/ubuntu/KetrisVersus/fullchain.pem');
   credentials = {key: privateKey, cert: certificate};
   server = https.createServer( credentials, app );
+
+  /*HTTP Redirect*/
+  const redirect_app = express();
+  const redirect_server = require('http').createServer( redirect_app );
+  redirect_server.listen( '8080', function() {
+    console.log( "Redirect listeneing..." );
+  });
+  redirect_app.get( '/', function(req,res) {
+    res.redirect( 'https://ketris.net' );
+  });
 }
 
 function load_files() {
