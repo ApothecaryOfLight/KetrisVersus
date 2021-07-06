@@ -52,7 +52,7 @@ else
   echo "const ip = \"ws://54.245.37.116:3000\";" >> ./frontend/content/ip_file.js
 fi
 
-sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8081
 sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 443 -j REDIRECT --to-port 8080
 
 #Done!
