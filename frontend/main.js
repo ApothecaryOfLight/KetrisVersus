@@ -32,7 +32,7 @@ if( process.argv[2] == "https" ) {
   redirect_server.listen( '8081', function() {
     console.log( "Redirect listeneing..." );
   });
-  redirect_app.get( '/', function(req,res) {
+  redirect_app.get( '*', function(req,res) {
     res.redirect( 'https://ketris.net' );
   });
 }
