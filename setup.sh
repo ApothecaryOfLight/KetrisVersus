@@ -8,6 +8,7 @@ sudo apt-get install nodejs -y
 sudo ufw allow 22
 sudo ufw allow 80
 sudo ufw allow 8080
+sudo ufw allow 8081
 sudo ufw allow 3000 #login/chat port.
 sudo ufw allow 1337 #ketris game port.
 sudo ufw enable
