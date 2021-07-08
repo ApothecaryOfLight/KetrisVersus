@@ -103,16 +103,6 @@ function load_files() {
 load_files();
 
 function doLaunch() {
-  app.get( '/', function(req,res) {
-    console.log( "get/" );
-    console.log( "isMobile: " + req.useragent.isMobile );
-    console.log( req.useragent.browser + ' === ' + req.useragent.version  );
-    if( req.useragent.isMobile == true ) {
-      res.send( requests['/mobile.html'] );
-    } else {
-      res.send( requests['/'] );
-    }
-  });
   app.get( '/.well-known/acme-challenge/I0Cc550LmIzJvrykmVidXpCAiiB9X_5OCYVgrvJHH54',
     function(req,res) {
       res.send('I0Cc550LmIzJvrykmVidXpCAiiB9X_5OCYVgrvJHH54.q8CYs8KUtJ2KzQJfOEOVvaCW5_uvHjoFtaDYLhGhWlE');
@@ -147,6 +137,16 @@ function doLaunch() {
   });
   app.get( '/favicon.ico', function(req,res) {
     res.send( requests['/favicon.ico'] );
+  });
+  app.get( '*', function(req,res) {
+    console.log( "get/" );
+    console.log( "isMobile: " + req.useragent.isMobile );
+    console.log( req.useragent.browser + ' === ' + req.useragent.version  );
+    if( req.useragent.isMobile == true ) {
+      res.send( requests['/mobile.html'] );
+    } else {
+      res.send( requests['/'] );
+    }
   });
 
   if( process.argv[2] == "https" ) {
