@@ -33,6 +33,7 @@ if( process.argv[2] == "https" ) {
     console.log( "Redirect listeneing..." );
   });
   redirect_app.get( '*', function(req,res) {
+    console.log( "HTTPS redirect event." );
     res.redirect( 'https://ketris.net' );
   });
 }
