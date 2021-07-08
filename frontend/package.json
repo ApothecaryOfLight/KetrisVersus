@@ -6,8 +6,8 @@
 		"@babel/preset-env": "7.x",
 		"@babel/preset-react": "7.x",
 		"express": "4.x",
+		"express-subdomain": "latest",
 		"express-useragent": "1.x",
-		"nodemon": "2.x",
-		"vhost": "latest"
+		"nodemon": "2.x"
 	}
 }

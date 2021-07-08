@@ -1,3 +1,4 @@
+const subdomain = require('express-subdomain');
 const express = require('express');
 const useragent = require('express-useragent');
 const app = express();
@@ -32,10 +33,18 @@ if( process.argv[2] == "https" ) {
   redirect_server.listen( '8081', function() {
     console.log( "Redirect listeneing..." );
   });
-  redirect_app.get( '*', function(req,res) {
+  redirect_app.get( '/', function(req,res) {
     console.log( "HTTPS redirect event." );
     res.redirect( 'https://ketris.net' );
   });
+
+  /*Added www Redirect*/
+  const router = express.Router();
+  router.get( '*', (req,res) => {
+    console.log( "Subdomain." );
+    res.redirect( 'https://ketris.net' );
+  });
+  app.use( subdomain( 'www', router ) );
 }
 
 function load_files() {
