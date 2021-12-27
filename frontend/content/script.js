@@ -673,10 +673,11 @@ function detach_ws_event( ws, event, function_name ) {
   }
 }
 
-document.addEventListener( "DOMContentLoaded", function(event) {
-  console.log( "DOMContentLoaded" );
+//document.addEventListener( "DOMContentLoaded", function(event) {
+//  console.log( "DOMContentLoaded" );
   var ws;
   try{
+    console.log( ip );
     ws = new WebSocket( ip );
   } catch( error ) {
     console.error( error );
@@ -685,7 +686,7 @@ document.addEventListener( "DOMContentLoaded", function(event) {
   console.log( "isMobile: " + isMobile );
   console.log( window.innerWidth );
   launch_LoginInterface( ws );
-});
+//});
 
 /*
 Modal Interface

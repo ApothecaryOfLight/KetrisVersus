@@ -12,11 +12,12 @@ var server;
 var ip;
 
 if( process.argv[2] == "https" ) {
+  console.log( "Starting HTTPS server." );
   ip = "wss://ketris.net";
   fs = require('fs');
   https = require('https');
-  privateKey = fs.readFileSync('/home/ubuntu/KetrisVersus/privkey.pem');
-  certificate = fs.readFileSync('/home/ubuntu/KetrisVersus/fullchain.pem');
+  privateKey = fs.readFileSync('../ketrisvs-privkey.pem');
+  certificate = fs.readFileSync('../ketrisvs-fullchain.pem');
   credentials = {key: privateKey, cert: certificate};
   server = https.createServer( credentials, function(request, response) {
     console.log( "Recieved request." );
@@ -24,7 +25,7 @@ if( process.argv[2] == "https" ) {
     response.end();
   });
 } else {
-  ip = "ws://54.245.37.116";
+  ip = "ws://ketris.net";
   server = http.createServer( function(req,res) {
     console.log( "Starting HTTP server." );
     response.writeHead( 404 );
@@ -94,7 +95,7 @@ async function attempt_create_user( user, pass, conn ) {
   }
 }
 
-server.listen( 3000 );
+server.listen( 8002 );
 
 wsServer = new WebSocketServer({
 	httpServer: server
@@ -316,7 +317,7 @@ function send_launch_game( in_game_id ) {
 const myUIDGen = new unique_id_generator;
 
 function init_websocket() {
-  console.log( "Initing websocket" );
+  console.log( "Initiating websocket" );
   wsServer.on('request', function(request) {
     var myConnection = request.accept( null, request.origin );
     console.log( "New connection!" );
