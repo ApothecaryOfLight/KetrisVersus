@@ -18,8 +18,8 @@ var credentials;
 if( process.argv[2] == "https" ) {
   fs = require('fs');
   https = require('https');
-  privateKey = fs.readFileSync('../ketrisvs-privkey.pem');
-  certificate = fs.readFileSync('../ketrisvs-fullchain.pem');
+  privateKey = fs.readFileSync('../privkey.pem');
+  certificate = fs.readFileSync('../fullchain.pem');
   credentials = {key: privateKey, cert: certificate};
 }
 //var server = https.createServer( credentials, app );

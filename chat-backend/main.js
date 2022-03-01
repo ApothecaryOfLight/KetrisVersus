@@ -16,8 +16,8 @@ if( process.argv[2] == "https" ) {
   ip = "wss://ketris.net";
   fs = require('fs');
   https = require('https');
-  privateKey = fs.readFileSync('../ketrisvs-privkey.pem');
-  certificate = fs.readFileSync('../ketrisvs-fullchain.pem');
+  privateKey = fs.readFileSync('../privkey.pem');
+  certificate = fs.readFileSync('../fullchain.pem');
   credentials = {key: privateKey, cert: certificate};
   server = https.createServer( credentials, function(request, response) {
     console.log( "Recieved request." );
