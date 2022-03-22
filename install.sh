@@ -19,7 +19,7 @@ then
   sudo ufw allow 8080
   sudo ufw allow 8081
   sudo ufw allow 3002 #login/chat port.
-  sudo ufw allow 1337 #ketris game port.
+  sudo ufw allow 3003 #ketris game port.
   sudo ufw enable
 
   #Install MySQL
@@ -49,7 +49,7 @@ then
   sudo ufw allow 8080
   sudo ufw allow 8081
   sudo ufw allow 3002 #login/chat port.
-  sudo ufw allow 1337 #ketris game port.
+  sudo ufw allow 3003 #ketris game port.
 
   #Setup MySQL schema.
   echo -e "CREATE DATABASE ketris_db;\nCREATE USER 'ketris_node_user'@'localhost' IDENTIFIED BY 'ketris_node_user_password';\nGRANT ALL ON ketris_db.* TO 'ketris_node_user'@'localhost';\nUSE ketris_db;\nCREATE TABLE ketris_users ( username_hash BINARY(16) NOT NULL, password_hash BINARY(16) NOT NULL, username_plaintext VARCHAR(256) NOT NULL, account_creation DATETIME NOT NULL, last_login DATETIME, PRIMARY KEY( username_hash ) );\nCREATE TABLE ketris_matches ( posting_user BINARY(16) NOT NULL, accepting_user BINARY(16) NOT NULL, timestamp_start DATETIME NOT NULL, timestamp_end DATETIME NOT NULL, posting_user_score INT NOT NULL, accepting_user_score INT NOT NULL );\nCREATE TABLE ketris_messages ( author_name VARCHAR( 256 ) NOT NULL, message_body MEDIUMTEXT NOT NULL, timestamp DATETIME NOT NULL );" > ketris_sql_init.sql
