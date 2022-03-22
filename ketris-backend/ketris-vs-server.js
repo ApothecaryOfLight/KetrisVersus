@@ -15,7 +15,7 @@ var privateKey;
 var certificate;
 var credentials;
 
-if( process.argv[2] == "https" ) {
+if( process.argv[2] == "prod" ) {
   fs = require('fs');
   https = require('https');
   privateKey = fs.readFileSync('../privkey.pem');
@@ -50,7 +50,7 @@ DB_Client.connect('ws://localhost:8989/');
 
 //var server = http.createServer( function( request, response ) {  } );
 var server;
-if( process.argv[2] == "https" ) {
+if( process.argv[2] == "prod" ) {
   server = https.createServer( credentials, function( req, res ) { } );
 } else {
   server = http.createServer( (req,res) => {} );
