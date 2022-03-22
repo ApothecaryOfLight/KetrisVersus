@@ -1,6 +1,6 @@
 "use strict";
 process.title = 'node-ketrisvs';
-var myPort = 8003;
+var myPort = 3003;
 var webSocketServer = require('websocket').server;
 
 const webSocketClient = require('websocket').client;

@@ -4,7 +4,7 @@
 //TODO: Highscore system
 
 function launchKetris( inIPAddress, inGameID ) {
-  console.log( "Connection to server " + inIPAddress + " for game " + inGameID + "." );
+  console.log( "Connection to server " + inIPAddress + ":3003 for game " + inGameID + "." );
   console.log( "isMobile: " + isMobile );
   console.log( "Launching Ketris." );
 
@@ -180,7 +180,7 @@ function launchKetris( inIPAddress, inGameID ) {
 
   window.WebSocket = window.WebSocket || window.MozWebSocket;
 //  let connection = new WebSocket( 'ws://54.245.37.116:1337' );
-  let connection = new WebSocket( inIPAddress + ":8003" );
+  let connection = new WebSocket( inIPAddress + ":3003" );
   connection.onopen = function () {
     console.log( "Connected to Ketris server!" );
     connection.send( JSON.stringify({

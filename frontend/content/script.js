@@ -314,7 +314,7 @@ function ws_event_server_enter_game( event ) {
   const inMessage = JSON.parse( event.data );
   console.dir( inMessage );
   if( inMessage.event === "server_enter_game" ) {
-    launchGameInterface( inMessage.ip, inMessage.game_id );
+    launchGameInterface( ip, inMessage.game_id );
   }
 }
 
@@ -677,8 +677,8 @@ function detach_ws_event( ws, event, function_name ) {
 //  console.log( "DOMContentLoaded" );
   var ws;
   try{
-    console.log( ip );
-    ws = new WebSocket( ip );
+    console.log( ip + ":3002" );
+    ws = new WebSocket( ip + ":3002" );
   } catch( error ) {
     console.error( error );
   }
