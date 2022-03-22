@@ -9,11 +9,9 @@ var privateKey;
 var certificate;
 var credentials;
 var server;
-var ip;
 
 if( process.argv[2] == "https" ) {
   console.log( "Starting HTTPS server." );
-  ip = "wss://ketris.net";
   fs = require('fs');
   https = require('https');
   privateKey = fs.readFileSync('../privkey.pem');
@@ -25,7 +23,6 @@ if( process.argv[2] == "https" ) {
     response.end();
   });
 } else {
-  ip = "ws://ketris.net";
   server = http.createServer( function(req,res) {
     console.log( "Starting HTTP server." );
     response.writeHead( 404 );
@@ -305,8 +302,7 @@ function send_launch_game( in_game_id ) {
   const message = {
     type: "chat_event",
     event: "server_enter_game",
-    game_id: in_game_id,
-    ip: ip
+    game_id: in_game_id
   };
   console.log( "send_launch_game" );
   console.log( games[in_game_id].game_name );
