@@ -18,7 +18,7 @@ then
   sudo ufw allow 80
   sudo ufw allow 8080
   sudo ufw allow 8081
-  sudo ufw allow 3000 #login/chat port.
+  sudo ufw allow 8002 #login/chat port.
   sudo ufw allow 1337 #ketris game port.
   sudo ufw enable
 
@@ -48,7 +48,7 @@ then
   #Open ports.
   sudo ufw allow 8080
   sudo ufw allow 8081
-  sudo ufw allow 3000 #login/chat port.
+  sudo ufw allow 8002 #login/chat port.
   sudo ufw allow 1337 #ketris game port.
 
   #Setup MySQL schema.

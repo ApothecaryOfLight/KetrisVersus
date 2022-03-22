@@ -95,7 +95,7 @@ async function attempt_create_user( user, pass, conn ) {
   }
 }
 
-server.listen( 8002 );
+server.listen( 3002 );
 
 wsServer = new WebSocketServer({
 	httpServer: server
