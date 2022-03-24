@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd "${0%/*}"
 if [[ "$1" = "standalone" ]];
 then
   echo "Beginning KetrisVS standalone installation.";

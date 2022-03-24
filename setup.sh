@@ -1,4 +1,6 @@
 #!/bin/bash
+cd "${0%/*}"
+
 #Update system.
 sudo apt-get update -y && sudo apt-get upgrade -y
 

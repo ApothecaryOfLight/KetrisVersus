@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd "${0%/*}"
 if [[ "$1" = "prod" ]];
 then
   npx nodemon --watch content --watch . -e js,css,html main.js https
