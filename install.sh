@@ -42,7 +42,7 @@ then
 
   #Install NodeJS packages.
   cd chat-backend && npm i
-  cd ../content && npm i
+  cd ../frontend && npm i
   cd ../ketris-backend && npm i
 
   #Open ports.
