@@ -1,19 +1,20 @@
 #!/bin/bash
+cd "${0%/*}"
 ##  Run project.
 ##    run.sh dev
 ##      Will run KetrisVS without an SSL/TSL Certificates.
 ##    run.sh prod
 ##      Will run KetrisVS with SSL/TSL Certificates.
 
-if [[ "$1" = "dev" ]];
+if [[ "$1" = "http" ]];
 then
   echo "Running KetrisVS in development mode."
   IP=$(hostname -I | xargs)
-  echo "const ip = \"ws://${IP}\";" > ./frontend/content/ip_file.js
+  echo "const ip = \"ws://${2}\";" > ./frontend/content/ip_file.js
   screen -d -m -S chat_backend bash -c 'cd chat-backend && ./run.sh dev'
   screen -d -m -S content bash -c 'cd frontend && ./run.sh dev'
   screen -d -m -S ketris_backend bash -c 'cd ketris-backend && ./run.sh dev'
-elif [[ "$1" = "prod" ]];
+elif [[ "$1" = "https" ]];
 then
   echo "Running KetrisVS in production mode."
   echo "const ip = \"wss://ketris.net\";" > ./frontend/content/ip_file.js
