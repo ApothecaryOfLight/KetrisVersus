@@ -41,9 +41,9 @@ then
   echo "Beginning KetrisVS unified installation.";
 
   #Install NodeJS packages.
-  cd chat_backend && npm i
-  cd content && npm i
-  cd ketris_backend && npm i
+  cd chat-backend && npm i
+  cd ../content && npm i
+  cd ../ketris-backend && npm i
 
   #Open ports.
   sudo ufw allow 8080
