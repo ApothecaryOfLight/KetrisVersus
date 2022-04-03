@@ -151,7 +151,7 @@
   width:100%;
   border: 32px solid;
   border-image-repeat: repeat;
-  border-image-source: url("/border.png");
+  border-image-source: url("border.png");
   border-image-width: 32px;
   border-image-slice: 32;
   background: #f2f2ff;
@@ -383,7 +383,7 @@
   width: 100%;
   border: 32px solid;
   border-image-repeat: repeat;
-  border-image-source: url(/border.png);
+  border-image-source: url("border.png");
   border-image-width: 32px;
   border-image-slice: 32;
 }
@@ -408,7 +408,7 @@
 
   border: 32px solid;
   border-image-repeat: repeat;
-  border-image-source: url(/border.png);
+  border-image-source: url("border.png");
   border-image-width: 32px;
   border-image-slice: 32;
 }
@@ -525,7 +525,7 @@ width: 100%;
 
   border: 32px solid;
   border-image-repeat: repeat;
-  border-image-source: url("/border.png");
+  border-image-source: url("border.png");
   border-image-width: 32px;
   border-image-slice: 32;
 }
