@@ -5,4 +5,4 @@ Multiplayer implementation of Tetris using:
 
 **Frontend:**  HTML5, Javascript, CSS.
 
-**Backend:** NodeJS, Nodemon, Websocket.
+**Backend:** NodeJS, Nodemon, Websocket, React.js, Babel.
