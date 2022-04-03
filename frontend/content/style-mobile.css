@@ -15,7 +15,6 @@
 .login_box_class {
   /*Set the width of the login-box to a fraction of the screen*/
   width: 30%;
-/*  min-height: 25%;*/
 
   /*Set up the flex properties*/
   display: flex; /*Make this a flex parent. It's already a flex child.*/
@@ -25,9 +24,6 @@
 
   /*Set the color white*/
   background-color: #f2f2ff;
-
-  /*Round the corners of the login interface.*/
-/*  border-radius: 5%;*/
 
   /*Create shadows for the login box, for all major browsers.*/
   -moz-box-shadow: 10px 10px 20px #000000;
@@ -99,26 +95,7 @@
     height: calc( 100% - 96px );
     margin: 0px;
     padding: 0;
-
-/*    border: 96px solid;
-    border-image-repeat: repeat;
-    border-image-source: url("/border.png");
-    border-image-width: 96px;
-    border-image-slice: 32;*/
   }
-/*  .login_top_class {
-    font-size: 5rem;
-  }
-  .login_username_class {
-    font-size: 4rem;
-  }
-  .login_password_class {
-    font-size: 4rem;
-  }
-  .button_class {
-    height: 6rem;
-    font-size: 3rem;
-  }*/
 }
 
 
@@ -188,14 +165,10 @@
 
 
 .column_user_area_class {
-  /*height: 100%;
-  width: 20%;*/
   flex-grow:1;
   overflow-y: auto;
 }
 .column_chat_area_class {
-  /*height: 80%;
-  width: 100%;*/
   flex-grow: 1;
   padding-top: 0%;
   padding-bottom: 1%;
@@ -204,8 +177,6 @@
   border-bottom: 1px solid #e2e2e2;
 }
 .column_avail_games_area_class {
-  /*height: 100%;
-  width: 20%;*/
   flex-grow:1;
   overflow-y:auto;
 }
@@ -521,20 +492,16 @@
 
 
 html {
-height: 100%;
+  height: 100%;
 }
 body {
-/*background: rgb(105,101,172);
-background: linear-gradient(137deg, rgba(105,101,172,1) 0%, rgba(78,78,177,1) 34%, rgba(10,159,189,1) 100%);
-background-repeat: no-repeat;
-background-attachement: fixed;*/
-display: flex;
-flex-flow: row nowrap;
-height: 100%;
-overflow-x: hidden;
-overflow-y: hidden;
-margin: 0px;
-width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  margin: 0px;
+  width: 100%;
 }
 
 #modal_overlay {
