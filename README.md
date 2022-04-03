@@ -1,8 +1,8 @@
 # KetrisVS
-**Version 0.2.0**
+**Version 0.2.1**
 
 Multiplayer implementation of Tetris using:
 
-**Frontend:**  HTML5, Javascript, CSS, and Flex.
+**Frontend:**  HTML5, Javascript, CSS.
 
-**Backend:** NodeJS, Express, Nodemon, Websocket, HTTP and Babel.
+**Backend:** NodeJS, Nodemon, Websocket.
