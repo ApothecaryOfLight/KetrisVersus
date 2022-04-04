@@ -2,6 +2,9 @@ const WebSocketServer = require('websocket').server;
 const http = require('http');
 const mysql = require('mysql2');
 
+const users = [];
+const games = [];
+
 /*HTTPS*/
 var fs;
 var https;
@@ -98,23 +101,20 @@ wsServer = new WebSocketServer({
 	httpServer: server
 });
 
-const users = [];
-const games = [];
-
 class unique_id_generator {
-    constructor() {
-      this.UIDs = [];
-    }
-    generate_uid( inField ) {
+  constructor() {
+    this.UIDs = [];
+  }
+  generate_uid( inField ) {
+    if( typeof( this.UIDs[inField] ) == "undefined" ) {
       console.log( "Generating first UID of field " + inField + "." );
-      if( !this.UIDs[inField] ) {
-        this.UIDs[inField] = {
+      this.UIDs[inField] = {
         counter: 1,
         retiredIDs : []
       };
       return 0;
     } else if( this.UIDs[inField].retiredIDs.length > 0 ) {
-      console.log( "Issuing retired UID of field " + inField + "." );
+      console.log( "Issuing retired UID of field " + inField + ", which is " + this.UIDs[inField].retiredIDs[this.UIDs[inField].retiredIDs.length-1] + "." );
       return this.UIDs[inField].retiredIDs.pop();
     } else {
       console.log( "Generating new UID of field " + inField + "." );
@@ -385,6 +385,7 @@ function init_websocket() {
 
         //Add game_id to current user.
         users[ new_user.user_id ].game_id = new_game.game_id;
+        console.log( "Setting user_id " + new_user.user_id + " to has game true." );
         users[ new_user.user_id ].has_game = true;
 
         //Send list event to connected users.
@@ -395,10 +396,8 @@ function init_websocket() {
           users[new_user.user_id].username
         );
       } else if( inMessage.event === "client_enter_game" ) {
-        console.log( "enter_game" );
-        console.log( "game_id: " + inMessage.game_id );
 
-        //Make sure accepting user doesn't have a game posted.
+        //If accepting user has a game posted, delist it.
         if( users[ new_user.user_id ].has_game == true ) {
           send_delist_game( users[new_user.user_id].game_id );
           remove_game( users[new_user.user_id].game_id );
@@ -411,11 +410,10 @@ function init_websocket() {
         games[ inMessage.game_id ].accepting_user_id = new_user.user_id;
 
         //Add game_id to both users.
-        users[ games[inMessage.game_id].accepting_user_id ].has_game = true;
         users[ games[inMessage.game_id].accepting_user_id ].game_id = inMessage.game_id;
 
         //Update user profile to reflect that game is delisted.
-        users[ games[inMessage.game_id].posting_user_id ].has_listed_game = false;
+        users[ games[inMessage.game_id].posting_user_id ].has_game = false;
 
         //Send notice to all users that game has been delisted.
         send_delist_game( inMessage.game_id );
@@ -451,6 +449,9 @@ function init_websocket() {
           console.log( "Removing game." );
           remove_game( new_user.game_id );
         }
+
+        //Retire user ID.
+        myUIDGen.retireUID( "users", new_user.user_id );
       }
 
       //Delete user.
