@@ -50,8 +50,9 @@ then
   #Create symlinks for mobile files.
   cd frontend/mobile && ln -s ../script-ketris.js script-ketris.js
   cd frontend/mobile && ln -s ../script.js script.js
-  cd frontend/mobile && ln -s ../border.png
-  cd frontend/mobile && ln -s ../spritesheet_mod.png
+  cd frontend/mobile && ln -s ../border.png border.png
+  cd frontend/mobile && ln -s ../spritesheet_mod.png spritesheet_mod.png
+  cd frontend/mobile && ln -s ../ip_file.js ip_file.js
 
   echo "KetrisVS unified installation complete!"
 else
