@@ -683,7 +683,6 @@ function detach_ws_event( ws, event, function_name ) {
     console.error( error );
   }
   build_event_listener_dictionary( ws );
-  console.log( "isMobile: " + isMobile );
   console.log( window.innerWidth );
   launch_LoginInterface( ws );
 //});

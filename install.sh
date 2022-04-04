@@ -47,6 +47,12 @@ then
   sudo mysql -s < ketris_sql_init.sql
   rm ketris_sql_init.sql
 
+  #Create symlinks for mobile files.
+  cd frontend/mobile && ln -s ../script-ketris.js script-ketris.js
+  cd frontend/mobile && ln -s ../script.js script.js
+  cd frontend/mobile && ln -s ../border.png
+  cd frontend/mobile && ln -s ../spritesheet_mod.png
+
   echo "KetrisVS unified installation complete!"
 else
   echo "Command line argument:";
