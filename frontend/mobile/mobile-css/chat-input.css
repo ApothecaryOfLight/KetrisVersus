@@ -1,0 +1,20 @@
+.input_text_wrapper_class {
+    display: flex;
+    flex-flow: row nowrap;
+  }
+  .input_text_class {
+    width: 100%;
+    outline: none;
+    border-width: 0px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    resize: none;
+    background: #f2f2ff;
+  }
+  .send_button_class {
+    border-radius: 5px;
+    outline: none;
+  }
+  .send_button_class:focus {
+    outline: none;
+  }

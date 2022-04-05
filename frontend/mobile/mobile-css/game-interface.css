@@ -1,0 +1,12 @@
+.game_interface_class {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    height: calc( 100% - 64px );
+    width: calc( 100% - 64px );
+    border: 32px solid;
+    border-image-repeat: repeat;
+    border-image-source: url("../ketris_media/border.png");
+    border-image-width: 32px;
+    border-image-slice: 32;
+  }
