@@ -90,7 +90,7 @@ function doReceivePause() {
       doSendUnpause();
     }
   }
-  document.addEventListener("visibilitychange", on_visibility_change);
+  
   function areBothVisible() {
     console.log( "Checking visibility: " );
     console.log( "enemy_visibility:" + myGameState.enemy_visibility );
