@@ -1,0 +1,28 @@
+.chat_interface_class {
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    border: 32px solid;
+    border-image-repeat: repeat;
+    border-image-source: url("../ketris_media/border.png");
+    border-image-width: 32px;
+    border-image-slice: 32;
+    background: #f2f2ff;
+  }
+
+.column_user_area_class {
+    flex-grow:1;
+    overflow-y: auto;
+  }
+  .column_chat_area_class {
+    flex-grow: 1;
+    padding-top: 0%;
+    padding-bottom: 1%;
+    overflow-y: auto;
+    background-color: #f2f2ff;
+    border-bottom: 1px solid #e2e2e2;
+  }
+  .column_avail_games_area_class {
+    flex-grow:1;
+    overflow-y:auto;
+  }

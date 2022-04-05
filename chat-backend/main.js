@@ -25,12 +25,15 @@ if( process.argv[2] == "https" ) {
     response.writeHead(404);
     response.end();
   });
-} else {
-  server = http.createServer( function(req,res) {
-    console.log( "Starting HTTP server." );
+} else if( process.argv[2] == "http" ) {
+  console.log( "Starting HTTP server." );
+  server = http.createServer( function(request,response) {
     response.writeHead( 404 );
     response.end();
   });
+} else {
+  console.log( "Incorrect command line invokation. Specify http or https.");
+  process.exit();
 }
 
 let mysql_pool;

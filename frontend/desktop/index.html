@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--Favicon-->
+  <link rel="shortcut icon" href="ketris_media/favicon.ico" />
+
+  <!--CSS-->
+  <link rel="stylesheet" type="text/css" href="desktop-css/style.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/chat-gamesarea.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/chat-input.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/chat-interface.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/chat-text.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/chat-textarea.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/chat-user.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/contact_dev.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/game-interface.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/general.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/ketris.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/login.css">
+  <link rel="stylesheet" type="text/css" href="desktop-css/modal.css">
+
+  <!--Google fonts.-->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Goldman:wght@700&display=swap" rel="stylesheet">
+
+  <!--JavaScript for rendering mobile or desktop.-->
+  <script>
+  const isMobile = false;
+  </script>
+
+  <!--Babel in-broswer transpilation-->
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <!--Dynamically generated ip file for switching between dev and prod.-->
+  <script src="ketris-javascript/ip_file.js"></script>
+
+  <!--Chatroom and matchmaking JavaScript.-->
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/react.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/available_games.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/chat_interface.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/chatroom.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/colors.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/contact_dev.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/create_account.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/event_listeners.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/launch_chat_interface.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/launch_game_interface.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/launch_login_interface.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/login.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/modal.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/unique_identifier.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/users.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/websocket.js"></script>
+  <script type="text/babel" src="ketris-javascript/script.js"></script>
+
+  <!--Gameplay JavaScript-->
+  <script type="text/babel" src="ketris-javascript/script-ketris.js"></script>
+</head>
+
+<body>
+  <div id='modal_overlay'>
+    <div id='modal'>
+      <div id='modal_title'></div>
+      <div id='modal_content'></div>
+      <div id='modal_buttons'></div>
+    </div>
+  </div>
+
+  <div id='login_interface' class='login_interface_class'>
+    <div id='login_box' class='login_box_class'>
+      <div id='login_top' class='login_top_class unselectable'>
+        Login
+      </div>
+      <div id='login_mid' class='login_mid_class'>
+        <input id='login_username' class='login_username_class' placeholder="Username"/>
+        <input id='login_password' class='login_password_class' placeholder="Password"/>
+      </div>
+      <div id='login_bot' class='login_bot_class'>
+        <button id='login_button' class='login_button_class button_class unselectable'>Login</button>
+        <button id='create_account_button' class='create_account_button_class button_class unselectable'>Create Account</button>
+      </div>
+    </div>  
+  </div>
+
+  <div id='chat_interface' class='chat_interface_class'>
+
+    <div id='top_pane' class='top_pane_class'>
+      <div id='banner' class='banner_class unselectable'>KETRIS</div>
+    </div>
+
+    <div id='bottom_pane' class='bottom_pane_class'>
+
+      <div id='left_pane' class='left_pane_class'>
+        <div id='column_user_area' class='column_user_area_class'>
+          <div id='user_area' class='user_area_class'></div>
+        </div>
+        <button id='contact_dev_button' class='contact_dev_button_class button_class unselectable'>Contact Developer!</button>
+      </div>
+
+      <div id='middle_pane' class='middle_pane_class'>
+        <div id='column_chat_area' class='column_chat_area_class'>
+          <div id='chat_area' class='chat_area_class'>
+            <div id='chat_box_wrapper' class='chat_box_wrapper_class'>
+              <div id='chat_box' class='chat_box_class'></div>
+            </div>
+          </div>
+        </div>
+        <div id='input_text_wrapper' class='input_text_wrapper_class'>
+          <textarea id='input_text' class='input_text_class' rows=4 autofocus></textarea>
+          <button id='send_button' class='send_button_class button_class'>Send</button>
+        </div>
+      </div>
+
+      <div id='right_pane' class='right_pane_class'>
+        <div id='column_avail_games_area' class='column_avail_games_area_class'>
+          <div id='avail_games_area' class='avail_games_area_class'></div>
+        </div>
+        <button id='start_new_game_button' class='start_new_game_button_class button_class unselectable'>Start New Game</buton>
+      </div>
+    </div>
+  </div>
+
+  <div id='game_interface' class='game_interface_class'>
+    <canvas id='myKetrisCanvas' width="626px" height="749px"'></canvas>
+  </div>
+
+  <div id='contact_dev_popup_overlay' class='contact_dev_popup_overlay_class'>
+    <div id='contact_dev_popup' class='contact_dev_popup_class'>
+
+      <div id='contact_dev_popup_title_bar' class='contact_dev_popup_title_bar_class'>
+        <div id='contact_dev_popup_title_bar_text' class='contact_dev_popup_title_bar_text_class unselectable'>
+          Contact dev!
+        </div>
+        <div id='contact_dev_popup_exit_button' class='contact_dev_popup_exit_button_class unselectable'>
+          &times;
+        </div>
+      </div>
+
+      <div id='contact_dev_popup_nameorg_bar' class='contact_dev_popup_nameorg_bar_class'>
+        <div id='contact_dev_popup_nameorg_text' class='contact_dev_popup_nameorg_text_class unselectable'>
+          Name/Organization:
+        </div>
+        <textarea id='contact_dev_popup_nameorg_field' class='contact_dev_popup_nameorg_field_class'></textarea>
+      </div>
+
+      <div id='contact_dev_popup_message_bar' class='contact_dev_popup_message_bar_class'>
+        <div id='contact_dev_popup_message_text' class='contact_dev_popup_message_text_class unselectable'>
+          Message:
+        </div>
+        <textarea id='contact_dev_popup_message_field' class='contact_dev_popup_message_field_class'></textarea>
+      </div>
+
+      <div id='contact_dev_popup_send_bar' class='contact_dev_popup_send_bar_class'>
+        <button id='contact_dev_popup_send_button' class='contact_dev_popup_send_button_class button_class unselectable'>
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

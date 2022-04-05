@@ -1,0 +1,45 @@
+.avail_games_area_class {
+    margin-left: 5px;
+  }
+  .avail_game_wrapper_class {
+    padding-bottom: 2px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #e2e2e2;
+  }
+  .avail_game_class {
+    display:flex;
+    flex-direction:row;
+  }
+  .avail_game_left_class {
+    display:flex;
+    flex-direction:column;
+  }
+  .avail_game_icon_class {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    background: green;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 25px;
+  }
+  .avail_game_username_class {
+    align-text: center;
+  }
+  .avail_game_timestamp_class {
+    align-text: center;
+  }
+  .avail_game_right_class {
+    
+  }
+  .avail_game_join_button_class {
+    padding: 15px;
+  }
+  .start_new_game_button_class {
+    width: 96%;
+    margin-left: 4%;
+    flex-grow:0;
+    bottom: 0px;
+  }

@@ -315,7 +315,7 @@ function launchKetris( inIPAddress, inGameID ) {
       const myKetrisCanvasContext = myKetrisCanvas.getContext("2d");
       myKetrisCanvasContext.canvas.width = 313;
     }
-    myDOMHandles.KetrisImage.src = "spritesheet_mod.png";
+    myDOMHandles.KetrisImage.src = "ketris_media/spritesheet_mod.png";
     myDOMHandles.KetrisImage.onload = function() {
       console.log( "Images loaded.");
       myDOMHandles.myBackgroundCanvas = document.createElement("canvas");

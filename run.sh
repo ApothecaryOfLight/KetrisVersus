@@ -1,24 +1,22 @@
 #!/bin/bash
 cd "${0%/*}"
 ##  Run project.
-##    run.sh dev
+##    run.sh http
 ##      Will run KetrisVS without an SSL/TSL Certificates.
-##    run.sh prod
+##    run.sh https
 ##      Will run KetrisVS with SSL/TSL Certificates.
 
 if [[ "$1" = "http" ]];
 then
   IP=$(hostname -I | xargs)
-  echo "const ip = \"ws://${2}\";" > ./frontend/content/ip_file.js
-  screen -d -m -S ketris_chat bash -c 'cd chat-backend && ./run.sh dev'
-##  screen -d -m -S ketris_frontend bash -c 'cd frontend && ./run.sh dev'
-  screen -d -m -S ketris_backend bash -c 'cd ketris-backend && ./run.sh dev'
+  echo "const ip = \"ws://${2}\";" > ./frontend/media/ip_file.js
+  screen -d -m -S ketris_chat bash -c 'cd chat-backend && ./run.sh http'
+  screen -d -m -S ketris_backend bash -c 'cd ketris-backend && ./run.sh http'
 elif [[ "$1" = "https" ]];
 then
-  echo "const ip = \"wss://ketris.net\";" > ./frontend/content/ip_file.js
-  screen -d -m -S ketris_chat bash -c 'cd chat-backend && ./run.sh prod'
-##  screen -d -m -S ketris_frontend bash -c 'cd frontend && ./run.sh prod'
-  screen -d -m -S ketris_backend bash -c 'cd ketris-backend && ./run.sh prod'
+  echo "const ip = \"wss://ketris.net\";" > ./frontend/media/ip_file.js
+  screen -d -m -S ketris_chat bash -c 'cd chat-backend && ./run.sh https'
+  screen -d -m -S ketris_backend bash -c 'cd ketris-backend && ./run.sh https'
 else
   echo "Command line argument:";
   echo "  run.sh dev";
