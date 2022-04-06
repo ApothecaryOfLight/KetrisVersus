@@ -15,7 +15,7 @@ then
   screen -d -m -S ketris_backend bash -c 'cd ketris-backend && ./run.sh http'
 elif [[ "$1" = "https" ]];
 then
-  echo "const ip = \"wss://ketris.net\";" > ./frontend/javascript/ip_file.js
+  echo "const ip = \"wss://ketris.net\";" > ./frontend/ketris-javascript/ip_file.js
   screen -d -m -S ketris_chat bash -c 'cd chat-backend && ./run.sh https'
   screen -d -m -S ketris_admin bash -c 'cd admin-backend && ./run.sh https'
   screen -d -m -S ketris_backend bash -c 'cd ketris-backend && ./run.sh https'
