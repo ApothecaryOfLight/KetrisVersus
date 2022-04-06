@@ -76,6 +76,11 @@ async function attempt_login ( inUsername, inPassword, connection, request, doAp
     console.log( rows.length );
     if( rows.length > 0 ) {
       doApprove( connection );
+      const details_obj = {
+        "username": inUsername,
+        "password": inPassword
+      }
+      error_log.log_event( "attempt_login()::try", "Successful login.", request.socket.remoteAddress, details_obj );
     } else {
       doDeny( connection );
       const details_obj = {
