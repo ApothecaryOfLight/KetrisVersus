@@ -11,11 +11,13 @@ then
   IP=$(hostname -I | xargs)
   echo "const ip = \"ws://${2}\";" > ./frontend/media/ip_file.js
   screen -d -m -S ketris_chat bash -c 'cd chat-backend && ./run.sh http'
+  screen -d -m -S ketris_admin bash -c 'cd admin-backend && ./run.sh http'
   screen -d -m -S ketris_backend bash -c 'cd ketris-backend && ./run.sh http'
 elif [[ "$1" = "https" ]];
 then
   echo "const ip = \"wss://ketris.net\";" > ./frontend/media/ip_file.js
   screen -d -m -S ketris_chat bash -c 'cd chat-backend && ./run.sh https'
+  screen -d -m -S ketris_admin bash -c 'cd admin-backend && ./run.sh https'
   screen -d -m -S ketris_backend bash -c 'cd ketris-backend && ./run.sh https'
 else
   echo "Command line argument:";

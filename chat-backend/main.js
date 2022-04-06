@@ -13,6 +13,9 @@ var certificate;
 var credentials;
 var server;
 
+/*Error logging*/
+const error_log = require('../admin-backend/error-logging.js');
+
 if( process.argv[2] == "https" ) {
   console.log( "Starting HTTPS server." );
   fs = require('fs');
@@ -62,7 +65,7 @@ function log_dev_message ( inAuthor, inMessage, inTimestamp ) {
   );
 }
 
-async function attempt_login ( inUsername, inPassword, connection, doApprove, doDeny ) {
+async function attempt_login ( inUsername, inPassword, connection, request, doApprove, doDeny ) {
   console.log( "attempt_login" );
   try {
     const [rows,fields] = await mysql_pool.query(
@@ -75,26 +78,51 @@ async function attempt_login ( inUsername, inPassword, connection, doApprove, do
       doApprove( connection );
     } else {
       doDeny( connection );
+      const details_obj = {
+        "username": inUsername,
+        "password": inPassword
+      }
+      error_log.log_event( "attempt_login()::try", "Failed login attempt was made.", request.socket.remoteAddress, details_obj );
     }
   } catch( error ) {
     doDeny( connection );
+    const details_obj = {
+      "username": inUsername,
+      "password": inPassword
+    }
+    error_log.log_error( "attempt_login()::catch", "Failed login attempt was made.", 1, request.socket.remoteAddress, details_obj );
   }
 }
 
-async function attempt_create_user( user, pass, conn ) {
+async function attempt_create_user( user, pass, conn, req ) {
   try {
     const insert_query = 'INSERT INTO ketris_users ' +
         '(username_hash, password_hash, ' +
-        'username_plaintext, account_creation) VALUES (' +
+        'username_plaintext, account_creation_time) VALUES (' +
         'UNHEX(MD5(\"' + user + '\")), ' +
         'UNHEX(MD5(\"' + pass + '\")), ' +
         '\"' + user + '\", ' +
-        '\'1999-01-01 01:01:01\' );';
+        "\'" + new Date().toUTCString() + "\' );";
+        console.log( insert_query );
     const [rows,fields] =  await mysql_pool.query( insert_query );
     console.dir( rows );
+
+    const details_obj = {
+      "username": user,
+      "password": pass
+    }
     conn.sendUTF( 'server_account_creation_success' );
+    error_log.log_event( "attempt_create_user()::try", "Successful account creation.", req.socket.remoteAddress, details_obj );
+
   } catch( error ) {
     conn.sendUTF( 'server_account_creation_failure' );
+    console.dir( error );
+    const details_obj = {
+      "username": user,
+      "password": pass,
+      "error": await error_log.process_text(JSON.stringify(error))
+    }
+    error_log.log_error( "attempt_create_user()::catch", "Failed account creation attempt was made.", 1, req.socket.remoteAddress, details_obj );
   }
 }
 
@@ -335,7 +363,7 @@ function init_websocket() {
       console.dir( inMessage );
       if( inMessage.event === "client_login" ) {
         console.log( "Attempting login!" );
-        attempt_login( inMessage.username, inMessage.password, myConnection,
+        attempt_login( inMessage.username, inMessage.password, myConnection, request,
           (myConnection) => {
             console.log( "Login approved!" );
             new_user.username = inMessage.username;
@@ -358,7 +386,8 @@ function init_websocket() {
         attempt_create_user(
           inMessage.username,
           inMessage.password,
-          myConnection
+          myConnection,
+          request
         );
       } else if( inMessage.event === "client_chat_message" ) {
         const chat_message = {

@@ -1,0 +1,11 @@
+{
+    "name": "ketris_admin_backend",
+    "version": "0.0.1",
+    "dependencies": {
+        "express": "4.17.1",
+        "cors": "latest",
+        "mysql2": "2.2.5",
+        "nodemon": "2.0.7",
+        "npx": "10.2.2"
+    }
+}

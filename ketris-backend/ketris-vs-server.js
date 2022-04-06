@@ -15,6 +15,9 @@ var privateKey;
 var certificate;
 var credentials;
 
+/*Error logging*/
+const error_log = require('../admin-backend/error-logging.js');
+
 if( process.argv[2] == "prod" ) {
   fs = require('fs');
   https = require('https');
