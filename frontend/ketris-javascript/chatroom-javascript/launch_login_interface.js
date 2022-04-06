@@ -6,6 +6,7 @@ function launch_LoginInterface( ws ) {
     attach_event( "login_button", 'click', "event_login_click" );
     attach_event( "create_account_button", 'click', "event_account_creation_click" );
     attach_ws_event( ws, 'open', "ws_event_websocket_opened" );
+    attach_ws_event( ws, 'close', "ws_event_websocket_closed" );
     attach_ws_event( ws, 'message', "ws_event_server_login_approval" );
     attach_ws_event( ws, 'message', "ws_event_server_login_failure" );
     attach_ws_event( ws, 'message', "ws_event_server_account_creation_failure" );

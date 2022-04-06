@@ -17,6 +17,20 @@ function ws_event_websocket_opened( event ) {
   );
 }
 
+function ws_event_websocket_closed( event ) {
+  console.log( "Websocket closed!" );
+  console.dir( event );
+  
+  const options = {
+    "Close" : close_modal
+  }
+  launch_modal( null, "Connection with server lost! Attempt refresh, please.", options );
+}
+
+function ws_event_kept_alive( event ) {
+  
+}
+
 try{
   console.log( ip + ":3002" );
   ws = new WebSocket( ip + ":3002" );

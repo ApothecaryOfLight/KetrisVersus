@@ -463,6 +463,12 @@ function init_websocket() {
       } else if( inMessage.event == "client_dev_message" ) {
         console.log( "Recieved dev message!" );
         log_dev_message( inMessage.author, inMessage.message, "1999-01-01 12:12:12" );
+      } else if( inMessage.event == "keep_alive" ) {
+        const kept_alive = {
+          type: "chat_event",
+          event: "kept_alive"
+        }
+        myConnection.sendUTF( JSON.stringify(kept_alive) );
       } else {
         console.log( "Unrecognized object!" );
         console.dir( inMessage );

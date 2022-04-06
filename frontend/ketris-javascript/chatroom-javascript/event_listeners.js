@@ -6,9 +6,15 @@ Core functionality
 let event_listener_dictionary = {};
 
 function build_event_listener_dictionary( ws ) {
-  /* Login events */
+  /* Websocket events */
   event_listener_dictionary["ws_event_websocket_opened"] =
     ws_event_websocket_opened.bind( ws );
+  event_listener_dictionary["ws_event_websocket_closed"] =
+    ws_event_websocket_closed.bind( ws );
+  event_listener_dictionary["event_kept_alive"] =
+    ws_event_kept_alive.bind( ws );
+
+  /* Login events */
   event_listener_dictionary["event_login_click"] =
     event_login_click.bind( ws );
   event_listener_dictionary["event_account_creation_click"] =

@@ -13,10 +13,9 @@ function send_chat_message( ws, inMessage ) {
   }
   
   function ws_event_server_enter_game( event ) {
-    console.log( "ws_event_server_enter_game" );
     const inMessage = JSON.parse( event.data );
-    console.dir( inMessage );
     if( inMessage.event === "server_enter_game" ) {
+      console.log( "ws_event_server_enter_game" );
       launchGameInterface( ip, inMessage.game_id );
     }
   }
@@ -24,7 +23,6 @@ function send_chat_message( ws, inMessage ) {
   function event_send_button( event ) {
     console.log( "event_send_button" );
   
-    //let mySendButton = document.getElementById("send_button");
     let myInputText = document.getElementById( "input_text" );
     const input_text = myInputText.value;
     if( input_text != "" ) {
