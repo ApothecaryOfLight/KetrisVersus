@@ -55,6 +55,7 @@ app.get( '/get_event_log', async function(req,res) {
 
 if( process.argv[2] == "https" ) {
     console.log( "Launching production server..." );
+    const file_stream = require('fs');
     privateKey = file_stream.readFileSync('../privkey.pem');
     certificate = file_stream.readFileSync('../fullchain.pem');
     credentials = {key: privateKey, cert: certificate};
