@@ -6,8 +6,7 @@ const sqlPool = mysql.createPoolPromise({
   user: 'ketris_node_user',
   password: 'ketris_node_user_password',
   database: 'ketris_db',
-  multipleStatements: true,
-  dateStrings: true
+  multipleStatements: true
 });
 
 function get_timestamp() {
