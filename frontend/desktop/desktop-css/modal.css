@@ -5,6 +5,7 @@
     height: 100%;
     background: #000000CC;
     justify-content: center;
+    z-index: 1;
   }
   #modal {
     display: grid;
