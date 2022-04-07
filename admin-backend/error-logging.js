@@ -9,10 +9,6 @@ const sqlPool = mysql.createPoolPromise({
   multipleStatements: true
 });
 
-function get_timestamp() {
-  return new Date().toUTCString();
-}
-
 function pad_with_zero( inNumber ) {
   if( inNumber < 10 ) {
     return "0" + inNumber;
@@ -151,4 +147,3 @@ exports.get_error_log = get_error_log;
 exports.log_event = log_event;
 exports.get_event_log = get_event_log;
 exports.process_text = process_text;
-//exports.get_timestamp = get_timestamp;

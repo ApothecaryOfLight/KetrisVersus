@@ -6,7 +6,7 @@ const users = [];
 const games = [];
 
 /*HTTPS*/
-var fs;
+const fs = require('fs');
 var https;
 var privateKey;
 var certificate;
@@ -18,7 +18,6 @@ const error_log = require('../admin-backend/error-logging.js');
 
 if( process.argv[2] == "https" ) {
   console.log( "Starting HTTPS server." );
-  fs = require('fs');
   https = require('https');
   privateKey = fs.readFileSync('../privkey.pem');
   certificate = fs.readFileSync('../fullchain.pem');
