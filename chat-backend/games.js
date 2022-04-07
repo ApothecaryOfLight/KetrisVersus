@@ -23,9 +23,7 @@ function send_GameList(games, conn) {
   /*
   Deletes game serverside.
   */
-  function remove_game( users, games, in_game_id, myUIDGen ) {
-    console.log( "remove_game " + in_game_id );
-  
+  function remove_game( users, games, in_game_id, myUIDGen ) {  
     //If game is listed, send delisting to all connected users.
     if( games[ in_game_id ].is_listed == true ) {
       send_delist_game( users, in_game_id );
@@ -77,8 +75,6 @@ function send_GameList(games, conn) {
       event: "server_enter_game",
       game_id: in_game_id
     };
-    console.log( "send_launch_game" );
-    console.log( games[in_game_id].game_name );
     send_MessageToUser( users, message, games[in_game_id].posting_user_id );
     send_MessageToUser( users, message, games[in_game_id].accepting_user_id );
   }

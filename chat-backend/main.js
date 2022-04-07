@@ -26,14 +26,11 @@ const myChat = require('./chat.js')
 const myGames = require('./games.js')
 
 function log_dev_message ( mySqlPool, inAuthor, inMessage, inTimestamp ) {
-  console.log( "log_dev_message" );
   mySqlPool.query(
     'INSERT INTO ketris_messages ( author_name, message_body, timestamp ) VALUES ' +
     '(\"' + inAuthor + '\", \"' + inMessage + '\", \'' + inTimestamp + '\');',
     function( error, results, fields ) {
-      if( error ) { console.log( error ); return; }
-      console.log( "Logged dev message!" )
-      console.log( inAuthor + "@" + inTimestamp + ": " + inMessage );
+      if( error ) { console.error( error ); return; }
     }
   );
 }
@@ -45,7 +42,6 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
 
   myWebsocket.on('request', function(request) {
     const myConnection = request.accept( null, request.origin );
-    console.log( "New connection!" );
 
     const new_user = {
       connection : myConnection,
@@ -56,11 +52,8 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
     }
 
     myConnection.on('message', function( message ) {
-      console.log( "Recieved message!" );
       const inMessage = JSON.parse( message.utf8Data );
-      console.dir( inMessage );
       if( inMessage.event === "client_login" ) {
-        console.log( "Attempting login!" );
         myUsers.attempt_login(
           error_log,
           new_user,
@@ -76,7 +69,6 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myGames.send_GameList
         );
       } else if( inMessage.event === "client_account_creation" ) {
-        console.log( "Attempting to create account!" );
         myUsers.attempt_create_user(
           error_log,
           mySqlPool,
@@ -100,8 +92,6 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           }
         });
       } else if( inMessage.event === "client_new_game" ) {
-        console.log( "New game" );
-
         //Add game to available games.
         const new_game = {
           game_name: new_user.username,
@@ -113,7 +103,6 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
 
         //Add game_id to current user.
         users[ new_user.user_id ].game_id = new_game.game_id;
-        console.log( "Setting user_id " + new_user.user_id + " to has game true." );
         users[ new_user.user_id ].has_game = true;
 
         //Send list event to connected users.
@@ -151,10 +140,8 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
         //Send message to both participants that Ketris should be launched.
         myGames.send_launch_game( users, games, inMessage.game_id, myChat.send_MessageToUser );
       } else if( inMessage.event === "client_completed_game" ) {
-        console.log( "Game completed." );
         myGames.remove_game( users, games, inMessage.game_id, myUIDGen );
       } else if( inMessage.event == "client_dev_message" ) {
-        console.log( "Recieved dev message!" );
         log_dev_message( mySqlPool, inMessage.author, inMessage.message, "1999-01-01 12:12:12" );
       } else if( inMessage.event == "keep_alive" ) {
         const kept_alive = {
@@ -168,8 +155,6 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
       }
     });
     myConnection.on( 'close', function( reasonCode, desc ) {
-      console.log( "Closed connection!" );
-
       //If user hasn't logged in yet simply return.
       if( new_user.user_id == -1 ) {
         return;
@@ -177,12 +162,10 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
 
       //Send notice to all users that this user has disconencted.
       if( users[ new_user.user_id ].username != "unlogged" ) {
-        console.log( "Logging out username: " + users[ new_user.user_id ].username );
         myUsers.send_LogoutUserNotification( users, users[ new_user.user_id ].username );
 
         //Delete game.
         if( users[ new_user.user_id ].has_game == true ) {
-          console.log( "Removing game." );
           myGames.remove_game( users, games, new_user.game_id, myUIDGen );
         }
 

@@ -17,7 +17,6 @@ function pad_with_zero( inNumber ) {
 }
 
 function pad_milliseconds( inMilliseconds ) {
-  console.log( inMilliseconds );
   let outMilliseconds = "";
   if( inMilliseconds < 100 ) {
     outMilliseconds += "0";
@@ -136,10 +135,6 @@ async function get_event_log( page, page_size ) {
     "FROM event_log;";
   const [log_rows,log_fields] = await sqlPool.query( event_log_query );
   return log_rows;
-}
-
-function get_log_by_search( search, page, page_size ) {
-
 }
 
 exports.log_error = log_error;

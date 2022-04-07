@@ -1,5 +1,4 @@
 async function do_approve_login( logger, new_user, inMessage, users, games, myConnection, myUIDGen, send_GameList ) {
-    console.log( "Login approved!" );
     try {
       new_user.username = inMessage.username;
       new_user.password = inMessage.password;
@@ -19,7 +18,6 @@ async function do_approve_login( logger, new_user, inMessage, users, games, myCo
   
   async function do_reject_login( logger, myConnection ) {
     try {
-      console.log( "Login denied!" );
       myConnection.sendUTF( "server_login_failed" );
     } catch( error_obj ) {
       console.error( error_obj );
@@ -28,14 +26,11 @@ async function do_approve_login( logger, new_user, inMessage, users, games, myCo
   exports.do_reject_login = do_reject_login;
   
   async function attempt_login ( logger, new_user, inMessage, users, games, mySqlPool, inUsername, inPassword, connection, request, myUIDGen, send_GameList ) {
-    console.log( "attempt_login" );
     try {
       const [rows,fields] = await mySqlPool.query(
         'SELECT * FROM ketris_users ' +
         'WHERE password_hash=UNHEX(MD5(\"' + inPassword + '\")) AND ' +
         'username_hash=UNHEX(MD5(\"'+inUsername+'\"));' );
-      console.dir( rows );
-      console.log( rows.length );
       if( rows.length > 0 ) {
         do_approve_login( logger, new_user, inMessage, users, games, connection, myUIDGen, send_GameList );
         const details_obj = {
@@ -71,9 +66,7 @@ async function do_approve_login( logger, new_user, inMessage, users, games, myCo
           'UNHEX(MD5(\"' + pass + '\")), ' +
           '\"' + user + '\", ' +
           "\'" + new Date().toUTCString() + "\' );";
-          console.log( insert_query );
       const [rows,fields] =  await mySqlPool.query( insert_query );
-      console.dir( rows );
   
       const details_obj = {
         "username": user,
@@ -129,14 +122,12 @@ function doesUsernameExist( users, in_username ) {
 exports.doesUsernameExist = doesUsernameExist;
 
 function send_NewUserNotification( users, in_user_id ) {
-    console.log( "Sending new user notification to all logged-in clients." );
     const newUser = {
       type: "chat_event",
       event: "server_new_user",
       username: users[in_user_id].username
     };
     const out = JSON.stringify( newUser );
-    console.dir( newUser );
     users.forEach( user => {
       if( Object.keys(user).length != 0 ) {
         if( user.user_id != in_user_id ) {
@@ -151,7 +142,6 @@ function send_NewUserNotification( users, in_user_id ) {
   This is sent to new users, to give them a full list of connected users.
   */
   function send_UserList( users, conn ) {
-    console.log( "Sending UserList" );
     const userList = [];
     users.forEach( user=> {
       if( Object.keys(user).length != 0 ) {
@@ -160,7 +150,6 @@ function send_NewUserNotification( users, in_user_id ) {
         });
       }
     });
-    console.dir( userList );
     const out = {
       type: "chat_event",
       event : "server_user_list",
