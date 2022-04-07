@@ -9,8 +9,8 @@ echo "USE ketris_db;" >> "ketris_sql_init.sql"
 echo "CREATE TABLE ketris_users ( username_hash BINARY(16) NOT NULL, password_hash BINARY(16) NOT NULL, username_plaintext VARCHAR(256) NOT NULL, account_creation_time TINYTEXT NOT NULL, last_login DATETIME, PRIMARY KEY( username_hash ) );" >> "ketris_sql_init.sql"
 echo "CREATE TABLE ketris_matches ( posting_user BINARY(16) NOT NULL, accepting_user BINARY(16) NOT NULL, timestamp_start DATETIME NOT NULL, timestamp_end DATETIME NOT NULL, posting_user_score INT NOT NULL, accepting_user_score INT NOT NULL );" >> "ketris_sql_init.sql"
 echo "CREATE TABLE ketris_messages ( author_name VARCHAR( 256 ) NOT NULL, message_body MEDIUMTEXT NOT NULL, timestamp DATETIME NOT NULL );" >> "ketris_sql_init.sql"
-echo "CREATE TABLE error_log( error_id INT, PRIMARY KEY(error_id), timestamp TINYTEXT, ip TINYTEXT, severity TINYINT, source VARCHAR(256), message TEXT, details JSON );" >> "ketris_sql_init.sql"
-echo "CREATE TABLE event_log( event_id INT, PRIMARY KEY(event_id), timestamp TINYTEXT, ip TINYTEXT, code_source VARCHAR(256), message TEXT, details JSON );" >> "ketris_sql_init.sql"
+echo "CREATE TABLE error_log( error_id INT NOT NULL, PRIMARY KEY(error_id), timestamp DATETIME NOT NULL, ip TINYTEXT, severity TINYINT, source VARCHAR(256), message TEXT NOT NULL, details JSON );" >> "ketris_sql_init.sql"
+echo "CREATE TABLE event_log( event_id INT NOT NULL, PRIMARY KEY(event_id), timestamp DATETIME NOT NULL, ip TINYTEXT, code_source VARCHAR(256), message TEXT NOT NULL, details JSON );" >> "ketris_sql_init.sql"
 
 #ID Manager
 echo "USE ketris_db;" >> "ketris_sql_init.sql"
