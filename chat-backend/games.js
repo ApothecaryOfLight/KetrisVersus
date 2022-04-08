@@ -1,81 +1,143 @@
 /*
-This is sent to new users, to give them a full list of listed games.
+This is sent to new users, to give them a full list of posted games.
 */
-function send_GameList(games, conn) {
-    const avail_gamesList = [];
-    games.forEach( game=> {
-      if( Object.keys(game).length != 0 && game.is_listed == true ) {
-        avail_gamesList.push({
-          game_name: game.game_name,
-          game_id: game.game_id
+function send_GameList( myLogger, games, myWebsocketConnection ) {
+    try {
+        const avail_gamesList = [];
+        games.forEach( game=> {
+            if( Object.keys(game).length != 0 && game.is_listed == true ) {
+                avail_gamesList.push({
+                    game_name: game.game_name,
+                    game_id: game.game_id
+                });
+            }
         });
-      }
-    });
-    const out = {
-      type: "chat_event",
-      event: "server_game_list",
-      game_list : avail_gamesList
+        const out = {
+            type: "chat_event",
+            event: "server_game_list",
+            game_list : avail_gamesList
+        }
+        myWebsocketConnection.myConnection.sendUTF( JSON.stringify( out ) );
+    } catch( error_obj ) {
+        myLogger.log_error(
+            "games.js::send_GameList()::catch",
+            "Failed to send game list to a specified connection.",
+            0,
+            myWebsocketConnection.ip,
+            error_obj
+        )
     }
-    conn.sendUTF( JSON.stringify( out ) );
-  }
-  exports.send_GameList = send_GameList;
-  
-  /*
-  Deletes game serverside.
-  */
-  function remove_game( users, games, in_game_id, myUIDGen ) {  
-    //If game is listed, send delisting to all connected users.
-    if( games[ in_game_id ].is_listed == true ) {
-      send_delist_game( users, in_game_id );
+}
+exports.send_GameList = send_GameList;
+
+
+/*
+Removes the game from being listed as posted on the client-side,
+and then deletes the game on the chat server.
+This takes place whether the game has been deleted, or whether
+the game has been accepted by another player.
+*/
+function remove_game( myLogger, myWebsocketConnection, users, games, in_game_id, myUIDGen ) {
+    try {
+        //If game is listed, send delisting to all connected users.
+        if( games[ in_game_id ].is_listed == true ) {
+            send_delist_game( users, in_game_id );
+        }
+
+        //Delete game server-side.
+    } catch( error_obj ) {
+        myLogger.log_error(
+            "games.js::remove_game()::catch",
+            "Failed to delete game.",
+            0,
+            myWebsocketConnection.ip,
+            error_obj
+        );
     }
+}
+exports.remove_game = remove_game;
+
+
+/*
+This is sent to all connected users to notify them that a game is no longer posted,
+whether that means the user who created it has logged out, or whether the game
+has been accepted by another player.
+*/
+function delist_game( myLogger, myWebsocketConnection, users, games, in_game_id, in_posting_user_id, send_MessageToAll ) {
+    try {
+        //Mark game as no longer listed.
+        games[ inMessage.game_id ].is_listed = false;
+
+        //Update posting user server-side info to reflect that game is delisted.
+        users[ in_posting_user_id ].has_game = false;
+        
+        //Delete game server-side and retire its ID.
+        games[ in_game_id ] = {};
+        myUIDGen.retireUID( "games", in_game_id );
+
+        //Send message to all connected users that the game is delisted.
+        send_MessageToAll(
+            users,
+            {
+                type: "chat_event",
+                event: "server_delist_game",
+                game_id: in_game_id
+            }
+        );
+    } catch( error_obj ) {
+        console.dir( error_obj );
+        myLogger.log_error(
+            "games.js::delist_game()::catch",
+            "Error delisting game.",
+            0,
+            myWebsocketConnection.ip,
+            error_obj
+        )
+    }
+}
+exports.delist_game = delist_game;
+
+
+function launch_game( myLogger, myWebsocketConnection, users, games, in_posting_user_id, in_accepting_user_id, in_game_id, send_MessageToUser ) {
+    try {
+        //Add game_id to accepting user.
+        users[ in_accepting_user_id ].game_id = in_game_id;
+
+        //Send message to both users to launch the game.
+        const message = {
+            type: "chat_event",
+            event: "server_enter_game",
+            game_id: in_game_id
+        };
+        send_MessageToUser( users, message, in_posting_user_id );
+        send_MessageToUser( users, message, in_accepting_user_id );
+    } catch( error_obj ) {
+        myLogger.log_error(
+            "games.js::launch_game()::catch",
+            "Error while launching game.",
+            0,
+            myWebsocketConnection.ip,
+            error_obj
+        )
+    }
+}
+exports.launch_game = launch_game;
   
-    //Delete game.
-    games[ in_game_id ] = {};
-    myUIDGen.retireUID( "games", in_game_id );
-  }
-  exports.remove_game = remove_game;
   
-  /*
-  This is sent to all connected users to notify them that a game is no longer available.
-  */
-  function send_delist_game( users, in_game_id, send_MessageToAll ) {
-    send_MessageToAll(
-      users,
-      {
-        type: "chat_event",
-        event: "server_delist_game",
-        game_id: in_game_id
-      }
+/*
+This is sent to all connected users to notify them that a game has been posted.
+*/
+function send_list_game( users, in_starting_user_id, in_starting_username, in_game_id, in_game_name, send_MessageToAllExcept ) {
+    send_MessageToAllExcept(
+        users,
+        {
+            type: "chat_event",
+            event: "server_list_game",
+            game_id: in_game_id,
+            starting_user: in_starting_username,
+            game_name: in_starting_username //placeholder
+        },
+        in_starting_user_id
     );
-  }
-  exports.send_delist_game = send_delist_game;
-  
-  
-  /*
-  This is sent to all connected users to notify them that a game is available.
-  */
-  function send_list_game( users, in_starting_user_id, in_starting_username, in_game_id, in_game_name, send_MessageToAllExcept ) {
-      send_MessageToAllExcept(
-      users,
-          {
-              type: "chat_event",
-              event: "server_list_game",
-              game_id: in_game_id,
-              starting_user: in_starting_username,
-              game_name: in_starting_username //placeholder
-          },
-          in_starting_user_id
-      );
-  }
-  exports.send_list_game = send_list_game;
-  
-  function send_launch_game( users, games, in_game_id, send_MessageToUser ) {
-    const message = {
-      type: "chat_event",
-      event: "server_enter_game",
-      game_id: in_game_id
-    };
-    send_MessageToUser( users, message, games[in_game_id].posting_user_id );
-    send_MessageToUser( users, message, games[in_game_id].accepting_user_id );
-  }
-  exports.send_launch_game = send_launch_game;
+}
+exports.send_list_game = send_list_game;

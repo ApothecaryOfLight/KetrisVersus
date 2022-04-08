@@ -82,12 +82,13 @@ async function log_error( source, message, severity, ip, details ) {
     await sqlPool.query( new_error_id_query );
   const new_error_id = new_error_row[0].new_id;
 
+
   const add_error_query =
     "INSERT INTO error_log " +
     "(error_id, source, message, severity, timestamp, ip, details) VALUES " +
-    "(" + new_error_id + 
-    ", \'" + source +
-    "\', \'" + await process_text( message.toString() ) + "\', " +
+    "(" + new_error_id + ", " +
+    "\'" + source + "\', " +
+    "\'" + await process_text( message.toString() ) + "\', " +
     severity + ", " +
     "\'" + timestamp_string + "\', " +
     "\'" + ip + "\', " +

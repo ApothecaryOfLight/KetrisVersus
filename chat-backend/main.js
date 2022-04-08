@@ -10,9 +10,6 @@ const mysql = require('./mysql.js');
 /*Unique ID Generator*/
 const unique_id_generator = require('./unique_id_generator');
 
-/*File system*/
-const fs = require('fs');
-
 /*Error logging*/
 const error_log = require('../admin-backend/error-logging.js');
 
@@ -48,7 +45,15 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
       username : "unlogged",
       password : "unlogged",
       isLogged : false,
-      user_id : -1
+      user_id : -1,
+      game_id : -1,
+      has_game : false
+    }
+
+    const myWebsocketConnection = {
+      myRequest: request,
+      myConnection: myConnection,
+      ip: request.socket.remoteAddress
     }
 
     myConnection.on('message', function( message ) {
@@ -63,8 +68,7 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           mySqlPool,
           inMessage.username,
           inMessage.password,
-          myConnection,
-          request,
+          myWebsocketConnection,
           myUIDGen,
           myGames.send_GameList
         );
@@ -96,7 +100,6 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
         const new_game = {
           game_name: new_user.username,
           game_id: myUIDGen.generate_uid( "games" ),
-          is_listed: true,
           posting_user_id: new_user.user_id
         }
         games[ new_game.game_id ] = new_game;
@@ -115,32 +118,30 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myChat.send_MessageToAllExcept
         );
       } else if( inMessage.event === "client_enter_game" ) {
+        //Delist the game serverside and with all the clients.
+        myGames.delist_game(
+          error_log,
+          myWebsocketConnection,
+          users,
+          games,
+          inMessage.game_id,
+          games[inMessage.game_id].posting_user_id,
+          myChat.send_MessageToAll
+        );
 
-        //If accepting user has a game posted, delist it.
-        if( users[ new_user.user_id ].has_game == true ) {
-          myGames.send_delist_game( users, users[new_user.user_id].game_id, myChat.send_MessageToAll );
-          myGames.remove_game( users, games, users[new_user.user_id].game_id, myUIDGen );
-        }
-
-        //Mark game as no longer listed.
-        games[ inMessage.game_id ].is_listed = false;
-
-        //Add second user to game
-        games[ inMessage.game_id ].accepting_user_id = new_user.user_id;
-
-        //Add game_id to both users.
-        users[ games[inMessage.game_id].accepting_user_id ].game_id = inMessage.game_id;
-
-        //Update user profile to reflect that game is delisted.
-        users[ games[inMessage.game_id].posting_user_id ].has_game = false;
-
-        //Send notice to all users that game has been delisted.
-        myGames.send_delist_game( users, inMessage.game_id, myChat.send_MessageToAll );
-
-        //Send message to both participants that Ketris should be launched.
-        myGames.send_launch_game( users, games, inMessage.game_id, myChat.send_MessageToUser );
+        //Launch the game.
+        myGames.launch_game(
+          error_log,
+          myWebsocketConnection,
+          users,
+          games,
+          games[inMessage.game_id].posting_user_id,
+          new_user.user_id,
+          inMessage.game_id,
+          myChat.send_MessageToUser
+        );
       } else if( inMessage.event === "client_completed_game" ) {
-        myGames.remove_game( users, games, inMessage.game_id, myUIDGen );
+        //myGames.remove_game( error_log, myWebsocketConnection, users, games, inMessage.game_id, myUIDGen );
       } else if( inMessage.event == "client_dev_message" ) {
         log_dev_message( mySqlPool, inMessage.author, inMessage.message, "1999-01-01 12:12:12" );
       } else if( inMessage.event == "keep_alive" ) {
@@ -155,6 +156,16 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
       }
     });
     myConnection.on( 'close', function( reasonCode, desc ) {
+      myLogger.log_event(
+        "main.js::do_attach_connection_events()",
+        "Websocket connection closed.",
+        myWebsocketConnection.ip,
+        {
+          reasonCode: reasonCode,
+          desc: desc
+        }
+      )
+
       //If user hasn't logged in yet simply return.
       if( new_user.user_id == -1 ) {
         return;
@@ -166,7 +177,15 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
 
         //Delete game.
         if( users[ new_user.user_id ].has_game == true ) {
-          myGames.remove_game( users, games, new_user.game_id, myUIDGen );
+          myGames.delist_game(
+            error_log,
+            myWebsocketConnection,
+            users,
+            games,
+            users[ new_user.user_id ].game_id,
+            users[ new_user.user_id ].user_id,
+            myChat.send_MessageToAll
+          );
         }
 
         //Retire user ID.
@@ -179,11 +198,12 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
   });
 }
 
+/*Main function. This serves as the entry-point for the program, launching the chat server and everything it needs.*/
 function main() {
   const mySqlPool = mysql.do_connect_to_sql_server();
-  const myWebserver = webserver.do_start_webserver();
+  const myWebserver = webserver.do_start_webserver( error_log );
   myWebserver.listen( 3002 );
-  const myWebsocketServer = websocket.do_start_websocket_server( myWebserver );
+  const myWebsocketServer = websocket.do_start_websocket_server( error_log, myWebserver );
   do_attach_connection_events( myWebsocketServer, mySqlPool );
 }
 

@@ -1,5 +1,37 @@
 "use strict"
 
+function object_to_text( data_object, depth ) {
+    depth = depth ?? 0;
+    if( Array.isArray(data_object) ) {
+      return "[ " + data_object + " ] ";
+    } else if( typeof( data_object ) == "object" ) {
+      let string = "{\n";
+      for( const key in data_object ) {
+        for( let i=0; i<=depth; i++ ) {
+          string += "____";
+        }
+        string += key + ": " + object_to_text( data_object[key], depth+1 ) + "\n";
+      }
+      for( let i=0; i<depth; i++ ) {
+        string += "____";
+      }
+      return string + "}";
+    } else if( typeof( data_object ) == "string" ) {
+      return "\"" + data_object + "\""
+    } else {
+        return data_object;
+    }
+  }
+
+function compose_collapsible_object( data_object ) {
+    const collapsible_row = document.createElement("tr");
+    const collapsible_container = document.createElement("td");
+    collapsible_container.className = "";
+    collapsible_container.innerText = object_to_text( data_object );
+    collapsible_row.appendChild( collapsible_container );
+    return collapsible_row;
+}
+
 function compose_error_log( error_log_obj ) {
     const error_log = document.createDocumentFragment();
     const table = document.createElement("table");
@@ -43,14 +75,23 @@ function compose_error_log( error_log_obj ) {
         error_ip.innerText = error_obj.ip;
         error_container.appendChild( error_ip );
 
+        /*if( typeof( error_obj.details ) != "undefined" ) {
+            if( typeof(error_obj.details.error) != "undefined" ) {
+                const expand_details_button = document.createElement("button");
+                expand_details_button.innerText("+");
+                
+            }
+        }*/
+
+        table_body.appendChild( error_container );
+
         if( typeof( error_obj.details ) != "undefined" ) {
             if( typeof(error_obj.details.error) != "undefined" ) {
                 const details_error = JSON.parse( reverse_process_text( error_obj.details.error ) );
-                //TODO: Append JSON object as expansible/collapsible element.
+                const details_error_container = compose_collapsible_object( details_error );
+                table_body.appendChild( details_error_container );
             }
         }
-
-        table_body.appendChild( error_container );
     }
     return error_log;
 }

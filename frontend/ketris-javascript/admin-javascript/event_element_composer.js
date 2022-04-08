@@ -24,7 +24,6 @@ function compose_event_log( event_log_obj ) {
         const event_timestamp = document.createElement("td");
         event_timestamp.className = 'event_obj_timestamp_container';
         event_timestamp.innerText = format_datetime( new Date(event_obj.timestamp) );
-        console.log( new Date(event_obj.timestamp ) );
         event_container.appendChild( event_timestamp );
 
         const event_code_source = document.createElement("td");

@@ -7,7 +7,6 @@ function pad_with_zero( inNumber ) {
   }
   
   function pad_milliseconds( inMilliseconds ) {
-    console.log( inMilliseconds );
     let outMilliseconds = "";
     if( inMilliseconds < 100 ) {
       outMilliseconds += "0";

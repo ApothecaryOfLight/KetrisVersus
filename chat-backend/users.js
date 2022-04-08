@@ -1,62 +1,93 @@
-async function do_approve_login( logger, new_user, inMessage, users, games, myConnection, myUIDGen, send_GameList ) {
+/*
+This function is called after the user's credentials have been validated.
+This adds the user to the chat server's listing of users,
+calls functions to send this new user listings of other logged in users
+and posted games, and then calls a function to send a notification to all
+other logged in users that this new user has also logged in.
+*/
+async function do_approve_login( myLogger, new_user, inMessage, users, games, myWebsocketConnection, myUIDGen, send_GameList ) {
     try {
-      new_user.username = inMessage.username;
-      new_user.password = inMessage.password;
-      new_user.user_id = myUIDGen.generate_uid( "users" );
-      new_user.has_game = false;
-      new_user.game_id = -1;
-      users[new_user.user_id] = new_user;
-      myConnection.sendUTF( "server_login_approved" );
-      send_UserList( users, myConnection );
-      send_GameList( games, myConnection );
-      send_NewUserNotification( users, new_user.user_id );
+        new_user.username = inMessage.username;
+        new_user.password = inMessage.password;
+        new_user.user_id = myUIDGen.generate_uid( "users" );
+        new_user.has_game = false;
+        new_user.game_id = -1;
+        users[new_user.user_id] = new_user;
+        myWebsocketConnection.myConnection.sendUTF( "server_login_approved" );
+        send_UserList( users, myWebsocketConnection.myConnection );
+        send_GameList( myLogger, games, myWebsocketConnection );
+        send_NewUserNotification( users, new_user.user_id );
     } catch( error_obj ) {
-      console.error( error_obj );
+        console.error( error_obj );
+        myLogger.log_error(
+            "users.js::do_approve_login()::catch",
+            "Error while approving login.",
+            myWebsocketConnection.ip,
+            error_obj
+        );
     }
-  }
-  exports.do_approve_login = do_approve_login;
-  
-  async function do_reject_login( logger, myConnection ) {
+}
+exports.do_approve_login = do_approve_login;
+
+
+/*
+Sends a message to the user that they failed to provide valid credentials.
+*/
+async function do_reject_login( logger, myWebsocketConnection ) {
     try {
-      myConnection.sendUTF( "server_login_failed" );
+        myWebsocketConnection.myConnection.sendUTF( "server_login_failed" );
     } catch( error_obj ) {
-      console.error( error_obj );
+        myLogger.log_error(
+            "users.js::do_reject_login()",
+            "Error while rejecting login.",
+            myWebsocketConnection.ip,
+            error_obj
+        );
     }
-  }
-  exports.do_reject_login = do_reject_login;
+}
+exports.do_reject_login = do_reject_login;
   
-  async function attempt_login ( logger, new_user, inMessage, users, games, mySqlPool, inUsername, inPassword, connection, request, myUIDGen, send_GameList ) {
+
+async function attempt_login ( logger, new_user, inMessage, users, games, mySqlPool, inUsername, inPassword, myWebsocketConnection, myUIDGen, send_GameList ) {
     try {
-      const [rows,fields] = await mySqlPool.query(
+        const [rows,fields] = await mySqlPool.query(
         'SELECT * FROM ketris_users ' +
         'WHERE password_hash=UNHEX(MD5(\"' + inPassword + '\")) AND ' +
         'username_hash=UNHEX(MD5(\"'+inUsername+'\"));' );
-      if( rows.length > 0 ) {
-        do_approve_login( logger, new_user, inMessage, users, games, connection, myUIDGen, send_GameList );
-        const details_obj = {
-          "username": inUsername,
-          "password": inPassword
+        if( rows.length > 0 ) {
+            do_approve_login( logger, new_user, inMessage, users, games, myWebsocketConnection, myUIDGen, send_GameList );
+            const details_obj = {
+                "username": inUsername,
+                "password": inPassword
+            }
+            logger.log_event( "attempt_login()::try", "Successful login.", myWebsocketConnection.ip, details_obj );
+        } else {
+            do_reject_login( logger, myWebsocketConnection );
+            const details_obj = {
+                "username": inUsername,
+                "password": inPassword
+            }
+            logger.log_event( "attempt_login()::try", "Failed login attempt was made.", myWebsocketConnection.ip, details_obj );
         }
-        logger.log_event( "attempt_login()::try", "Successful login.", request.socket.remoteAddress, details_obj );
-      } else {
-        do_reject_login( logger, connection );
+    } catch( error_obj ) {
+    doDeny( logger, myWebsocketConnection.myConnection );
         const details_obj = {
-          "username": inUsername,
-          "password": inPassword
+            "username": inUsername,
+            "password": inPassword,
+            "error": error_obj
         }
-        logger.log_event( "attempt_login()::try", "Failed login attempt was made.", request.socket.remoteAddress, details_obj );
-      }
-    } catch( error ) {
-      doDeny( logger, connection );
-      const details_obj = {
-        "username": inUsername,
-        "password": inPassword
-      }
-      logger.log_error( "attempt_login()::catch", "Failed login attempt was made.", 1, request.socket.remoteAddress, details_obj );
+        logger.log_error(
+            "attempt_login()::catch",
+            "Failed login attempt was made.",
+            1,
+            myWebsocketConnection.ip,
+            details_obj
+        );
     }
-  }
-  exports.attempt_login = attempt_login;
+}
+exports.attempt_login = attempt_login;
   
+
   async function attempt_create_user( logger, mySqlPool, user, pass, conn, req ) {
     try {
       const insert_query = 'INSERT INTO ketris_users ' +
@@ -88,6 +119,7 @@ async function do_approve_login( logger, new_user, inMessage, users, games, myCo
   }
   exports.attempt_create_user = attempt_create_user;
 
+
 /*
 This is sent to all users to notify them that a user has disconnected.
 */
@@ -106,6 +138,7 @@ function send_LogoutUserNotification( users, inUsername ) {
 }
 exports.send_LogoutUserNotification = send_LogoutUserNotification;
 
+
 /*
 Used to ensure that each user will have a unqiue name.
 Will be replaced with RDBM check.
@@ -120,6 +153,7 @@ function doesUsernameExist( users, in_username ) {
     return false;
   }
 exports.doesUsernameExist = doesUsernameExist;
+
 
 function send_NewUserNotification( users, in_user_id ) {
     const newUser = {
