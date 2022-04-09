@@ -8,6 +8,8 @@ function launch_ChatInterface( ws ) {
     login_interface.style.display = "none";
     chat_interface.style.display = "flex";
   
+    //attach_ws_event( ws, 'message', "ws_event_server_ping" );
+
     attach_event( 'contact_dev_button', 'click', "event_launch_contact_dev_popup" );
     attach_event( 'contact_dev_popup_exit_button', 'click', "event_close_contact_dev_popup" );
     attach_event( 'contact_dev_popup_send_button', 'click', "event_send_contact_dev_message" );

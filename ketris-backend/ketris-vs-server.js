@@ -25,7 +25,6 @@ if( process.argv[2] == "prod" ) {
   certificate = fs.readFileSync('../fullchain.pem');
   credentials = {key: privateKey, cert: certificate};
 }
-//var server = https.createServer( credentials, app );
 
 var myClients = {};
 var myButtons = [];
@@ -45,13 +44,10 @@ let db_backend;
 DB_Client.on('connect', function(connection) {
   console.log( "Connected to mySQL backend!" );
   db_backend = connection;
-  //db_backend.sendUTF( "testing" );
 });
 DB_Client.connect('ws://localhost:8989/');
 
 
-
-//var server = http.createServer( function( request, response ) {  } );
 var server;
 if( process.argv[2] == "prod" ) {
   server = https.createServer( credentials, function( req, res ) { } );
@@ -75,20 +71,21 @@ function sendToEnemy( inGameID, inMyConnection, inMessage ) {
 }
 
 wsServer.on('request', function(request) {
-  console.log(
-    (new Date()) + ' Connection from origin '
-    + request.origin + '.'
-  );
   var connection = request.accept( null, request.origin );
+
+  setInterval( () => {
+    console.log("ping");
+    connection.sendUTF(JSON.stringify({
+      type: "game_event",
+      event: "ping"
+    }));
+  },
+  29000 );
+
   let game_id = -1;
-  console.log( (new Date()) + ' Connection accepted.' );
   connection.on( 'message', function( message ) {
     var json = JSON.parse( message.utf8Data );
-    console.log( "Recieved message." );
-    console.dir( json );
     if( json.event === "client_new_shape" ) {
-      console.log( "New Shape");
-      console.log( json.Shape + "/" + json.Color );
       var out = JSON.stringify({
         type: 'game_event',
         event: 'server_new_shape',
@@ -101,7 +98,6 @@ wsServer.on('request', function(request) {
       });
       sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_movement" ) {
-      console.log( "Movement");
       var out = JSON.stringify({
         type: 'game_event',
         event: 'server_movement',
@@ -109,7 +105,6 @@ wsServer.on('request', function(request) {
       });
       sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_score" ) {
-      console.log( "Score" );
       var out = JSON.stringify({
         type: 'game_event',
         event: 'server_score',
@@ -117,7 +112,6 @@ wsServer.on('request', function(request) {
       });
       sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_collision" ) {
-      console.log( "Collision");
       var out = JSON.stringify({
         type: 'game_event',
         event: 'server_collision',
@@ -130,7 +124,6 @@ wsServer.on('request', function(request) {
       });
       sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_rotation" ) {
-      console.log( "Rotation" );
       var out = JSON.stringify({
         type: 'game_event',
         event: 'server_rotation',
@@ -138,42 +131,36 @@ wsServer.on('request', function(request) {
       });
       sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_pause" ) {
-      console.log( "pause" );
       var out = JSON.stringify({
         type: 'game_event',
         event: 'server_pause'
       });
       sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_unpause" ) {
-      console.log( "unpause" );
       var out = JSON.stringify({
         type: 'game_event',
         event: 'server_unpause'
       });
       sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_freeze" ) {
-      console.log( "freeze" );
       var out = JSON.stringify({
         type: 'game_event',
         event: 'server_freeze'
       });
       sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_unfreeze" ) {
-      console.log( "unfreeze" );
       var out = JSON.stringify({
         type: 'game_event',
         event: 'server_unfreeze'
       });
       sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_restart" ) {
-      console.log( "Restart" );
       var out = JSON.stringify({
         type:'game_event',
         event: 'server_restart'
        });
        sendToEnemy( game_id, connection, out );
     } else if( json.event === "client_end_game" ) {
-      console.log( "Endgame" );
       sendToEnemy(
         game_id,
         connection,
@@ -183,7 +170,6 @@ wsServer.on('request', function(request) {
         })
       );
     } else if( json.event === "client_visible" ) {
-      console.log( "visible" );
       sendToEnemy(
         game_id,
         connection,
@@ -193,7 +179,6 @@ wsServer.on('request', function(request) {
         })
       );
     } else if( json.event === "client_hidden" ) {
-      console.log( "hidden" );
       sendToEnemy(
         game_id,
         connection,
@@ -203,16 +188,13 @@ wsServer.on('request', function(request) {
         })
       );
     } else if( json.event === "client_start_ketris" ) {
-      console.log( "Logging a start_ketris" );
       game_id = json.game_id;
       if( !myGames[json.game_id] ) {
         myGames[json.game_id] = [];
       }
       myGames[json.game_id].push( connection );
       //TODO: Send approval packet to make sure both connections are in myGames
-      console.dir( myGames[json.game_id].length );
       if( myGames[json.game_id].length == 2 ) {
-        console.log( "Starting match." );
         myGames[json.game_id].forEach( game => {
           game.send( JSON.stringify({
             type: 'game_event',
@@ -220,6 +202,8 @@ wsServer.on('request', function(request) {
           }));
         });
       }
+    } else if( json.event === "pong" ) {
+      console.log("pong");
     }
   });
   connection.on( 'close', function( reasonCode, description ) {

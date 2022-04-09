@@ -5,7 +5,6 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
     connection.onclose = (event) => {
         console.log( "Websocket connection closed!" );
         console.dir( event );
-        clearInterval( myWebsocket.keepAlive );
 
         document.removeEventListener("visibilitychange", on_visibility_change);
     }
@@ -16,13 +15,6 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
             event: "client_start_ketris",
             game_id: inGameID
         }));
-
-        myWebsocket.keepAlive = setInterval(
-            () => {
-                doSendKeepAlive();
-            },
-            49000
-        );
 
         document.addEventListener("visibilitychange", on_visibility_change);
     }
@@ -43,7 +35,13 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
     }
     //console.dir( inPacket );
     if( inPacket.type === 'game_event' ) {
-        if( inPacket.event === 'server_end_game' ) {
+        if( inPacket.event === "ping" ) {
+            console.log("ping");
+            connection.send( JSON.stringify({
+                type: "game_event",
+                event: "pong"
+            }));
+        } else if( inPacket.event === 'server_end_game' ) {
             //console.log( "Ending game packet recieved." );
             myGameState.GameOver = true;
             myGameState.GlobalPlay = false;
@@ -109,7 +107,6 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
             game_interface.style.display = "none";
             chat_interface.style.display = "flex";
             document.removeEventListener( 'visibilitychange', on_visibility_change );
-            clearInterval( myWebsocket.keepAlive );
             connection.close();
             return;
         }

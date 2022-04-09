@@ -1,4 +1,6 @@
 function reverse_process_text( inText ) {
+  console.log( typeof( inText ) );
+  console.log( inText );
     let processed_text = inText.replace(
       /&#39;/g,
       "\'"

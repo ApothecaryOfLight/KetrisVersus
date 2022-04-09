@@ -53,8 +53,15 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
     const myWebsocketConnection = {
       myRequest: request,
       myConnection: myConnection,
-      ip: request.socket.remoteAddress
-    }
+      ip: request.socket.remoteAddress,
+      ping: setInterval( () => {
+        myConnection.sendUTF(JSON.stringify({
+          type: "server_event",
+          event: "ping"
+        }));
+      },
+      290000 )
+    };
 
     myConnection.on('message', function( message ) {
       const inMessage = JSON.parse( message.utf8Data );
@@ -141,22 +148,17 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myChat.send_MessageToUser
         );
       } else if( inMessage.event === "client_completed_game" ) {
-        //myGames.remove_game( error_log, myWebsocketConnection, users, games, inMessage.game_id, myUIDGen );
       } else if( inMessage.event == "client_dev_message" ) {
         log_dev_message( mySqlPool, inMessage.author, inMessage.message, "1999-01-01 12:12:12" );
-      } else if( inMessage.event == "keep_alive" ) {
-        const kept_alive = {
-          type: "chat_event",
-          event: "kept_alive"
-        }
-        myConnection.sendUTF( JSON.stringify(kept_alive) );
+      } else if( inMessage.event == "pong" ) {
       } else {
         console.log( "Unrecognized object!" );
         console.dir( inMessage );
       }
     });
     myConnection.on( 'close', function( reasonCode, desc ) {
-      myLogger.log_event(
+      console.log("connection close.");
+      error_log.log_event(
         "main.js::do_attach_connection_events()",
         "Websocket connection closed.",
         myWebsocketConnection.ip,
@@ -164,7 +166,7 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           reasonCode: reasonCode,
           desc: desc
         }
-      )
+      );
 
       //If user hasn't logged in yet simply return.
       if( new_user.user_id == -1 ) {

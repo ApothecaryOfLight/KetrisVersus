@@ -7,10 +7,6 @@ const myDOMHandles = {
     myEnemyScoreCanvas : null
   }
 
-const myWebsocket = {
-  keepAlive: null
-}
-
   const myGameState = {
     GlobalPlay: false,
     Paused: false,

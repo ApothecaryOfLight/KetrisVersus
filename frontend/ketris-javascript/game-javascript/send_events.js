@@ -63,10 +63,3 @@ function doSendMovementLeft() {
     });
     connection.send( newElementOut );
   }
-
-  function doSendKeepAlive() {
-    connection.send( JSON.stringify({
-      type: "connection",
-      event: "keep_alive"
-    }))
-  }

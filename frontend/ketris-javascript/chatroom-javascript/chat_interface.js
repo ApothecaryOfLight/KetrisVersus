@@ -1,5 +1,15 @@
 'use strict';
 
+/*function ws_event_server_ping( event ) {
+  const inMessage = JSON.parse( event.data );
+  if( inMessage.event === "ping" ) {
+    const pong_message = JSON.stringify({
+      event: "pong"
+    });
+
+  }
+}*/
+
 /*
 Chat Interface
 */

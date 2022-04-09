@@ -11,8 +11,6 @@ function build_event_listener_dictionary( ws ) {
     ws_event_websocket_opened.bind( ws );
   event_listener_dictionary["ws_event_websocket_closed"] =
     ws_event_websocket_closed.bind( ws );
-  event_listener_dictionary["event_kept_alive"] =
-    ws_event_kept_alive.bind( ws );
 
   /* Login events */
   event_listener_dictionary["event_login_click"] =
@@ -25,6 +23,9 @@ function build_event_listener_dictionary( ws ) {
     ws_event_server_login_failure.bind( ws );
   event_listener_dictionary["ws_event_server_account_creation_failure"] =
     ws_event_server_account_creation_failure.bind( ws );
+
+
+  //event_listener_dictionary["ws_event_server_ping"] = ws_event_server_ping.bind( ws );
 
   /* Chat events */
   event_listener_dictionary["ws_event_server_enter_game"] = ws_event_server_enter_game.bind( ws );
