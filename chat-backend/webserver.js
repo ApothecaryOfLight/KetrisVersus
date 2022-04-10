@@ -8,8 +8,6 @@ const filesystem = require('fs');
 function do_start_webserver( myLogger ) {
     try {
         if( process.argv[2] == "https" ) {
-            conosle.log( "Starting https server." );
-            https = require('https');
             const privateKey = filesystem.readFileSync('../privkey.pem');
             const certificate = filesystem.readFileSync('../fullchain.pem');
             const credentials = {key: privateKey, cert: certificate};
@@ -21,7 +19,6 @@ function do_start_webserver( myLogger ) {
                 }
             );
         } else if( process.argv[2] == "http" ) {
-            conosle.log( "Starting http server." );
             return http.createServer( function(request,response) {
                 response.writeHead( 404 );
                 response.end();
@@ -30,6 +27,7 @@ function do_start_webserver( myLogger ) {
             console.log( "Incorrect command line invokation. Specify http or https.");
             process.exit();
         }
+        console.log("done");
     } catch( error_obj ) {
         myLogger.log_error(
             "webserver.js::do_start_webserver()::catch",
