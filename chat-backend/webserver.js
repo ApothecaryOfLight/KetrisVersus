@@ -8,6 +8,7 @@ const filesystem = require('fs');
 function do_start_webserver( myLogger ) {
     try {
         if( process.argv[2] == "https" ) {
+            conosle.log( "Starting https server." );
             https = require('https');
             const privateKey = filesystem.readFileSync('../privkey.pem');
             const certificate = filesystem.readFileSync('../fullchain.pem');
@@ -20,6 +21,7 @@ function do_start_webserver( myLogger ) {
                 }
             );
         } else if( process.argv[2] == "http" ) {
+            conosle.log( "Starting http server." );
             return http.createServer( function(request,response) {
                 response.writeHead( 404 );
                 response.end();
