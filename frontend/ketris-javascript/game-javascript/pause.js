@@ -84,7 +84,7 @@ function doReceivePause() {
       doSendPause();
     } else if( document.visibilityState == "visible" ) {
       myAnimationValues.AnimationFrameHandle =
-        window.requestAnimationFrame( doManageDrawing);
+        window.requestAnimationFrame( doManageDrawing, myAnimationValues.AnimationFrameHandle );
       doSendVisible();
       doUnpause();
       doSendUnpause();

@@ -23,7 +23,9 @@ function send_chat_message( ws, inMessage ) {
   }
   
   function ws_event_server_enter_game( event ) {
+    console.log( "Server enter game.")
     const inMessage = JSON.parse( event.data );
+    console.dir( inMessage );
     if( inMessage.event === "server_enter_game" ) {
       console.log( "ws_event_server_enter_game" );
       launchGameInterface( ip, inMessage.game_id );

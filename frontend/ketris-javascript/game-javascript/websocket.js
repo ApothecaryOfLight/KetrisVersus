@@ -36,17 +36,17 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
     //console.dir( inPacket );
     if( inPacket.type === 'game_event' ) {
         if( inPacket.event === "ping" ) {
-            console.log("ping");
             connection.send( JSON.stringify({
                 type: "game_event",
                 event: "pong"
             }));
         } else if( inPacket.event === 'server_end_game' ) {
-            //console.log( "Ending game packet recieved." );
+            console.log( "Ending game packet recieved." );
             myGameState.GameOver = true;
             myGameState.GlobalPlay = false;
             doComposeMenu( 10, 3, 0 );
             DrawMenu = true;
+            cancelAnimationFrame( myAnimationValues.AnimationFrameHandle );
         } else if( inPacket.event === 'server_commence_gameplay' ) {
             doLaunchKetrisGameplayer();
             if( document.visibilityState == "hidden" ) {

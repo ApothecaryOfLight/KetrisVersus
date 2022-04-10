@@ -63,10 +63,10 @@ This is sent to all connected users to notify them that a game is no longer post
 whether that means the user who created it has logged out, or whether the game
 has been accepted by another player.
 */
-function delist_game( myLogger, myWebsocketConnection, users, games, in_game_id, in_posting_user_id, send_MessageToAll ) {
+function delist_game( myLogger, myWebsocketConnection, users, games, in_game_id, in_posting_user_id, myUIDGen, send_MessageToAll ) {
     try {
         //Mark game as no longer listed.
-        games[ inMessage.game_id ].is_listed = false;
+        games[ in_game_id ].is_listed = false;
 
         //Update posting user server-side info to reflect that game is delisted.
         users[ in_posting_user_id ].has_game = false;
@@ -109,6 +109,9 @@ function launch_game( myLogger, myWebsocketConnection, users, games, in_posting_
             event: "server_enter_game",
             game_id: in_game_id
         };
+        console.dir( message );
+        console.log(in_posting_user_id);
+        console.log(in_accepting_user_id);
         send_MessageToUser( users, message, in_posting_user_id );
         send_MessageToUser( users, message, in_accepting_user_id );
     } catch( error_obj ) {

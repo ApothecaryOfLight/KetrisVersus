@@ -125,14 +125,17 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myChat.send_MessageToAllExcept
         );
       } else if( inMessage.event === "client_enter_game" ) {
+        console.log( "Delisting game." );
         //Delist the game serverside and with all the clients.
+        const posting_user_id = games[inMessage.game_id].posting_user_id;
         myGames.delist_game(
           error_log,
           myWebsocketConnection,
           users,
           games,
           inMessage.game_id,
-          games[inMessage.game_id].posting_user_id,
+          posting_user_id,
+          myUIDGen,
           myChat.send_MessageToAll
         );
 
@@ -142,7 +145,7 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myWebsocketConnection,
           users,
           games,
-          games[inMessage.game_id].posting_user_id,
+          posting_user_id,
           new_user.user_id,
           inMessage.game_id,
           myChat.send_MessageToUser
@@ -175,10 +178,14 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
 
       //Send notice to all users that this user has disconencted.
       if( users[ new_user.user_id ].username != "unlogged" ) {
-        myUsers.send_LogoutUserNotification( users, users[ new_user.user_id ].username );
+        myUsers.send_LogoutUserNotification(
+          users,
+          users[ new_user.user_id ].username
+        );
 
         //Delete game.
         if( users[ new_user.user_id ].has_game == true ) {
+          console.log( "Desliting game " + users[new_user.user_id].game_id );
           myGames.delist_game(
             error_log,
             myWebsocketConnection,
@@ -186,6 +193,7 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
             games,
             users[ new_user.user_id ].game_id,
             users[ new_user.user_id ].user_id,
+            myUIDGen,
             myChat.send_MessageToAll
           );
         }

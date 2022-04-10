@@ -11,6 +11,7 @@ class AvailGames extends React.Component {
       let parent = this;
       this.state.websocket.addEventListener('message', function(event) {
         const inMessage = JSON.parse( event.data );
+        console.dir( inMessage );
         if( inMessage.event === "server_list_game" ) {
           console.log( "server_list_game event!" );
           parent.state.inGames.push({

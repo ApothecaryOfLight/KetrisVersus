@@ -1,5 +1,6 @@
 function doLaunchKetrisGameplayer() {
     console.log( "Launching Ketris Gameplayer." );
+    format_globals();
     let playCanvasWidth = 313;
     if( isMobile == false ) {
       playCanvasWidth = 313*2;
