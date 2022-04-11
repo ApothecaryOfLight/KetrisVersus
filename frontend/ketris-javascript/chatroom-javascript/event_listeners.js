@@ -37,7 +37,6 @@ function build_event_listener_dictionary( ws ) {
 }
 
 function attach_event( DOM_ID, event, function_name ) {
-  console.log( "Attaching to object " + DOM_ID + " on " + event + " with " + function_name );
   try {
     if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
     if( event === "undefined" ) { throw "Event undefined!"; }
@@ -50,7 +49,6 @@ function attach_event( DOM_ID, event, function_name ) {
 }
 
 function detach_event( DOM_ID, event, function_name ) {
-  console.log( "Detaching from object " + DOM_ID + " on " + event + " with " + function_name );
   try {
     if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
     if( event === "undefined" ) { throw "Event undefined!"; }
@@ -63,10 +61,6 @@ function detach_event( DOM_ID, event, function_name ) {
 }
 
 function attach_key_event( DOM_ID, event, key, function_name ) {
-  console.log(
-    "Attaching keypress to object " + DOM_ID + " on " +
-    event + " key " + key + " with " + function_name
-  );
   try {
     if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
     if( event === "undefined" ) { throw "Event undefined!"; }
@@ -80,10 +74,6 @@ function attach_key_event( DOM_ID, event, key, function_name ) {
 }
 
 function detach_key_event( DOM_ID, event, key, function_name ) {
-  console.log(
-    "Detaching keypress from object " + DOM_ID + " on " +
-    event + " key " + key + " with " + function_name
-  );
   try {
     if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
     if( event === "undefined" ) { throw "Event undefined!"; }
@@ -97,7 +87,6 @@ function detach_key_event( DOM_ID, event, key, function_name ) {
 }
 
 function attach_ws_event( ws, event, function_name ) {
-  console.log( "Attaching to websocket event on " + event + " with " + function_name );
   try {
     if( ws === "undefined" ) { throw "Websocket undefined!"; }
     if( event === "undefined" ) { throw "Event undefined!"; }
@@ -109,7 +98,6 @@ function attach_ws_event( ws, event, function_name ) {
 }
 
 function detach_ws_event( ws, event, function_name ) {
-  console.log( "Detaching from websocket event on " + event + " with " + function_name );
   try {
     if( ws === "undefined" ) { throw "Websocket undefined!"; }
     if( event === "undefined" ) { throw "Event undefined!"; }

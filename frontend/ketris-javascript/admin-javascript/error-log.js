@@ -1,6 +1,4 @@
 function reverse_process_text( inText ) {
-  console.log( typeof( inText ) );
-  console.log( inText );
     let processed_text = inText.replace(
       /&#39;/g,
       "\'"
@@ -28,7 +26,6 @@ function get_error_log() {
     fetch( get_error_log_request )
     .then( json => json.json() )
     .then( json => {
-      console.dir( json );
         const error_log_container = document.getElementById("error-log-container");
         error_log_container.appendChild( compose_error_log( json.error_log ) );
     });

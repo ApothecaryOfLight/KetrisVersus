@@ -30,7 +30,7 @@ function attach_connection_events( myWebsocketServer ) {
         event: "ping"
       }));
     },
-    290000 );
+    2900 );
 
     let game_id = -1;
     connection.on( 'message', function( message ) {

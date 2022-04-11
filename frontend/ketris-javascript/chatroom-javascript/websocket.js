@@ -3,7 +3,7 @@
 var ws;
 
 function ws_event_websocket_opened( event ) {
-  console.log( "Websocket opened!" );
+  console.log( "Websocket opened @ " + new Date().toString() + "!" );
   event.srcElement.removeEventListener( 'click', event_listener_dictionary["event_websocket_opened"] );
 
   ws.send( JSON.stringify({
@@ -25,7 +25,7 @@ function ws_event_websocket_opened( event ) {
 }
 
 function ws_event_websocket_closed( event ) {
-  console.log( "Websocket closed!" );
+  console.log( "Websocket closed @ " + new Date().toString() + "!" );
   console.dir( event );
   
   const options = {

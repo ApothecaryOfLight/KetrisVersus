@@ -60,7 +60,7 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           event: "ping"
         }));
       },
-      290000 )
+      2900 )
     };
 
     myConnection.on('message', function( message ) {

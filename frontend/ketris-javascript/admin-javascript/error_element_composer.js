@@ -25,11 +25,24 @@ function object_to_text( data_object, depth ) {
 
 function compose_collapsible_object( data_object ) {
     const collapsible_row = document.createElement("tr");
-    const collapsible_container = document.createElement("td");
-    collapsible_container.className = "";
+    const collapsible_column = document.createElement("td");
+    const collapsible_container = document.createElement("div");
+
+    collapsible_container.className = "log_details_container";
     collapsible_container.innerText = object_to_text( data_object );
-    collapsible_row.appendChild( collapsible_container );
+
+    collapsible_column.appendChild( collapsible_container );
+    collapsible_row.appendChild( collapsible_column );
+
     return collapsible_row;
+}
+
+function compose_show_details_button( button_placement_location ) {
+
+}
+
+function compose_hide_details_button( button_placement_location ) {
+
 }
 
 function compose_error_log( error_log_obj ) {
@@ -75,13 +88,19 @@ function compose_error_log( error_log_obj ) {
         error_ip.innerText = error_obj.ip;
         error_container.appendChild( error_ip );
 
-        /*if( typeof( error_obj.details ) != "undefined" ) {
+        const error_details_button_row = document.createElement("td");
+        if( typeof( error_obj.details ) != "undefined" ) {
             if( typeof(error_obj.details.error) != "undefined" ) {
-                const expand_details_button = document.createElement("button");
-                expand_details_button.innerText("+");
-                
+              const expand_details_button = document.createElement("button");
+              expand_details_button.innerText = "+";
+              expand_details_button.addEventListener( 'click', (event) => {
+                //console.dir( event.path[2] );
+                const details_object_reference = event.path[2].nextSibling.children[0].children[0].classList = "";
+              });
+              error_details_button_row.appendChild( expand_details_button );
             }
-        }*/
+        }
+        error_container.appendChild( error_details_button_row );
 
         table_body.appendChild( error_container );
 
@@ -89,6 +108,7 @@ function compose_error_log( error_log_obj ) {
             if( typeof(error_obj.details.error) != "undefined" ) {
                 const details_error = JSON.parse( reverse_process_text( error_obj.details.error ) );
                 const details_error_container = compose_collapsible_object( details_error );
+                details_error_container.className = "";
                 table_body.appendChild( details_error_container );
             }
         }
