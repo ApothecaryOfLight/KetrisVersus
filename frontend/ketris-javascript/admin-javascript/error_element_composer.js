@@ -34,7 +34,10 @@ function compose_collapsible_object( data_object ) {
     collapsible_column.appendChild( collapsible_container );
     collapsible_row.appendChild( collapsible_column );
 
-    return collapsible_row;
+    return {
+      whole_object: collapsible_row,
+      log_details_conatiner: collapsible_container
+    };
 }
 
 function compose_show_details_button( details_error_container ) {
@@ -103,9 +106,12 @@ function compose_error_log( error_log_obj ) {
         const error_details_button_row = document.createElement("td");
         if( typeof( error_obj.details ) != "undefined" && typeof(error_obj.details.error) != "undefined" ) {
           const details_error = JSON.parse( reverse_process_text( error_obj.details.error ) );
-          const details_error_container = compose_collapsible_object( details_error );
+
+          const collapsible_object = compose_collapsible_object( details_error );
+
+          const details_error_container = collapsible_object.whole_object;
           details_error_container.className = "";
-          error_details_button_row.appendChild( compose_show_details_button(details_error_container.firstChild.firstChild) );
+          error_details_button_row.appendChild( compose_show_details_button(collapsible_object.log_details_conatiner) );
           error_container.appendChild( error_details_button_row );
           table_body.appendChild( error_container );
           table_body.appendChild( details_error_container );
