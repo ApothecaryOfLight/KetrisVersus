@@ -38,9 +38,9 @@ function build_event_listener_dictionary( ws ) {
 
 function attach_event( DOM_ID, event, function_name ) {
   try {
-    if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
-    if( event === "undefined" ) { throw "Event undefined!"; }
-    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    if( typeof(DOM_ID) === "undefined" ) { throw "DOM Element undefined!"; }
+    if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
+    if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
     let dom_element_handle = document.getElementById( DOM_ID );
     dom_element_handle.addEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
@@ -50,9 +50,9 @@ function attach_event( DOM_ID, event, function_name ) {
 
 function detach_event( DOM_ID, event, function_name ) {
   try {
-    if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
-    if( event === "undefined" ) { throw "Event undefined!"; }
-    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    if( typeof(DOM_ID) === "undefined" ) { throw "DOM Element undefined!"; }
+    if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
+    if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
     let dom_element_handle = document.getElementById( DOM_ID );
     dom_element_handle.removeEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
@@ -62,10 +62,10 @@ function detach_event( DOM_ID, event, function_name ) {
 
 function attach_key_event( DOM_ID, event, key, function_name ) {
   try {
-    if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
-    if( event === "undefined" ) { throw "Event undefined!"; }
-    if( function_name === "undefined" ) { throw "Function undefined!"; }
-    if( key === "undefined" ) { throw "Key undefined!"; }
+    if( typeof(DOM_ID) === "undefined" ) { throw "DOM Element undefined!"; }
+    if( typeof(even)t === "undefined" ) { throw "Event undefined!"; }
+    if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
+    if( typeof(key) === "undefined" ) { throw "Key undefined!"; }
     let dom_element_handle = document.getElementById( DOM_ID );
     dom_element_handle.addEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
@@ -75,10 +75,10 @@ function attach_key_event( DOM_ID, event, key, function_name ) {
 
 function detach_key_event( DOM_ID, event, key, function_name ) {
   try {
-    if( DOM_ID === "undefined" ) { throw "DOM Element undefined!"; }
-    if( event === "undefined" ) { throw "Event undefined!"; }
-    if( function_name === "undefined" ) { throw "Function undefined!"; }
-    if( key === "undefined" ) { throw "Key undefined!"; }
+    if( typeof(DOM_ID) === "undefined" ) { throw "DOM Element undefined!"; }
+    if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
+    if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
+    if( typeof(key) === "undefined" ) { throw "Key undefined!"; }
     let dom_element_handle = document.getElementById( DOM_ID );
     dom_element_handle.removeEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
@@ -88,9 +88,9 @@ function detach_key_event( DOM_ID, event, key, function_name ) {
 
 function attach_ws_event( ws, event, function_name ) {
   try {
-    if( ws === "undefined" ) { throw "Websocket undefined!"; }
-    if( event === "undefined" ) { throw "Event undefined!"; }
-    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    if( typeof(ws) === "undefined" ) { throw "Websocket undefined!"; }
+    if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
+    if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
     ws.addEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
     console.error( error );
@@ -99,9 +99,9 @@ function attach_ws_event( ws, event, function_name ) {
 
 function detach_ws_event( ws, event, function_name ) {
   try {
-    if( ws === "undefined" ) { throw "Websocket undefined!"; }
-    if( event === "undefined" ) { throw "Event undefined!"; }
-    if( function_name === "undefined" ) { throw "Function undefined!"; }
+    if( typeof(ws) === "undefined" ) { throw "Websocket undefined!"; }
+    if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
+    if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
     ws.removeEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
     console.error( error );
