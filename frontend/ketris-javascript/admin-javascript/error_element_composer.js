@@ -41,7 +41,8 @@ function compose_show_details_button( button_placement_location ) {
   const expand_details_button = document.createElement("button");
   expand_details_button.innerText = "+";
   expand_details_button.addEventListener( 'click', (event) => {
-    button_placement_location.parentElement.nextSibling.firstChild.firstChild.classList = "";
+    button_placement_location.parentElement.nextSibling.firstChild.firstChild.style["max-height"] =
+      button_placement_location.parentElement.nextSibling.firstChild.firstChild.scrollHeight + "px";
     console.dir( event );
     event.srcElement.replaceWith( compose_hide_details_button(button_placement_location) );
   });
@@ -49,13 +50,13 @@ function compose_show_details_button( button_placement_location ) {
 }
 
 function compose_hide_details_button( button_placement_location ) {
-  const expand_details_button = document.createElement("button");
-  expand_details_button.innerText = "-";
-  expand_details_button.addEventListener( 'click', (event) => {
-    button_placement_location.parentElement.nextSibling.firstChild.firstChild.classList = "log_details_container";
+  const collapse_details_button = document.createElement("button");
+  collapse_details_button.innerText = "-";
+  collapse_details_button.addEventListener( 'click', (event) => {
+    button_placement_location.parentElement.nextSibling.firstChild.firstChild.style["max-height"] = 0;
     event.srcElement.replaceWith( compose_show_details_button(button_placement_location) );
   });
-  return expand_details_button;
+  return collapse_details_button;
 }
 
 function compose_error_log( error_log_obj ) {
