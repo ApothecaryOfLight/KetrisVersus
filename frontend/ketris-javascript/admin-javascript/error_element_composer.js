@@ -25,7 +25,10 @@ function object_to_text( data_object, depth ) {
 
 function compose_collapsible_object( data_object ) {
     const collapsible_row = document.createElement("tr");
+    collapsible_row.className = "log_details_row";
+    collapsible_row.style["display"] = "none";
     const collapsible_column = document.createElement("td");
+    collapsible_column.colSpan = 3;
     const collapsible_container = document.createElement("div");
 
     collapsible_container.className = "log_details_container";
@@ -44,16 +47,28 @@ function compose_show_details_button( details_error_container ) {
   const expand_details_button = document.createElement("button");
   expand_details_button.innerText = "+";
   expand_details_button.addEventListener( 'click', (event) => {
+    details_error_container.parentElement.parentElement.style["display"] = "table-row";
     details_error_container.style["max-height"] = details_error_container.scrollHeight + "px";
     event.srcElement.replaceWith( compose_hide_details_button(details_error_container) );
   });
   return expand_details_button;
 }
 
+function end_transition( details_error_container ) {
+  details_error_container.parentElement.parentElement.style["display"] = "none";
+}
+
+function remove_end_transition_event( details_error_container, func_ref ) {
+  details_error_container.removeEventListener( "transitionend", func_ref );
+}
+
 function compose_hide_details_button( details_error_container ) {
   const collapse_details_button = document.createElement("button");
   collapse_details_button.innerText = "-";
   collapse_details_button.addEventListener( 'click', (event) => {
+    const func_ref = end_transition.bind( null, details_error_container );
+    details_error_container.addEventListener("transitionend", func_ref );
+    details_error_container.addEventListener("transitionend", remove_end_transition_event.bind( null, details_error_container, func_ref ) );
     details_error_container.style["max-height"] = 0;
     event.srcElement.replaceWith( compose_show_details_button(details_error_container) );
   });
@@ -63,6 +78,7 @@ function compose_hide_details_button( details_error_container ) {
 function compose_error_log( error_log_obj ) {
     const error_log = document.createDocumentFragment();
     const table = document.createElement("table");
+    table.className = 'table_body';
     error_log.appendChild(table);
 
     const table_title = document.createElement("thread");
@@ -81,25 +97,25 @@ function compose_error_log( error_log_obj ) {
         const error_obj = error_log_obj[error_key];
 
         const error_container = document.createElement("tr");
-        error_container.className = 'error_obj_container';
+        error_container.className = "table_row";
 
         const error_timestamp = document.createElement("td");
-        error_timestamp.className = 'error_obj_timestamp_container';
+        error_timestamp.className = 'table_cell';
         error_timestamp.innerText = error_obj.timestamp;
         error_container.appendChild( error_timestamp );
 
         const error_source = document.createElement("td");
-        error_source.className = 'error_obj_source_container';
+        error_source.className = 'table_cell';
         error_source.innerText = error_obj.source;
         error_container.appendChild( error_source );
 
         const error_message = document.createElement("td");
-        error_message.className = 'error_obj_message_container';
+        error_message.className = 'table_cell';
         error_message.innerText = error_obj.message;
         error_container.appendChild( error_message );
 
         const error_ip = document.createElement("td");
-        error_ip.className = 'error_obj_ip_container';
+        error_ip.className = 'table_cell';
         error_ip.innerText = error_obj.ip;
         error_container.appendChild( error_ip );
 

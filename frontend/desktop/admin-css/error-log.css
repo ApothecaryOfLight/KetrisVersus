@@ -10,7 +10,7 @@
 
 
 .error_obj_container {
-    border: solid .5rem black;
+    border: solid 1px black;
 }
 .error_obj {
 
@@ -51,8 +51,28 @@
 
 }
 
+.log_details_row {
+    column-count: 4;
+    display: none;
+}
+
 .log_details_container {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
+    width: 100%;
+}
+
+.table_body {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table_cell {
+    border: 1px solid black;
+}
+
+.table_row {
+    height: min-content important!;
 }
