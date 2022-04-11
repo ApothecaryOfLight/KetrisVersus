@@ -56,21 +56,17 @@ function compose_show_details_button( details_error_container ) {
 
 function end_transition( details_error_container ) {
   details_error_container.parentElement.parentElement.style["display"] = "none";
-}
-
-function remove_end_transition_event( details_error_container, func_ref ) {
-  details_error_container.removeEventListener( "transitionend", func_ref );
+  const clone_node = details_error_container.cloneNode(true);
+  details_error_container.replaceWith( clone_node );
+  this.replaceWith( compose_show_details_button(clone_node) );
 }
 
 function compose_hide_details_button( details_error_container ) {
   const collapse_details_button = document.createElement("button");
   collapse_details_button.innerText = "-";
   collapse_details_button.addEventListener( 'click', (event) => {
-    const func_ref = end_transition.bind( null, details_error_container );
-    details_error_container.addEventListener("transitionend", func_ref );
-    details_error_container.addEventListener("transitionend", remove_end_transition_event.bind( null, details_error_container, func_ref ) );
+    details_error_container.addEventListener("transitionend", end_transition.bind( collapse_details_button, details_error_container ) );
     details_error_container.style["max-height"] = 0;
-    event.srcElement.replaceWith( compose_show_details_button(details_error_container) );
   });
   return collapse_details_button;
 }
