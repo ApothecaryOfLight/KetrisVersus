@@ -1,5 +1,3 @@
-
-
 function compose_event_log( event_log_obj ) {
     const event_log = document.createDocumentFragment();
     const table = document.createElement("table");
@@ -43,24 +41,22 @@ function compose_event_log( event_log_obj ) {
         event_ip.innerText = event_obj.ip;
         event_container.appendChild( event_ip );
 
-        /*if( typeof( event_obj.details ) != "undefined" ) {
-            if( typeof(event_obj.details.event) != "undefined" ) {
-                const details_event = JSON.parse( reverse_process_text( event_obj.details.event ) );
-                //TODO: Append JSON object as expansible/collapsible element.
-            }
-        }*/
-
-        table_body.appendChild( event_container );
-
+        const event_details_button_row = document.createElement("td");
         if( typeof( event_obj.details ) != "undefined" && event_obj.details != null ) {
-            if( typeof( event_obj.details ) == "string" ) {
-                const details = JSON.parse( reverse_process_text( event_obj.details ) );
-                const details_container = compose_collapsible_object( details );
-                table_body.appendChild( details_container );
-            } else {
-                const details_container = compose_collapsible_object( event_obj.details );
-                table_body.appendChild( details_container );
-            }
+          console.dir( event_obj );
+          const details_event = JSON.parse( reverse_process_text( JSON.stringify(event_obj.details) ) );
+
+          const collapsible_object = compose_collapsible_object( details_event );
+
+          const details_event_container = collapsible_object.whole_object;
+          details_event_container.className = "";
+          event_details_button_row.appendChild( compose_show_details_button(collapsible_object.log_details_conatiner) );
+          event_container.appendChild( event_details_button_row );
+          table_body.appendChild( event_container );
+          table_body.appendChild( details_event_container );
+        } else {
+          event_container.appendChild( event_details_button_row );
+          table_body.appendChild( event_container );
         }
     }
     return event_log;
