@@ -1,54 +1,9 @@
-#error_log_container {
-    width: 80vw;
-    border: solid 1rem black;
+#error-log-container {
+    display: none;
 }
 
-.error_log_container_entry {
-    width: 90%;
-    border: thick double blue;
-}
-
-
-.error_obj_container {
-    border: solid 1px black;
-}
-.error_obj {
-
-}
-
-.error_obj_ip_container {
-    border: solid 1px black;
-}
-.error_obj_ip {
-
-}
-
-.error_obj_message_container {
-    border: solid 1px black;
-}
-.error_obj_message {
-
-}
-
-.error_obj_severity_container {
-    border: solid 1px black;
-}
-.error_obj_severity {
-
-}
-
-.error_obj_source_container {
-    border: solid 1px black;
-}
-.error_obj_source {
-
-}
-
-.error_obj_timestamp_container {
-    border: solid 1px black;
-}
-.error_obj_timestamp {
-
+#event-log-container {
+    display: none;
 }
 
 .log_details_row {
