@@ -37,24 +37,22 @@ function compose_collapsible_object( data_object ) {
     return collapsible_row;
 }
 
-function compose_show_details_button( button_placement_location ) {
+function compose_show_details_button( details_error_container ) {
   const expand_details_button = document.createElement("button");
   expand_details_button.innerText = "+";
   expand_details_button.addEventListener( 'click', (event) => {
-    button_placement_location.parentElement.nextSibling.firstChild.firstChild.style["max-height"] =
-      button_placement_location.parentElement.nextSibling.firstChild.firstChild.scrollHeight + "px";
-    console.dir( event );
-    event.srcElement.replaceWith( compose_hide_details_button(button_placement_location) );
+    details_error_container.style["max-height"] = details_error_container.scrollHeight + "px";
+    event.srcElement.replaceWith( compose_hide_details_button(details_error_container) );
   });
   return expand_details_button;
 }
 
-function compose_hide_details_button( button_placement_location ) {
+function compose_hide_details_button( details_error_container ) {
   const collapse_details_button = document.createElement("button");
   collapse_details_button.innerText = "-";
   collapse_details_button.addEventListener( 'click', (event) => {
-    button_placement_location.parentElement.nextSibling.firstChild.firstChild.style["max-height"] = 0;
-    event.srcElement.replaceWith( compose_show_details_button(button_placement_location) );
+    details_error_container.style["max-height"] = 0;
+    event.srcElement.replaceWith( compose_show_details_button(details_error_container) );
   });
   return collapse_details_button;
 }
@@ -103,26 +101,18 @@ function compose_error_log( error_log_obj ) {
         error_container.appendChild( error_ip );
 
         const error_details_button_row = document.createElement("td");
-        if( typeof( error_obj.details ) != "undefined" ) {
-            if( typeof(error_obj.details.error) != "undefined" ) {
-              
-
-              error_details_button_row.appendChild( compose_show_details_button(error_details_button_row) );
-            }
+        if( typeof( error_obj.details ) != "undefined" && typeof(error_obj.details.error) != "undefined" ) {
+          const details_error = JSON.parse( reverse_process_text( error_obj.details.error ) );
+          const details_error_container = compose_collapsible_object( details_error );
+          details_error_container.className = "";
+          error_details_button_row.appendChild( compose_show_details_button(details_error_container.firstChild.firstChild) );
+          error_container.appendChild( error_details_button_row );
+          table_body.appendChild( error_container );
+          table_body.appendChild( details_error_container );
+        } else {
+          error_container.appendChild( error_details_button_row );
+          table_body.appendChild( error_container );
         }
-        error_container.appendChild( error_details_button_row );
-
-        table_body.appendChild( error_container );
-
-        if( typeof( error_obj.details ) != "undefined" ) {
-            if( typeof(error_obj.details.error) != "undefined" ) {
-                const details_error = JSON.parse( reverse_process_text( error_obj.details.error ) );
-                const details_error_container = compose_collapsible_object( details_error );
-                details_error_container.className = "";
-                table_body.appendChild( details_error_container );
-            }
-        }
-              
     }
     return error_log;
 }
