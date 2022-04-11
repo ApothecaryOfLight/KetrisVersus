@@ -38,11 +38,24 @@ function compose_collapsible_object( data_object ) {
 }
 
 function compose_show_details_button( button_placement_location ) {
-
+  const expand_details_button = document.createElement("button");
+  expand_details_button.innerText = "+";
+  expand_details_button.addEventListener( 'click', (event) => {
+    button_placement_location.parentElement.nextSibling.firstChild.firstChild.classList = "";
+    console.dir( event );
+    event.srcElement.replaceWith( compose_hide_details_button(button_placement_location) );
+  });
+  return expand_details_button;
 }
 
 function compose_hide_details_button( button_placement_location ) {
-
+  const expand_details_button = document.createElement("button");
+  expand_details_button.innerText = "-";
+  expand_details_button.addEventListener( 'click', (event) => {
+    button_placement_location.parentElement.nextSibling.firstChild.firstChild.classList = "log_details_container";
+    event.srcElement.replaceWith( compose_show_details_button(button_placement_location) );
+  });
+  return expand_details_button;
 }
 
 function compose_error_log( error_log_obj ) {
@@ -91,13 +104,9 @@ function compose_error_log( error_log_obj ) {
         const error_details_button_row = document.createElement("td");
         if( typeof( error_obj.details ) != "undefined" ) {
             if( typeof(error_obj.details.error) != "undefined" ) {
-              const expand_details_button = document.createElement("button");
-              expand_details_button.innerText = "+";
-              expand_details_button.addEventListener( 'click', (event) => {
-                //console.dir( event.path[2] );
-                const details_object_reference = event.path[2].nextSibling.children[0].children[0].classList = "";
-              });
-              error_details_button_row.appendChild( expand_details_button );
+              
+
+              error_details_button_row.appendChild( compose_show_details_button(error_details_button_row) );
             }
         }
         error_container.appendChild( error_details_button_row );
@@ -112,6 +121,7 @@ function compose_error_log( error_log_obj ) {
                 table_body.appendChild( details_error_container );
             }
         }
+              
     }
     return error_log;
 }
