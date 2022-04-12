@@ -48,8 +48,6 @@ function doLaunchKetrisGameplayer() {
 
       myAnimationValues.AnimationFrameHandle =
         window.requestAnimationFrame( doManageDrawing );
-      //doManageDrawing();
-      //timerDraw = setInterval( doDraw, 10 );
     };
   }
 
