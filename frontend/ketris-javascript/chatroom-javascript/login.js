@@ -48,6 +48,7 @@ function doLogin( websocket, username, password ) {
   function ws_event_server_login_approval( event ) {
     if( event.data === "server_login_approved" ) {
       console.log( "Login approved!" );
+      console.dir( event );
       cleanup_LoginInterface( this );
       launch_ChatInterface( this );
     }
