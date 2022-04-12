@@ -42,8 +42,6 @@ function doLaunchKetrisGameplayer() {
       myDOMHandles.myEnemyCanvas.height = 749;
 
       doComposeBackground();
-
-      //TODO: Put in an initial start button.
       doStartNewGame();
 
       myAnimationValues.AnimationFrameHandle =
