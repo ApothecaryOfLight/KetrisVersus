@@ -63,7 +63,7 @@ function detach_event( DOM_ID, event, function_name ) {
 function attach_key_event( DOM_ID, event, key, function_name ) {
   try {
     if( typeof(DOM_ID) === "undefined" ) { throw "DOM Element undefined!"; }
-    if( typeof(even)t === "undefined" ) { throw "Event undefined!"; }
+    if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
     if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
     if( typeof(key) === "undefined" ) { throw "Key undefined!"; }
     let dom_element_handle = document.getElementById( DOM_ID );

@@ -12,6 +12,7 @@ function ws_event_websocket_opened( event ) {
   }))
 
   ws.addEventListener( "message", (message_obj) => {
+    console.dir( message_obj );
     const message = JSON.parse( message_obj.data );
     if( message.type == "server_event" ) {
       if( message.event == "ping" ) {
