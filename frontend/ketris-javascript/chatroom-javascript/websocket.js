@@ -28,9 +28,10 @@ function ws_event_websocket_closed( event ) {
   console.log( "Websocket closed @ " + new Date().toString() + "!" );
   console.dir( event );
   
-  const options = {
-    "Close" : close_modal
-  }
+  const options = [{
+    text: "Close",
+    func: "close_modal()"
+  }];
   launch_modal( null, "Connection with server lost! Attempt refresh, please.", options );
 }
 
