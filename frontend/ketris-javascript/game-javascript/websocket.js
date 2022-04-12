@@ -102,11 +102,12 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
         } else if( inPacket.event === 'server_restart' ) {
             doStartNewGame();
         } else if( inPacket.event === 'server_disconnect' ) {
-            let game_interface = document.getElementById('game_interface');
+            /*let game_interface = document.getElementById('game_interface');
             let chat_interface = document.getElementById('chat_interface');
             game_interface.style.display = "none";
             chat_interface.style.display = "flex";
-            document.removeEventListener( 'visibilitychange', on_visibility_change );
+            document.removeEventListener( 'visibilitychange', on_visibility_change );*/
+            doEndKetrisGameplayer();
             connection.close();
             return;
         }

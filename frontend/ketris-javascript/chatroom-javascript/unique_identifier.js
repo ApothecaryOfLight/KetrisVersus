@@ -8,8 +8,8 @@ class UID {
       console.log( "Generating first UID of field " + inField + "." );
       if( !this.UIDs[inField] ) {
         this.UIDs[inField] = {
-        counter: 1,
-        retiredIDs : []
+          counter: 1,
+          retiredIDs : []
         };
         return 0;
       } else if( this.UIDs[inField].retiredIDs.length ) {

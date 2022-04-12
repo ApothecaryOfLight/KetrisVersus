@@ -1,5 +1,6 @@
 function doLaunchKetrisGameplayer() {
     console.log( "Launching Ketris Gameplayer." );
+    attach_game_mouse_events();
     format_globals();
     let playCanvasWidth = 313;
     if( isMobile == false ) {
@@ -51,3 +52,13 @@ function doLaunchKetrisGameplayer() {
       //timerDraw = setInterval( doDraw, 10 );
     };
   }
+
+function doEndKetrisGameplayer() {
+  detach_game_mouse_events();
+  cancelAnimationFrame( myAnimationValues.AnimationFrameHandle );
+  document.removeEventListener( 'visibilitychange', on_visibility_change );
+  let game_interface = document.getElementById('game_interface');
+  let chat_interface = document.getElementById('chat_interface');
+  game_interface.style.display = "none";
+  chat_interface.style.display = "flex";
+}
