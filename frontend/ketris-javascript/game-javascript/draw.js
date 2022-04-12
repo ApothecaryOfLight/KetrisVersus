@@ -1,6 +1,4 @@
 function doManageDrawing( inTimestamp ) {
-  //console.log( "animationframe" );
-  //if( myGameState.Paused == true ) { return; }
   let progress;
   if( myAnimationValues.last != null ) {
     progress = inTimestamp - myAnimationValues.last;
@@ -11,7 +9,6 @@ function doManageDrawing( inTimestamp ) {
   }
   doDraw();
   if( progress < 2000 ) {
-    console.log("tick");
     myAnimationValues.AnimationFrameHandle = window.requestAnimationFrame( doManageDrawing );
   }
 }
