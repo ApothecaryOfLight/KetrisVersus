@@ -23,6 +23,11 @@ const sqlPool = mysql.createPoolPromise({
 /*Error logging*/
 const error_log = require('./error-logging.js');
 
+
+/*
+This attaches a get route to our Express server, returning the error log in response
+to a URI request that ends in /get_error_log.
+*/
 app.get( '/get_error_log', async function(req,res) {
     console.log( "get_error_log received.");
     try {
@@ -38,6 +43,11 @@ app.get( '/get_error_log', async function(req,res) {
     }
 });
 
+
+/*
+This attaches a get route to our Express server, returning the event log in response
+to a URI request that ends in /get_event_log.
+*/
 app.get( '/get_event_log', async function(req,res) {
     console.log( "get_event_log received.");
     try {
@@ -53,6 +63,16 @@ app.get( '/get_event_log', async function(req,res) {
     }
 });
 
+
+
+/*
+This acts as our main function. Using process.argv we can check which command line
+option was specified at the invokation of this application. If https was provided,
+we get the security credentials and launch an HTTPS server.
+
+On the other hand, if http was specified instead, we just launch the Express server
+without any security credentials.
+*/
 if( process.argv[2] == "https" ) {
     console.log( "Launching production server..." );
     const file_stream = require('fs');

@@ -5,6 +5,19 @@ var myPort = 3003;
 
 /*HTTPS*/
 
+
+/*
+This function is used to start the HTTP or HTTPS webserver.
+
+This relies on the process.argv array, which provides access to the command line
+arguments supplied in the invokation of the application.
+
+If the https command is supplied, then the security credentials are read from the
+filesystem, and used to create a secure HTTPS server.
+
+If the http command is supplied, then the unsecure HTTP server it started. The HTTP
+server is for development purposes.
+*/
 function launch_webserver() {
     if( process.argv[2] == "https" ) {
         const fs = require('fs');

@@ -10,6 +10,18 @@ const webserver = require('./webserver.js');
 /*Websocket*/
 const websocket = require('./websocket.js');
 
+
+/*
+Sends game event to the other player.
+
+myGames: Array reference containing all existing games being played.
+
+inGameID: Unique identifier denoting which game the event took place in.
+
+inMyConnection: Reference to the connection of the player where the event originated.
+
+inMessage: String containing the event itself.
+*/
 function sendToEnemy( myGames, inGameID, inMyConnection, inMessage ) {
 	myGames[inGameID].forEach( user => {
 		if( user != inMyConnection ) {
@@ -18,6 +30,24 @@ function sendToEnemy( myGames, inGameID, inMyConnection, inMessage ) {
 	});
 }
 
+
+/*
+Function called once that attaches the request event listener, listeneing for a
+request event.
+
+Whenever a new user connects, which takes place when a new game starts, that event
+listener will fire, creating a ping Interval, to keep the connection alive even
+when the game is paused, and attaches an additional event listener for that
+user, listening for the message event.
+
+That message event will always be a JSON formatted string, so we will use JSON.parse
+to return an Object containing the event type and the data associated with that event.
+
+We will also attach to each user a connection close event listener. It is important to
+note that this will not fire every time a connection is closed. There are a number of
+disconnections that will not cause this to fire. The documentation specifies that events
+such as the user's computer being unplugged will not cause this event to fire.
+*/
 function attach_connection_events( myWebsocketServer ) {
   const myGames = [];
 

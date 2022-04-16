@@ -1,6 +1,11 @@
 /*MySQL*/
 const mysql = require('mysql2');
 
+
+/*
+This function creates a connection to the MySQL server and returns a reference to it,
+allowing queries to be make against the ketris_db database.
+*/
 function do_connect_to_sql_server() {
     const mysql_pool = mysql.createPoolPromise({
         connectionLimmit: 50,

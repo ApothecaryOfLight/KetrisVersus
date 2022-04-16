@@ -48,6 +48,40 @@ async function do_reject_login( logger, myWebsocketConnection ) {
 exports.do_reject_login = do_reject_login;
   
 
+/*
+This function attempts to login with the provided credentials. If the user has not
+created an account with those credentials, or supplied incorrect credentials, then
+the login attempt will fail.
+
+If the login attempt succeeds, an approval message is sent to the client, moving
+that client past the login interface and into the chatroom interface.
+
+If the login attempt fails, a rejection message is send to the client, resulting
+in a modal popup appearing informing the user that their login attempt failed.
+
+logger: Object that provides rror/event logging functionality.
+
+new_user: Object reference to the newly created user's information.
+
+inMessage: Object reference containing the login-attempt's provided information.
+
+users: Array containing a list of all connected users.
+
+games: Array containing a list of all posted games.
+
+mySQLPool: Object reference that provides MySQL querying functionality.
+
+inUsername: The user's username, as a hashed value.
+
+inPassword: The user's password, as a hashed value.
+
+myWebsocketConnection: A Websocket connection for this user.
+
+myUIDGen: A reference to the unique identifier generator.
+
+send_GameList: A Function reference that will be used to send the list of posted
+games if the login is successful.
+*/
 async function attempt_login ( logger, new_user, inMessage, users, games, mySqlPool, inUsername, inPassword, myWebsocketConnection, myUIDGen, send_GameList ) {
     try {
         const [rows,fields] = await mySqlPool.query(
@@ -88,36 +122,52 @@ async function attempt_login ( logger, new_user, inMessage, users, games, mySqlP
 exports.attempt_login = attempt_login;
   
 
-  async function attempt_create_user( logger, mySqlPool, user, pass, conn, req ) {
-    try {
-      const insert_query = 'INSERT INTO ketris_users ' +
-          '(username_hash, password_hash, ' +
-          'username_plaintext, account_creation_time) VALUES (' +
-          'UNHEX(MD5(\"' + user + '\")), ' +
-          'UNHEX(MD5(\"' + pass + '\")), ' +
-          '\"' + user + '\", ' +
-          "\'" + new Date().toUTCString() + "\' );";
-      const [rows,fields] =  await mySqlPool.query( insert_query );
-  
-      const details_obj = {
-        "username": user,
-        "password": pass
-      }
-      conn.sendUTF( 'server_account_creation_success' );
-      logger.log_event( "attempt_create_user()::try", "Successful account creation.", req.socket.remoteAddress, details_obj );
-  
+/*
+This function attempts to create a set of credentials. If the credential creation
+attempt fails, a message is sent to the user informing them that the credential
+creation attempt failed.
+
+logger: Object reference providing error/event logging functionality.
+
+mySqlPool: Object reference providing MySQL query funcionality.
+
+user: Hashed username credential provided by the user.
+
+pass: Hashed password credential provided by the user.
+
+conn: Websocket connection for the user.
+
+req: Request object for this event.
+*/
+async function attempt_create_user( logger, mySqlPool, user, pass, conn, req ) {
+  try {
+    const insert_query = 'INSERT INTO ketris_users ' +
+      '(username_hash, password_hash, ' +
+      'username_plaintext, account_creation_time) VALUES (' +
+      'UNHEX(MD5(\"' + user + '\")), ' +
+      'UNHEX(MD5(\"' + pass + '\")), ' +
+      '\"' + user + '\", ' +
+      "\'" + new Date().toUTCString() + "\' );";
+    const [rows,fields] =  await mySqlPool.query( insert_query );
+
+    const details_obj = {
+      "username": user,
+      "password": pass
+    }
+    conn.sendUTF( 'server_account_creation_success' );
+    logger.log_event( "attempt_create_user()::try", "Successful account creation.", req.socket.remoteAddress, details_obj );
+
     } catch( error ) {
       conn.sendUTF( 'server_account_creation_failure' );
-      console.dir( error );
-      const details_obj = {
-        "username": user,
-        "password": pass,
-        "error": await error_log.process_text(JSON.stringify(error))
-      }
-      logger.log_error( "attempt_create_user()::catch", "Failed account creation attempt was made.", 1, req.socket.remoteAddress, details_obj );
+    const details_obj = {
+      "username": user,
+      "password": pass,
+      "error": await error_log.process_text(JSON.stringify(error))
     }
+    logger.log_error( "attempt_create_user()::catch", "Failed account creation attempt was made.", 1, req.socket.remoteAddress, details_obj );
   }
-  exports.attempt_create_user = attempt_create_user;
+}
+exports.attempt_create_user = attempt_create_user;
 
 
 /*
@@ -155,6 +205,14 @@ function doesUsernameExist( users, in_username ) {
 exports.doesUsernameExist = doesUsernameExist;
 
 
+/*
+This function sends a message to each connected user that a new user has successfully
+logged in.
+
+users: Array reference containing all connected users.
+
+in_user_id: Unique identifier of the new user who just successfully logged in.
+*/
 function send_NewUserNotification( users, in_user_id ) {
     const newUser = {
       type: "chat_event",

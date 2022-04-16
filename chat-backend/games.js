@@ -98,6 +98,28 @@ function delist_game( myLogger, myWebsocketConnection, users, games, in_game_id,
 exports.delist_game = delist_game;
 
 
+/*
+This function sends a message to both the user who originall posted the game,
+who is specified by in_posting_user_id, as well as the user who accepted the game,
+which is specified in in_accepting_user_id.
+
+myLogger: The error/event logging object.
+
+myWebsocketConnection: A reference to the websocket connection of the accepting user.
+
+users: An Array containing all connected users.
+
+games: An Array containing all posted games.
+
+in_posting_user_id: The unique identifier of the user who originally created the game.
+
+in_accepting_user_id: The unique identifier of the user who accepted the game.
+
+in_game_id: The unique identifier of the game that both players want to enter.
+
+send_MessageToUser: A reference to the function that will send the server_enter_game
+event to both users.
+*/
 function launch_game( myLogger, myWebsocketConnection, users, games, in_posting_user_id, in_accepting_user_id, in_game_id, send_MessageToUser ) {
     try {
         //Add game_id to accepting user.
@@ -109,9 +131,6 @@ function launch_game( myLogger, myWebsocketConnection, users, games, in_posting_
             event: "server_enter_game",
             game_id: in_game_id
         };
-        console.dir( message );
-        console.log(in_posting_user_id);
-        console.log(in_accepting_user_id);
         send_MessageToUser( users, message, in_posting_user_id );
         send_MessageToUser( users, message, in_accepting_user_id );
     } catch( error_obj ) {

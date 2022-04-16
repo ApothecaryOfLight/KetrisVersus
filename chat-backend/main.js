@@ -32,6 +32,22 @@ function log_dev_message ( mySqlPool, inAuthor, inMessage, inTimestamp ) {
   );
 }
 
+
+/*
+This function attaches all connection event listeners to a given Websocket connection.
+
+This function creates an event listener for the server's Websocket that will listen
+for a request on the Websocket. When that request takes place, it attaches the message
+event listener that we will use to process the input of the clients.
+
+Each client will have their own request listener, but they will all share this
+function's scope outside of the anonymous function that handles the request. This
+shared scope includes the myUIDGen invokation, as well as the users and games Arrays.
+
+myWebsocket: The Websocket connection of this server.
+
+mySqlPool: A reference to the MySQL object that is used to query the MySQL database.
+*/
 function do_attach_connection_events( myWebsocket, mySqlPool ) {
   const myUIDGen = new unique_id_generator.unique_id_generator;
   const users = [];
@@ -208,7 +224,10 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
   });
 }
 
-/*Main function. This serves as the entry-point for the program, launching the chat server and everything it needs.*/
+
+/*
+Main function. This serves as the entry-point for the program, launching the chat server and everything it needs.
+*/
 function main() {
   const mySqlPool = mysql.do_connect_to_sql_server();
   const myWebserver = webserver.do_start_webserver( error_log );
