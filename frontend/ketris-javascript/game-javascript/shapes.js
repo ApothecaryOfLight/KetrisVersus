@@ -1,4 +1,10 @@
+/*
+Global Array of Arrays storing the available shapes and their rotations.
 
+First Array layer consists of each shape.
+
+Second Array layer consists of each rotation.
+*/
 const Shapes = [
     [
         [ [1,0,0,0], [1,0,0,0], [1,0,0,0], [1,0,0,0] ],

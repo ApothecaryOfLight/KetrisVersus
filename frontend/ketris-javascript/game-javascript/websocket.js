@@ -1,4 +1,13 @@
 let connection;
+
+
+/*
+Launch the Websocket connection to the game server.
+
+inIPAddress: IP address of the game server.
+
+inGameID: Game ID of the game session being launched.
+*/
 function doLaunchWebsocket( inIPAddress, inGameID ) {
     window.WebSocket = window.WebSocket || window.MozWebSocket;
     connection = new WebSocket( inIPAddress + ":3003" );
@@ -77,18 +86,14 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
             } else if( inPacket.event === 'server_score' ) {
                 myGameState.myEnemyScore = inPacket.score;
             } else if( inPacket.event === 'server_rotation' ) {
-            CurrentElement_Enemy.Rotation = inPacket.rotation;
+                CurrentElement_Enemy.Rotation = inPacket.rotation;
             } else if( inPacket.event === 'server_pause' ) {
-                console.log( "pause recieved" );
                 doReceivePause();
             } else if( inPacket.event === 'server_unpause' ) {
-                console.log( "unpause recieved" );
                 doReceiveUnpause();
             } else if ( inPacket.event === 'server_visible' ) {
-                console.log( "Recieved visible" );
                 doReceiveVisible();
             } else if ( inPacket.event === 'server_hidden' ) {
-                console.log( "Recieved hidden" );
                 doReceiveHidden();
             } else if( inPacket.event === 'server_restart' ) {
                 doStartNewGame();
@@ -99,8 +104,8 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
             }
         } else {
             console.dir(
-            'Illegal json data recieved:',
-            inPacket
+                'Illegal json data recieved:',
+                inPacket
             );
         }
     };

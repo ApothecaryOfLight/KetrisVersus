@@ -1,3 +1,6 @@
+/*
+Get the position of the mouse cursor.
+*/
 function getCursorPosition( canvas, event ) {
   let x, y;
   let myCanvas = document.getElementById('myKetrisCanvas');
@@ -12,6 +15,10 @@ function getCursorPosition( canvas, event ) {
   return [x,y];
 }
 
+
+/*
+Funtion to run upon mouse clicks.
+*/
 function mouse_events(e) {
   let out = getCursorPosition( myKetrisCanvas, e );
   console.log( out[0] + "/" + out[1] );
@@ -85,10 +92,18 @@ function mouse_events(e) {
   }
 }
 
+
+/*
+Attach mouse events to the click event.
+*/
 function attach_game_mouse_events() {
   window.addEventListener( 'click', mouse_events );
 }
 
+
+/*
+Detach mouse events to the click event.
+*/
 function detach_game_mouse_events() {
   window.removeEventListener( 'click', mouse_events )
 }

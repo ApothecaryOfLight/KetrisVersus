@@ -26,30 +26,43 @@ function pad_with_zero( inNumber ) {
 }
 
 
+/*
+This function will ensure that milliseconds will consist of 6 digits, a requirement
+for the timestamp format we're using (the MySQL DATETIME format). That value is in
+fractional seconds, not milliseconds.
+
+MySQL lets us set the preicion of these fractional seconds, which we set to the max,
+at 6. This makes them equivalent to microseconds, which are three magnitudes of order
+smaller than milliseconds.
+
+Because the JavaScript getMilliseconds() function returns a three digit value, we
+will need to append three zeroes, to convert from milliseconds to microseconds,
+and then prepend a number of zeroes that will make the string 6 digits long, in
+order to match the format expected by MySQL's DATETIME(6).
+*/
 function pad_milliseconds( inMilliseconds ) {
   let outMilliseconds = "";
-  if( inMilliseconds < 100 ) {
-    outMilliseconds += "0";
-    if( inMilliseconds < 10 ) {
-      outMilliseconds += "0";
-    }
-  }
-  outMilliseconds += inMilliseconds;
+
+  //JavaScript milliseconds need to be multipled by two orders of magnitude to be
+  //converted into fractional seconds. That means appending two zeroes, since we
+  //can't JavaScript won't give us values at those finer granularities.
+  outMilliseconds = inMilliseconds + "000";
+
+  //Next we need to prepend zeroes to the string in order to reach a length of 6 digits.
   const inLength = String(outMilliseconds).length;
   const needed_zeroes = 6 - inLength;
   for( let i=0; i<needed_zeroes; i++ ) {
-    outMilliseconds += String("0");
+    outMilliseconds = String("0") + outMilliseconds;
   }
+
   return outMilliseconds;
 }
 
-/*
-NB: DATETIME's fractional seconds represent microseconds. JavaScript getMilliseconds()
-provides milliseconds. 1 milliseconds is equal to 1000 microseconds.
 
+/*
 We use pad_with_zero to make sure that all 2-digit values have 2 digits, and we use
 pad_milliseconds to make sure that our milliseconds value has 6 digits, both of which
-are required for timestamp string format.
+are required for MySQL DATETIME format.
 */
 function get_datetime() {
   const timestamp = new Date();

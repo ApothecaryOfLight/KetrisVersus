@@ -1,3 +1,6 @@
+/*
+Set the global variables to their default values.
+*/
 function format_globals() {
   myDOMHandles.myBackgroundCanvas = null;
   myDOMHandles.myPlayCanvas = null;
@@ -51,6 +54,11 @@ function format_globals() {
   CurrentElement_Enemy.NextColor = Math.floor(Math.random()*5);
 }
 
+
+/*
+Object containing references to the canvases, both those displayed and those used as
+buffers, as well as the sprite atlas from which images are drawn.
+*/
 const myDOMHandles = {
   KetrisImage: new Image(),
   myBackgroundCanvas: null,
@@ -60,6 +68,10 @@ const myDOMHandles = {
   myEnemyScoreCanvas : null
 }
 
+
+/*
+Object containing global variables.
+*/
 const myGameState = {
   GlobalPlay: false,
   Paused: false,
@@ -76,11 +88,19 @@ const myGameState = {
   enemy_visibility: true
 }
 
+
+/*
+Object containing global variables.
+*/
 const myAnimationValues = {
   myLastTimestamp: null,
   AnimationFrameHandle: null,
   last: null
 }
+
+/*
+Object containing global variables for speed of falling objects.
+*/
 const Config = {
   Speed: 0.001,
   CollapsingSpeed: 0.003,
@@ -88,6 +108,10 @@ const Config = {
   LastLevel: 0
 };
 
+
+/*
+Object containing global variables for the current and next shapes.
+*/
 const CurrentElement = {
   Timestamp: 0,
   XPos: 0,
@@ -101,6 +125,10 @@ const CurrentElement = {
   NextColor: Math.floor(Math.random()*5)+1
 };
 
+
+/*
+Object containing global variables for the enemy's current and next shapes.
+*/
 const CurrentElement_Enemy = {
   Timestamp: 0,
   XPos: 0,

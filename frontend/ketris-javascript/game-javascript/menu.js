@@ -1,10 +1,22 @@
-/////////////////////////////////////////////////////////////////////////
-//  Menu Functions  /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 let StartGameButtonCanvas;
 let StartGameButtonCanvasContext;
 let DrawMenu = false;
 let MenuRedrawTimer;
+
+
+/*
+Draw a menu tile to the menu buffer.
+
+inX: X position to draw the tile to.
+
+inY: Y position to draw the tile to.
+
+inMaxX: Horizontal limit of the menu size.
+
+inMaxY: Vertical limit of the menu size.
+
+inMenuType: Value for future implementation of different menu types.
+*/
 function doDrawMenuTile( inX, inY, inMaxX, inMaxY, inMenuType ) {
   StartGameButtonCanvasContext = StartGameButtonCanvas.getContext("2d");
   let XOffset = 0;
@@ -83,9 +95,14 @@ function doDrawMenuTile( inX, inY, inMaxX, inMaxY, inMenuType ) {
     myDOMHandles.KetrisImage,
     70, 148, 16, 16,
     inX*16, (inY*16)+YOffset, 16, 16
-    );
+  );
   return;
 }
+
+
+/*
+Compose the menu in the buffer.
+*/
 function doComposeMenu( inX, inY, inMenuType ) {
   StartGameButtonCanvas = document.createElement("canvas");
   StartGameButtonCanvas.width = inX*16;
@@ -99,16 +116,25 @@ function doComposeMenu( inX, inY, inMenuType ) {
   StartGameButtonCanvasContext.font="20px Georgia";
   StartGameButtonCanvasContext.fillText("Start Game",21,29);
 }
+
+
+/*
+Draw the menu from the buffer to the play area.
+*/
 function doDrawMenu() {
   let myCanvas = document.getElementById( "myKetrisCanvas" );
   let myCanvasContext = myCanvas.getContext( "2d" );
   myCanvasContext.drawImage( StartGameButtonCanvas, 80, 296 );  
 }
+
+
+/*
+Start a new game. Function to be called on clicking Start Game button.
+*/
 function doStartNewGame() {
   console.log( "Starting new game!" );
   Config.Speed = 0.001;
   myGameState.StartGameTimestamp = Date.now();
-  //doGenerateNextElement();
   for( let x=0; x<10; x++ ) {
     for( let y=0; y<20; y++ ) {
       KetrisGrid[y][x] = 0;

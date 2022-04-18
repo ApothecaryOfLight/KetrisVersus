@@ -18,6 +18,11 @@ function reverse_process_text( inText ) {
     return processed_text;
 }
 
+
+/*
+This function fetches the error log from the server, calls the function that will parse
+the information into an HTML table, and appends that to the DOM.
+*/
 function get_error_log() {
     const non_ws_ip = get_ip();
     const get_error_log_request = new Request(
@@ -31,6 +36,11 @@ function get_error_log() {
     });
 }
 
+
+/*
+This function fetches the event log from the server, calls the function that will parse
+the information into an HTML table, and appends that to the DOM.
+*/
 function get_event_log() {
     const non_ws_ip = get_ip();
     const get_event_log_request = new Request(

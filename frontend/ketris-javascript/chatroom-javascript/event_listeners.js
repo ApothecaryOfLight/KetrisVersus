@@ -1,10 +1,14 @@
 'use strict';
 
-/*
-Core functionality
-*/
+
+//Global Object storing event listeners.
 let event_listener_dictionary = {};
 
+
+/*
+Function that constructs the event listener Object, binding the listener functions
+as the value cooresponding to the cooresponding function name as a String ket.
+*/
 function build_event_listener_dictionary( ws ) {
   /* Websocket events */
   event_listener_dictionary["ws_event_websocket_opened"] =
@@ -36,11 +40,24 @@ function build_event_listener_dictionary( ws ) {
   event_listener_dictionary["event_send_contact_dev_message"] = event_send_contact_dev_message.bind( ws );
 }
 
+
+/*
+Attach an event listener to a DOM element.
+
+DOM_ID: The element to attach the event listener to.
+
+event: The event to listen for.
+
+function_name: Name of the function to attach to the DOM element specified.
+*/
 function attach_event( DOM_ID, event, function_name ) {
   try {
+    //Ensure that the arguments are specified.
     if( typeof(DOM_ID) === "undefined" ) { throw "DOM Element undefined!"; }
     if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
     if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
+
+    //Attach the event listener.
     let dom_element_handle = document.getElementById( DOM_ID );
     dom_element_handle.addEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
@@ -48,11 +65,24 @@ function attach_event( DOM_ID, event, function_name ) {
   }
 }
 
+
+/*
+Detach an event listener from a DOM element.
+
+DOM_ID: The element to dettach an event listener from.
+
+event: The event listened for..
+
+function_name: Name of the function to detach from the DOM element specified.
+*/
 function detach_event( DOM_ID, event, function_name ) {
   try {
+    //Ensure that the arguments are specified.
     if( typeof(DOM_ID) === "undefined" ) { throw "DOM Element undefined!"; }
     if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
     if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
+    
+    //Remove the event listener.
     let dom_element_handle = document.getElementById( DOM_ID );
     dom_element_handle.removeEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
@@ -60,48 +90,48 @@ function detach_event( DOM_ID, event, function_name ) {
   }
 }
 
-function attach_key_event( DOM_ID, event, key, function_name ) {
-  try {
-    if( typeof(DOM_ID) === "undefined" ) { throw "DOM Element undefined!"; }
-    if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
-    if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
-    if( typeof(key) === "undefined" ) { throw "Key undefined!"; }
-    let dom_element_handle = document.getElementById( DOM_ID );
-    dom_element_handle.addEventListener( event, event_listener_dictionary[ function_name ] );
-  } catch ( error ) {
-    console.error( error );
-  }
-}
 
-function detach_key_event( DOM_ID, event, key, function_name ) {
-  try {
-    if( typeof(DOM_ID) === "undefined" ) { throw "DOM Element undefined!"; }
-    if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
-    if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
-    if( typeof(key) === "undefined" ) { throw "Key undefined!"; }
-    let dom_element_handle = document.getElementById( DOM_ID );
-    dom_element_handle.removeEventListener( event, event_listener_dictionary[ function_name ] );
-  } catch ( error ) {
-    console.error( error );
-  }
-}
+/*
+Attach an event listener to the provided Websocket.
 
+ws: Websocket connection to the server.
+
+event: Event to listen for.
+
+function_name: Function to execute upon the event being triggered.
+*/
 function attach_ws_event( ws, event, function_name ) {
   try {
+    //Ensure that the arguments are specified.
     if( typeof(ws) === "undefined" ) { throw "Websocket undefined!"; }
     if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
     if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
+    
+    //Attach the event listener.
     ws.addEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
     console.error( error );
   }
 }
 
+
+/*
+Detach an event listener from the provided Websocket.
+
+ws: Websocket connection to the server.
+
+event: Event listened for.
+
+function_name: Function to detach from the event listener.
+*/
 function detach_ws_event( ws, event, function_name ) {
   try {
+    //Ensure that the arguments are specified.
     if( typeof(ws) === "undefined" ) { throw "Websocket undefined!"; }
     if( typeof(event) === "undefined" ) { throw "Event undefined!"; }
     if( typeof(function_name) === "undefined" ) { throw "Function undefined!"; }
+
+    //Remove the event listener.
     ws.removeEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
     console.error( error );

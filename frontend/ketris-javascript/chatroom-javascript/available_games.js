@@ -1,18 +1,30 @@
 'use strict';
 
+
+/*
+React component to manage games posted by other players.
+*/
 class AvailGames extends React.Component {
     constructor( inGames, websocket ) {
       super( inGames, websocket );
       this.state = {...inGames};
       this.UID = new UID;
     }
+
+
+    //Call upon React being ready to attach event listeners to the component.
     componentDidMount() {
       this.setState( this.state.inGames );
       let parent = this;
+
+      //Attach the Websocket listener events to this React component.
       this.state.websocket.addEventListener('message', function(event) {
+        //Parse the JSON object.
         const inMessage = JSON.parse( event.data );
+
+        //Check the event type to determine how the message should be acted upon.
         if( inMessage.event === "server_list_game" ) {
-          console.log( "server_list_game event!" );
+          //Add the newly posted game to the list displayed to the user.
           parent.state.inGames.push({
             game_name: inMessage.game_name,
             game_icon: inMessage.game_name.charAt(0).toUpperCase(),
@@ -20,8 +32,11 @@ class AvailGames extends React.Component {
             game_id: inMessage.game_id,
             UID: inMessage.game_id //guaranteed unique by server
           });
+
+          //Have React render the updated component.
           parent.setState( parent.state.inGames );
         } else if( inMessage.event === "server_delist_game" ) {
+          //Iterate through the games listed and remove the game that has been delisted.
           parent.state.inGames.forEach( ( element, index ) => {
             if( element.game_id === inMessage.game_id ) {
               parent.state.inGames.splice( index, 1 );
@@ -29,7 +44,12 @@ class AvailGames extends React.Component {
           });
           parent.setState( parent.state.inGames );
         } else if( inMessage.event === "server_game_list" ) {
+          //This object contains a list of all posted games. This is for users who have
+          //just logged in, and need that full list.
           parent.state.inGames = [];
+
+          //Map the received game list into a format React can apply to it's stored list
+          //of games.
           inMessage.game_list.map( (game) => {
             parent.state.inGames.push({
               game_name: game.game_name,
@@ -39,18 +59,25 @@ class AvailGames extends React.Component {
               UID: game.game_id
             });
           });
+
+          //Have React render the updated component.
           parent.setState( parent.state.inGames );
         }
       });
     };
+
+
+    //This event is to be called when this user joins a posted game.
     join_game( inGameID, inGameName ) {
-      console.log( "Joining game ID: " + inGameID + " GameName: " + inGameName + "." );
       this.state.websocket.send(JSON.stringify({
         event: "client_enter_game",
         game_id: inGameID,
         game_name: inGameName
       }));
     }
+
+
+    //This function builds and renders the list of available games.
     render() {
       const avail_games_dom = this.state.inGames.map( (avail_game) =>
         <div className='avail_game_wrapper_class' key={avail_game.UID}>

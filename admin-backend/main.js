@@ -38,6 +38,9 @@ app.get( '/get_error_log', async function(req,res) {
     } catch(error_obj) {
         await error_log.log_error(
             "main.js:app.get:get_error_log",
+            "Error in retrieving error log.",
+            1,
+            "Admin Server",
             error_obj
         );
     }
@@ -58,6 +61,9 @@ app.get( '/get_event_log', async function(req,res) {
     } catch(error_obj) {
         await error_log.log_error(
             "main.js:app.get:get_event_log",
+            "Error in retrieving event log.",
+            1,
+            "Admin Server",
             error_obj
         );
     }
