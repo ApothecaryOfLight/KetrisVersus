@@ -284,7 +284,7 @@ function doFallingBlocksLogic() {
         } else if( //Or if the falling block is about to collide with another block
           KetrisGrid[Math.round(RealPosition)][x] != 0  ||
           RealPosition+0.6 >= 20
-        ) 
+        ) {
           //Remove it from the falling grid.{
           FallingGrid[y][x] = 0;
 
