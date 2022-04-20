@@ -52,7 +52,6 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
                 myGameState.GlobalPlay = false;
                 doComposeMenu( 10, 3, 0 );
                 DrawMenu = true;
-                cancelAnimationFrame( myAnimationValues.AnimationFrameHandle );
             } else if( inPacket.event === 'server_commence_gameplay' ) {
                 doLaunchKetrisGameplayer();
                 if( document.visibilityState == "hidden" ) {

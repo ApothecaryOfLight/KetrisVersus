@@ -1,13 +1,7 @@
 /*
 Set the global variables to their default values.
 */
-function format_globals() {
-  myDOMHandles.myBackgroundCanvas = null;
-  myDOMHandles.myPlayCanvas = null;
-  myDOMHandles.myMenuCanvas = null;
-  myDOMHandles.myScoreCanvas = null;
-  myDOMHandles.myEnemyScoreCanvas = null;
-  
+function format_globals() {  
   myGameState.GlobalPlay = false;
   myGameState.Paused = false;
   myGameState.PausedTimestamp = false;

@@ -96,7 +96,11 @@ function doDraw() {
   //If the menu is visible:
   if( DrawMenu == true ) {
     //Draw the menu.
-    doDrawMenu();
+    if( mouseover_objects.start_game_button == false ) {
+      doDrawMenu("default");
+    } else if( mouseover_objects.start_game_button == true ) {
+      doDrawMenu("mouseover");
+    }
   }
 
   //Store a value that represents how much time has elapsed since the game began.

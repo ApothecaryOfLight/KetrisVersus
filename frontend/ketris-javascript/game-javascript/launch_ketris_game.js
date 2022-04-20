@@ -62,10 +62,6 @@ function doLaunchKetrisGameplayer() {
 
     //Start the new Ketris game.
     doStartNewGame();
-
-    //Begin the animation request sequence.
-    myAnimationValues.AnimationFrameHandle =
-      window.requestAnimationFrame( doManageDrawing );
   };
 }
 
