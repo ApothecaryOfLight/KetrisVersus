@@ -1,5 +1,4 @@
-let connection;
-
+'use strict';
 
 /*
 Launch the Websocket connection to the game server.

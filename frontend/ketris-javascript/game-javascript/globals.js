@@ -1,3 +1,19 @@
+'use strict';
+
+let connection;
+
+const mouseover_objects = {
+  start_game_button: false
+}
+
+let StartGameButtonCanvas;
+let StartGameButtonCanvasContext;
+let StartGameButtonCanvasMouseover;
+let StartGameButtonCanvasContextMouseover;
+let DrawMenu = false;
+let MenuRedrawTimer;
+
+
 /*
 Set the global variables to their default values.
 */

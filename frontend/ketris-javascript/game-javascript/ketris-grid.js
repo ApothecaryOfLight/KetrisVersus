@@ -1,3 +1,5 @@
+'use strict';
+
 /*
 Array globals containing the play area data.
 */

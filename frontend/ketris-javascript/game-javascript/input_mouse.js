@@ -1,6 +1,4 @@
-const mouseover_objects = {
-  start_game_button: false
-}
+'use strict';
 
 /*
 Get the position of the mouse cursor.
@@ -180,8 +178,12 @@ function mouse_events( mouse_event ) {
 }
 
 
+/*
+Function to be attached as a callback to a mousemove event over the Ketris canvas.
 
-
+mouse_move_event: Parameter supplied automatically by the event listener containing
+the details of the mouse event.
+*/
 function mouse_moved( mouse_move_event ) {
   //Get the standardized mouse coordinants.
   const mouse_coord_object =

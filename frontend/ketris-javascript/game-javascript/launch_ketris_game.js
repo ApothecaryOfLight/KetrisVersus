@@ -1,3 +1,5 @@
+'use strict';
+
 /*
 Launch the Ketris game itself.
 */

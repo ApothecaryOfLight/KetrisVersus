@@ -1,37 +1,3 @@
-let StartGameButtonCanvas;
-let StartGameButtonCanvasContext;
-let StartGameButtonCanvasMouseover;
-let StartGameButtonCanvasContextMouseover;
-let DrawMenu = false;
-let MenuRedrawTimer;
-
-
-/*
-Array containing menu button Objects.
-*/
-const MenuButtons = [
-  {
-    text: "Start Game",
-    font: "",
-    xPos: 21,
-    yPos: 29,
-    event: doStartNewGame,
-    desktop_click: {
-      xStart: 80,
-      yStart: 188,
-      xEnd: 240,
-      yEnd: 236
-    },
-    mobile_click: {
-      xStart: 59,
-      yStart: 221,
-      xEnd: 178,
-      yEnd: 256
-    }
-  }
-];
-
-
 /*
 Draw a menu tile to the menu buffer.
 
@@ -203,6 +169,32 @@ function doDrawMenu( inButtonType ) {
     );
   }
 }
+
+
+/*
+Array containing menu button Objects.
+*/
+const MenuButtons = [
+  {
+    text: "Start Game",
+    font: "",
+    xPos: 21,
+    yPos: 29,
+    event: doStartNewGame,
+    desktop_click: {
+      xStart: 80,
+      yStart: 188,
+      xEnd: 240,
+      yEnd: 236
+    },
+    mobile_click: {
+      xStart: 59,
+      yStart: 221,
+      xEnd: 178,
+      yEnd: 256
+    }
+  }
+];
 
 
 /*

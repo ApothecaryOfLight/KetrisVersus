@@ -1,3 +1,5 @@
+'use strict';
+
 /*
 Process a left arrow key press.
 */
