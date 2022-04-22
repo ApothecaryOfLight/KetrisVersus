@@ -7,17 +7,17 @@ inIPAddress: IP address of the game server.
 
 inGameID: Game ID of the game session being launched.
 */
-function doLaunchWebsocket( inIPAddress, inGameID ) {
+function doLaunchWebsocket( inIPAddress, inGameID, inChatroomWebsocket ) {
     window.WebSocket = window.WebSocket || window.MozWebSocket;
     connection = new WebSocket( inIPAddress + ":3003" );
     connection.onclose = (event) => {
-        console.log( "Websocket connection closed!" );
+        console.log( "Game server websocket connection closed!" );
         console.dir( event );
 
         document.removeEventListener("visibilitychange", on_visibility_change);
     }
     connection.onopen = function () {
-        console.log( "Connected to Ketris server!" );
+        console.log( "Game server websocket connection opened!" );
         connection.send( JSON.stringify({
             type: "game_event",
             event: "client_start_ketris",
@@ -47,10 +47,14 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
                 }));
             } else if( inPacket.event === 'server_end_game' ) {
                 console.log( "Ending game packet recieved." );
-                myGameState.GameOver = true;
-                myGameState.GlobalPlay = false;
-                doComposeMenu( 10, 3, 0 );
-                DrawMenu = true;
+                try {
+                    myGameState.GameOver = true;
+                    myGameState.GlobalPlay = false;
+                    doComposeMenu( 10, 3, 0 );
+                    DrawMenu = true;
+                } catch( error ) {
+                    console.error( error );
+                }
             } else if( inPacket.event === 'server_commence_gameplay' ) {
                 doLaunchKetrisGameplayer();
                 if( document.visibilityState == "hidden" ) {
@@ -96,7 +100,7 @@ function doLaunchWebsocket( inIPAddress, inGameID ) {
             } else if( inPacket.event === 'server_restart' ) {
                 doStartNewGame();
             } else if( inPacket.event === 'server_disconnect' ) {
-                doEndKetrisGameplayer();
+                doEndKetrisGameplayer( inChatroomWebsocket );
                 connection.close();
                 return;
             }

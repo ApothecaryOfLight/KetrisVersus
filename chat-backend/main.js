@@ -84,13 +84,12 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
       if( inMessage.event === "client_login" ) {
         myUsers.attempt_login(
           error_log,
-          new_user,
-          inMessage,
-          users,
-          games,
           mySqlPool,
+          new_user,
           inMessage.username,
           inMessage.password,
+          users,
+          games,
           myWebsocketConnection,
           myUIDGen,
           myGames.send_GameList
@@ -99,10 +98,14 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
         myUsers.attempt_create_user(
           error_log,
           mySqlPool,
+          new_user,
           inMessage.username,
           inMessage.password,
-          myConnection,
-          request
+          users,
+          games,
+          myWebsocketConnection,
+          myUIDGen,
+          myGames.send_GameList
         );
       } else if( inMessage.event === "client_chat_message" ) {
         const chat_message = {

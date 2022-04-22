@@ -71,7 +71,7 @@ function doLaunchKetrisGameplayer() {
 /*
 End the Ketris game.
 */
-function doEndKetrisGameplayer() {
+function doEndKetrisGameplayer( inChatroomWebsocket ) {
   //Remove the mouse related event listeners.
   detach_game_mouse_events();
 
@@ -82,5 +82,5 @@ function doEndKetrisGameplayer() {
   //to other tabs, for example).
   document.removeEventListener( 'visibilitychange', on_visibility_change );
 
-  switchInterface("chat");
+  switchInterface( "chat", inChatroomWebsocket );
 }

@@ -96,7 +96,7 @@ characters they have replaced.
 Finally we use the g flag to apply our regex search patterns to every match in the
 inText string, rather than simply replacing the first matched instance.
 */
-async function process_text( inText ) {
+function process_text( inText ) {
   let processed_text = inText.replace(
     /\'/g,
     "&#39;"
@@ -149,17 +149,21 @@ async function log_error( source, message, severity, ip, details ) {
     await sqlPool.query( new_error_id_query );
   const new_error_id = new_error_row[0].new_id;
 
+  details.error = {
+    stack: details.error.stack,
+    message: details.error.message
+  }
 
   const add_error_query =
     "INSERT INTO error_log " +
     "(error_id, source, message, severity, timestamp, ip, details) VALUES " +
     "(" + new_error_id + ", " +
     "\'" + source + "\', " +
-    "\'" + await process_text( message.toString() ) + "\', " +
+    "\'" + process_text( message.toString() ) + "\', " +
     severity + ", " +
     "\'" + timestamp_string + "\', " +
     "\'" + ip + "\', " +
-    "\'" + JSON.stringify( details ) + "\'" +
+    "\'" + process_text(JSON.stringify( details )) + "\'" +
     ");";
 
   const [add_rows,add_fields] = await sqlPool.query( add_error_query );

@@ -80,9 +80,9 @@ function compose_event_log( event_log_obj ) {
 
     
     //Check to see if there is a details object to use.
-    if( typeof( event_obj.details ) != "undefined" && event_obj.details != null ) {
+    if( typeof( event_obj.details ) != "undefined" ) {
       //If so, parse the text into something the user can easily read.
-      const details_event = JSON.parse( reverse_process_text( JSON.stringify(event_obj.details) ) );
+      const details_event = JSON.parse( reverse_process_text( event_obj.details ) );
 
       //Create the expandable/collapsible element itself.
       //This will return the element of the row, as well as a reference to the div that

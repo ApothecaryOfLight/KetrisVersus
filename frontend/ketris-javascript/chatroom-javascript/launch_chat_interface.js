@@ -4,11 +4,8 @@
 /*
 Launch the chat interface.
 */
-function launch_ChatInterface( ws ) {
+function launch_ChatInterface( chatroomWebsocket ) {
   console.log( "Launching chat interface!" );
-
-  //Show the chat interface and hide the login and game interfaces.
-  switchInterface( "chat", ws );
 
   //Set up the React components and render them.
   let chatLog = [];
@@ -16,15 +13,15 @@ function launch_ChatInterface( ws ) {
   let gameList = [];
   const myUID = new UID();
   ReactDOM.render(
-    <CurrentUsers userlist={userList} websocket={ws} />,
+    <CurrentUsers userlist={userList} websocket={chatroomWebsocket} />,
     document.getElementById('column_user_area')
   );
   ReactDOM.render(
-    <AvailGames inGames={gameList} websocket={ws} />,
+    <AvailGames inGames={gameList} websocket={chatroomWebsocket} />,
     document.getElementById('column_avail_games_area')
   );
   ReactDOM.render(
-    <ChatRoom chatmessages={chatLog} websocket={ws} />,
+    <ChatRoom chatmessages={chatLog} websocket={chatroomWebsocket} />,
     document.getElementById('column_chat_area')
   );
 }

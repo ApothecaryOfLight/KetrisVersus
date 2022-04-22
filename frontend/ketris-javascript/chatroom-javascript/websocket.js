@@ -11,13 +11,6 @@ function ws_event_websocket_opened( event ) {
   //websocket has already been opened.
   event.srcElement.removeEventListener( 'click', event_listener_dictionary["event_websocket_opened"] );
 
-  //Send a message to the server informing it that the client has successfully opened
-  //the connection.
-  ws.send( JSON.stringify({
-    type: "chat_client_event",
-    event: "websocket_open_success"
-  }))
-
   //Add an event listener for the server ping.
   ws.addEventListener( "message", (message_obj) => {
     //Check the message type.

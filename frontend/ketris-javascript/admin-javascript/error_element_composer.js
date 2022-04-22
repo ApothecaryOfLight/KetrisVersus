@@ -242,17 +242,11 @@ function compose_error_log( error_log_obj ) {
     const error_details_button_row = document.createElement("td");
 
     //Check to see if there is a details object to use.
-    if(
-      typeof( error_obj.details ) != "undefined" &&
-      typeof(error_obj.details.error) != "undefined"
-    ) {
-      //If so, parse the text into something the user can easily read.
-      const details_error = JSON.parse( reverse_process_text( error_obj.details.error ) );
-
+    if( typeof( error_obj.details ) != "undefined" ) {
       //Create the expandable/collapsible element itself.
       //This will return the element of the row, as well as a reference to the div that
       //will actually be expanded or collapsed.
-      const collapsible_object = compose_collapsible_object( details_error );
+      const collapsible_object = compose_collapsible_object( JSON.parse(reverse_process_text(error_obj.details)) );
 
       //Create an element to contain the expandable/collapsable row.
       const details_error_container = collapsible_object.whole_object;

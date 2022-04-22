@@ -31,7 +31,7 @@ function ws_event_server_enter_game( event ) {
     switchInterface( "game", this );
   
     //Launch the game itself.
-    launchKetris( ip, inMessage.game_id );
+    launchKetris( ip, inMessage.game_id, this );
   }
 }
 
