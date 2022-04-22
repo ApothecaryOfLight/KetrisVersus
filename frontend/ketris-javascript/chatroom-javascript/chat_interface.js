@@ -27,7 +27,11 @@ event: Contains the game_id representing the game to be launched.
 function ws_event_server_enter_game( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event === "server_enter_game" ) {
-    launchGameInterface( this, ip, inMessage.game_id );
+    //Hide the login/chat interfaces, show the game interface, and attach game event listeners.
+    switchInterface( "game", this );
+  
+    //Launch the game itself.
+    launchKetris( ip, inMessage.game_id );
   }
 }
 
