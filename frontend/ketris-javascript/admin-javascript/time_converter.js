@@ -28,7 +28,6 @@ and then prepend a number of zeroes that will make the string 6 digits long, in
 order to match the format expected by MySQL's DATETIME(6).
 */
 function pad_milliseconds( inMilliseconds ) {
-  console.log( inMilliseconds );
   let outMilliseconds = "";
 
   //JavaScript milliseconds need to be multipled by two orders of magnitude to be
