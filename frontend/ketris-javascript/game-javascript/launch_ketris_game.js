@@ -82,11 +82,5 @@ function doEndKetrisGameplayer() {
   //to other tabs, for example).
   document.removeEventListener( 'visibilitychange', on_visibility_change );
 
-  //Get references to the game and chat interfaces.
-  let game_interface = document.getElementById('game_interface');
-  let chat_interface = document.getElementById('chat_interface');
-
-  //Hide the game interface, show the chat interface.
-  game_interface.style.display = "none";
-  chat_interface.style.display = "flex";
+  switchInterface("chat");
 }

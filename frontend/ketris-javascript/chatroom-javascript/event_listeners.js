@@ -137,3 +137,49 @@ function detach_ws_event( ws, event, function_name ) {
     console.error( error );
   }
 }
+
+
+function attachLoginEvents( websocket ) {
+  attach_event( "login_button", 'click', "event_login_click" );
+  attach_event( "create_account_button", 'click', "event_account_creation_click" );
+  attach_ws_event( websocket, 'open', "ws_event_websocket_opened" );
+  attach_ws_event( websocket, 'close', "ws_event_websocket_closed" );
+  attach_ws_event( websocket, 'message', "ws_event_server_login_approval" );
+  attach_ws_event( websocket, 'message', "ws_event_server_login_failure" );
+  attach_ws_event( websocket, 'message', "ws_event_server_account_creation_failure" );
+}
+
+function detachLoginEvents( websocket ) {
+  detach_event( "login_button", 'click', "event_login_click" );
+  detach_event( "create_account_button", 'click', "event_account_creation_click" );
+  detach_ws_event( websocket, 'open', "ws_event_websocket_opened" );
+  detach_ws_event( websocket, 'message', "ws_event_server_login_approval" );
+}
+
+function attachChatEvents( websocket ) {
+  attach_event( 'contact_dev_button', 'click', "event_launch_contact_dev_popup" );
+  attach_event( 'contact_dev_popup_exit_button', 'click', "event_close_contact_dev_popup" );
+  attach_event( 'contact_dev_popup_send_button', 'click', "event_send_contact_dev_message" );
+  attach_ws_event( websocket, 'message', "ws_event_server_enter_game" );
+  attach_event( 'input_text', 'keydown', "event_enter_send_message" );
+  attach_event( 'start_new_game_button', 'click', 'event_start_new_game_button' );
+  attach_event( 'send_button', 'click', 'event_send_button' );
+}
+
+function detachChatEvents( websocket ) {
+  detach_event( 'contact_dev_button', 'click', "event_launch_contact_dev_popup" );
+  detach_event( 'contact_dev_popup_exit_button', 'click', "event_close_contact_dev_popup" );
+  detach_event( 'contact_dev_popup_send_button', 'click', "event_send_contact_dev_message" );
+  detach_ws_event( websocket, 'message', "ws_event_server_enter_game" );
+  detach_event( 'input_text', 'keydown', "event_enter_send_message" );
+  detach_event( 'start_new_game_button', 'click', 'event_start_new_game_button' );
+  detach_event( 'send_button', 'click', 'event_send_button' );
+}
+
+function attachGameEvents() {
+
+}
+
+function detachGameEvents() {
+
+}

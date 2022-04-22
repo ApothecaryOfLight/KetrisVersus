@@ -27,7 +27,7 @@ event: Contains the game_id representing the game to be launched.
 function ws_event_server_enter_game( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event === "server_enter_game" ) {
-    launchGameInterface( ip, inMessage.game_id );
+    launchGameInterface( this, ip, inMessage.game_id );
   }
 }
 

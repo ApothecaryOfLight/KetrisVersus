@@ -17,7 +17,7 @@ let MenuRedrawTimer;
 /*
 Set the global variables to their default values.
 */
-function format_globals() {  
+function format_globals() {
   myGameState.GlobalPlay = false;
   myGameState.Paused = false;
   myGameState.PausedTimestamp = false;

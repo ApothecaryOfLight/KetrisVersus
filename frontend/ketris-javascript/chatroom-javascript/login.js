@@ -87,9 +87,6 @@ Function called upon receiving from the server a login approval.
 function ws_event_server_login_approval( event ) {
   //Check the received event data.
   if( event.data === "server_login_approved" ) {
-    //Detach events from the login interface.
-    cleanup_LoginInterface( this );
-
     //Launch the chat interface.
     launch_ChatInterface( this );
   }
