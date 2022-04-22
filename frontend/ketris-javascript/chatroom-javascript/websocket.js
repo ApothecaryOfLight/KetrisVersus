@@ -61,8 +61,9 @@ function ws_event_websocket_closed( event ) {
 Attempt to open the Websocket to the chat server.
 */
 try{
-  console.log( ip + ":3002" );
-  ws = new WebSocket( ip + ":3002" );
+  const chatroom_address = ip + ":3002";
+  console.log( "Connecting to chat server @ " + chatroom_address + "." );
+  ws = new WebSocket( chatroom_address );
 } catch( error ) {
   console.error( error );
 }
@@ -71,5 +72,6 @@ try{
 //Build the event listener dictionary.
 build_event_listener_dictionary( ws );
 
+
 //Launch the login interface.
-launch_LoginInterface( ws );
+switchInterface( "login", ws );
