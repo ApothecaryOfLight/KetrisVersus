@@ -122,6 +122,11 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           }
         });
       } else if( inMessage.event === "client_new_game" ) {
+        //Ensure that this user doesn't already have a game posted.
+        if( users[ new_user.user_id].has_game ) {
+          return;
+        }
+
         //Add game to available games.
         const new_game = {
           game_name: new_user.username,
