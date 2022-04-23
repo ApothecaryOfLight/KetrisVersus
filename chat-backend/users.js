@@ -263,11 +263,12 @@ async function attempt_create_user( logger, mySqlPool, new_user, inUsername, inP
     //Stringbash the insertion query.
     const insert_query = 'INSERT INTO ketris_users ' +
       '(username_hash, password_hash, ' +
-      'username_plaintext, account_creation_time) VALUES (' +
+      'username_plaintext, account_creation_time, creation_ip ) VALUES (' +
       'UNHEX(MD5(\"' + inUsername + '\")), ' +
       'UNHEX(MD5(\"' + inPassword + '\")), ' +
       '\"' + inUsername + '\", ' +
-      "\'" + new Date().toUTCString() + "\' );";
+      '\"' + new Date().toUTCString() + '\", ' +
+      '\"' + myWebsocketConnection.ip + '\");';
 
     //Make the query, attempting to insert the new credentials into the database.
     const [rows,fields] =  await mySqlPool.query( insert_query );
