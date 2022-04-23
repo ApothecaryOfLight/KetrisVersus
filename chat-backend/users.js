@@ -21,6 +21,7 @@ async function do_approve_login( myLogger, new_user, username, password, users, 
         myLogger.log_error(
             "users.js::do_approve_login()::catch",
             "Error while approving login.",
+            1,
             myWebsocketConnection.ip,
             error_obj
         );
@@ -32,16 +33,19 @@ exports.do_approve_login = do_approve_login;
 /*
 Sends a message to the user that they failed to provide valid credentials.
 */
-async function do_reject_login( logger, myWebsocketConnection ) {
+async function do_reject_login( myLogger, myWebsocketConnection ) {
     try {
       myWebsocketConnection.myConnection.sendUTF( "server_login_failed" );
     } catch( error_obj ) {
-        myLogger.log_error(
-            "users.js::do_reject_login()",
-            "Error while rejecting login.",
-            myWebsocketConnection.ip,
-            error_obj
-        );
+      console.log("do_reject_login" );
+      console.dir( error_obj );
+      myLogger.log_error(
+          "users.js::do_reject_login()",
+          "Error while rejecting login.",
+          1,
+          myWebsocketConnection.ip,
+          error_obj
+      );
     }
 }
 exports.do_reject_login = do_reject_login;
@@ -50,16 +54,17 @@ exports.do_reject_login = do_reject_login;
 /*
 Sends a message to the user that they failed to provide valid credentials.
 */
-async function do_reject_account_creation( logger, myWebsocketConnection ) {
+async function do_reject_account_creation( myLogger, myWebsocketConnection ) {
     try {
       myWebsocketConnection.myConnection.sendUTF( "server_account_creation_failure" );
     } catch( error_obj ) {
-        myLogger.log_error(
-            "users.js::do_reject_account_creation()",
-            "Error while rejecting account creation.",
-            myWebsocketConnection.ip,
-            error_obj
-        );
+      myLogger.log_error(
+          "users.js::do_reject_account_creation()",
+          "Error while rejecting account creation.",
+          1,
+          myWebsocketConnection.ip,
+          error_obj
+      );
     }
 }
 exports.do_reject_account_creation = do_reject_account_creation;
@@ -134,20 +139,21 @@ async function attempt_login ( logger, mySqlPool, new_user, inUsername, inPasswo
             details_obj
           );
       } else {
-          do_reject_login( logger, myWebsocketConnection );
-          const details_obj = {
-              "username": inUsername,
-              "password": inPassword
-          }
-          logger.log_event(
-            "attempt_login()::try",
-            "Failed login attempt was made.",
-            myWebsocketConnection.ip,
-            details_obj
-          );
+        do_reject_login( logger, myWebsocketConnection );
+        const details_obj = {
+            "username": inUsername,
+            "password": inPassword
+        }
+        logger.log_event(
+          "attempt_login()::try",
+          "Failed login attempt was made.",
+          myWebsocketConnection.ip,
+          details_obj
+        );
       }
     } catch( error_obj ) {
-      doDeny( logger, myWebsocketConnection.myConnection );
+      console.log("c");
+      do_reject_login( logger, myWebsocketConnection );
       const details_obj = {
           "username": inUsername,
           "password": inPassword,
