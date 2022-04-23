@@ -22,14 +22,33 @@ const myChat = require('./chat.js')
 /*Game Listings*/
 const myGames = require('./games.js')
 
-function log_dev_message ( mySqlPool, inAuthor, inMessage, inTimestamp ) {
-  mySqlPool.query(
-    'INSERT INTO ketris_messages ( author_name, message_body, timestamp ) VALUES ' +
-    '(\"' + inAuthor + '\", \"' + inMessage + '\", \'' + inTimestamp + '\');',
-    function( error, results, fields ) {
-      if( error ) { console.error( error ); return; }
-    }
-  );
+
+/*
+This function is used to record messages sent through the Contact Developer modal.
+
+mySqlPool: Reference providing MySQL querying.
+
+inUsername: The username the user is logged in under.
+
+inAuthor: The name specified by the user in the Contact Developer modal.
+
+inMessage: The text specified by the user in the Contact Developer modal.
+
+inTimestamp: Server-side timestamp of when the message was received.
+
+inIP: The source IP of the contact developer message.
+*/
+function log_dev_message ( mySqlPool, inUsername, inAuthor, inMessage, inTimestamp, inIP ) {
+  const insert_dev_message_query =
+  'INSERT INTO ketris_messages ' +
+  '( author_name, message_body, timestamp, ip ) ' +
+  'VALUES (' +
+  '\"Username: ' + inUsername + " , Dev message author: " + inAuthor + '\", ' +
+  '\"DEV_MESSAGE: ' + inMessage + '\", ' +
+  '\"' + inTimestamp + '\", ' +
+  '\"' + inIP + '\" ' +
+  ');'
+  mySqlPool.query( insert_dev_message_query );
 }
 
 
@@ -185,7 +204,14 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
         );
       } else if( inMessage.event === "client_completed_game" ) {
       } else if( inMessage.event == "client_dev_message" ) {
-        log_dev_message( mySqlPool, inMessage.author, inMessage.message, "1999-01-01 12:12:12" );
+        log_dev_message(
+          mySqlPool,
+          users[new_user.user_id].username,
+          inMessage.author,
+          inMessage.message,
+          error_log.get_datetime(),
+          myWebsocketConnection.ip
+        );
       } else if( inMessage.event == "pong" ) {
       } else {
         console.log( "Unrecognized object!" );
