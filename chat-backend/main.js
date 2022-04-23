@@ -113,7 +113,8 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           username : new_user.username,
           userdata : "placeholder",
           text : inMessage.text,
-          event: "server_chat_message"
+          event: "server_chat_message",
+          timestamp: error_log.get_datetime()
         }
         const chat_message_string = JSON.stringify( chat_message );
         users.forEach( user => {

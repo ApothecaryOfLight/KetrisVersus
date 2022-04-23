@@ -24,14 +24,44 @@ class ChatRoom extends React.Component {
 
         //Check the event type to determine how the message should be acted upon.
         if( inMessage.event === "server_chat_message" ) {
-          //A chat message has been received. Add it to the chat messages stored by
-          //React.
+          //A chat message has been received.
+          
+          //Get the user's timezone offset in hours.
+          const user_timezone_hours = new Date().getTimezoneOffset()/60;
+
+          //Convert the server's timestamp into a JavaScript timestamp.
+          const timestamp = new Date(inMessage.timestamp);
+
+          //Get the hours value of the server's timestamp.
+          const timestamp_hour = timestamp.getHours();
+          //Subtract the server's hour timestamp by the user's time zone.
+          timestamp.setHours( timestamp_hour - user_timezone_hours );
+
+          //Convert the timestamp into Strings for the date and the time.
+          const date_string = timestamp.toDateString();
+          const time_string = timestamp.toLocaleTimeString('en-US');
+
+          //Get whether its ante or post meridian (AM or PM).
+          const meridian = time_string.substring(
+            time_string.length - 2,
+            time_string.length
+          );
+
+          //Stringbash the final timestamp string together, removing the seconds
+          //value in the process.
+          const final_timestamp_string =
+            date_string + " " +
+            time_string.substr( 0, time_string.length - 6 ) +
+            " " + meridian;
+
+          //Add it to the chat messages stored by React.
           parent.state.chatmessages.push({
             username: inMessage.username,
             user_icon: inMessage.username.charAt(0).toUpperCase(),
             user_color: getColor( inMessage.username.charAt(0).toUpperCase() ),
             text: inMessage.text,
-            UID: parent.UID.generateUID('chats')
+            UID: parent.UID.generateUID('chats'),
+            timestamp: final_timestamp_string
           });
 
           //Have React render the updated component.
@@ -64,7 +94,7 @@ class ChatRoom extends React.Component {
                 {chatmessage.text}
               </div>
               <div className='chat_line_timestamp_class'>
-                Timestamp
+                {chatmessage.timestamp}
               </div>
             </div>
           </div>
