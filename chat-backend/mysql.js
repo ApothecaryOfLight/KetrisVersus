@@ -16,5 +16,4 @@ function do_connect_to_sql_server() {
     });
     return mysql_pool;
 }
-
 exports.do_connect_to_sql_server = do_connect_to_sql_server;

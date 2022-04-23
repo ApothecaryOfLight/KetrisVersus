@@ -108,6 +108,7 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myGames.send_GameList
         );
       } else if( inMessage.event === "client_chat_message" ) {
+        //Create the chat message Object to send to the connected users.
         const chat_message = {
           type: "chat_event",
           username : new_user.username,
@@ -116,7 +117,14 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           event: "server_chat_message",
           timestamp: error_log.get_datetime()
         }
+        //Record the chat message in the database.
+        myChat.do_log_chat_message(
+          error_log, mySqlPool,
+          chat_message, myWebsocketConnection
+        );
+        //Stringify the object.
         const chat_message_string = JSON.stringify( chat_message );
+        //Iterate through each user and send them the message.
         users.forEach( user => {
           if( Object.keys( user ).length != 0 ) {
             user.connection.sendUTF( chat_message_string );
