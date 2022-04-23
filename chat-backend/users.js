@@ -37,8 +37,6 @@ async function do_reject_login( myLogger, myWebsocketConnection ) {
     try {
       myWebsocketConnection.myConnection.sendUTF( "server_login_failed" );
     } catch( error_obj ) {
-      console.log("do_reject_login" );
-      console.dir( error_obj );
       myLogger.log_error(
           "users.js::do_reject_login()",
           "Error while rejecting login.",
@@ -142,17 +140,17 @@ async function attempt_login ( logger, mySqlPool, new_user, inUsername, inPasswo
         do_reject_login( logger, myWebsocketConnection );
         const details_obj = {
             "username": inUsername,
-            "password": inPassword
+            "password": inPassword,
+            "reason": "Credentials not matched in database."
         }
         logger.log_event(
           "attempt_login()::try",
-          "Failed login attempt was made.",
+          "Failed login attempt was made. Credentials not matched in database.",
           myWebsocketConnection.ip,
           details_obj
         );
       }
     } catch( error_obj ) {
-      console.log("c");
       do_reject_login( logger, myWebsocketConnection );
       const details_obj = {
           "username": inUsername,
