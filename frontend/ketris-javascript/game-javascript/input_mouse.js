@@ -81,46 +81,33 @@ function transform_mouse_coords_to_ketris_canvas( mouse_move_event ) {
 
 /*
 Funtion to run upon mouse clicks.
+mouse_coord_object.mouse_X_pos
+mouse_coord_object.mouse_Y_pos
 */
 function mouse_events( mouse_event ) {
   let out = getCursorPosition( myKetrisCanvas, mouse_event );
+
+  const mouse_coord_object =
+  transform_mouse_coords_to_ketris_canvas( mouse_event );
+
   if( myGameState.GlobalPlay == true ) {
     if( myGameState.Paused == false ) {
-      if( isMobile ) {
-        if( out[1] < 305 ) {
+      if( mouse_coord_object.mouse_X_pos < 313 ) {
+        if( mouse_coord_object.mouse_Y_pos < (620/2) ) {
           doUpKeyPress();
-        } else if( out[1] > 305  ) {
-          if( out[0] < 65 ) {
+        }
+        if( mouse_coord_object.mouse_Y_pos > (620/2) && mouse_coord_object.mouse_Y_pos ) {
+          if( mouse_coord_object.mouse_X_pos < 310/3 ) {
             doLeftKeyPress();
           }
           if(
-          out[0] > 65 &&
-          out[0] < 130
+            mouse_coord_object.mouse_X_pos > (310/3) &&
+            mouse_coord_object.mouse_X_pos < (310/3)*2
           ) {
             doDownKeyPress();
           }
-          if( out[0] > 130 ) {
+          if( mouse_coord_object.mouse_X_pos > (310/3)*2 ) {
             doRightKeyPress();
-          }
-        }
-      } else {
-        if( out[0] < 313 ) {
-          if( out[1] < (620/2) ) {
-            doUpKeyPress();
-          }
-          if( out[1] > (620/2) && out[1] ) {
-            if( out[0] < 310/3 ) {
-              doLeftKeyPress();
-            }
-            if(
-              out[0] > (310/3) &&
-              out[0] < (310/3)*2
-            ) {
-              doDownKeyPress();
-            }
-            if( out[0] > (310/3)*2 ) {
-              doRightKeyPress();
-            }
           }
         }
       }
@@ -150,30 +137,6 @@ function mouse_events( mouse_event ) {
         doStartNewGame();
       }
     });
-
-    if( isMobile ) {
-      if( out[0] > 42 && out[0] < 149 ) {
-        if( out[1] > 188 && out[1] < 220 ) {
-          let restart = JSON.stringify({
-            type: 'game_event',
-            event: 'client_restart'
-          });
-          connection.send( restart );
-          doStartNewGame();
-        }
-      }
-    } else {
-    if( out[0] > 59 && out[0] < 178 ) {
-      if( out[1] > 221 && out[1] < 256 ) {
-        let restart = JSON.stringify({
-          type: 'game_event',
-          event: 'client_restart'
-        });
-        connection.send( restart );
-        doStartNewGame();
-      }
-    }
-    }
   }
 }
 
