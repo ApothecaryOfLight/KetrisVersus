@@ -145,7 +145,7 @@ async function attempt_login ( logger, mySqlPool, new_user, inUsername, inPasswo
   try {
     //Ensure that no one is already logged in with those credentials by testing
     //every logged in user's username against the new username.
-    if( !users.every( (user) => { return user.username =! inUsername } ) ) {
+    if( !users.every( (user) => { return user.username != inUsername; } ) ) {
       //Reject login.
       do_reject_login( logger, myWebsocketConnection );
 
