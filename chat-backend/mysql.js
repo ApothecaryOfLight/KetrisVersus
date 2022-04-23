@@ -8,7 +8,7 @@ allowing queries to be make against the ketris_db database.
 */
 function do_connect_to_sql_server() {
     const mysql_pool = mysql.createPoolPromise({
-        connectionLimmit: 50,
+        connectionLimit: 50,
         host: 'localhost',
         user: 'ketris_node_user',
         password: 'ketris_node_user_password',

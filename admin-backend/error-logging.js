@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 
 const sqlPool = mysql.createPoolPromise({
-  connectionLimmit: 50,
+  connectionLimit: 50,
   host: 'localhost',
   user: 'ketris_node_user',
   password: 'ketris_node_user_password',
