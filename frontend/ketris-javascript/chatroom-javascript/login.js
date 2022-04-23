@@ -132,17 +132,3 @@ function ws_event_server_account_creation_failure( event ) {
     );
   }
 }
-
-
-/*function ws_event_server_account_creation_success( event ) {
-  if( event.data === "server_account_creation_success" ) {
-    //Check the received event data.
-    if( event.data === "server_login_approved" ) {
-      //Show the chat interface and hide the login and game interfaces.
-      switchInterface( "chat", this );
-  
-      //Launch the chat interface.
-      launch_ChatInterface( this );
-    }
-  }
-}*/
