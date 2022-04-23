@@ -19,6 +19,8 @@ function build_event_listener_dictionary( ws ) {
   /* Login events */
   event_listener_dictionary["event_login_click"] =
     event_login_click.bind( ws );
+  event_listener_dictionary["event_login_enter"] =
+    event_login_enter.bind( ws );
   event_listener_dictionary["event_account_creation_click"] =
     event_account_creation_click.bind( ws );
   event_listener_dictionary["ws_event_server_login_approval"] =
@@ -27,8 +29,6 @@ function build_event_listener_dictionary( ws ) {
     ws_event_server_login_failure.bind( ws );
   event_listener_dictionary["ws_event_server_account_creation_failure"] =
     ws_event_server_account_creation_failure.bind( ws );
-  /*event_listener_dictionary["ws_event_server_account_creation_success"] =
-  ws_event_server_account_creation_success;*/
 
   /* Chat events */
   event_listener_dictionary["ws_event_server_enter_game"] = ws_event_server_enter_game.bind( ws );
@@ -141,16 +141,33 @@ function detach_ws_event( ws, event, function_name ) {
 }
 
 
+function attach_key_event( DOM_ID, function_name ) {
+  const dom_reference = document.getElementById( DOM_ID );
+  dom_reference.addEventListener( "keydown", event_listener_dictionary["event_login_enter"] );
+}
+
+function detach_key_event( DOM_ID, function_name ) {
+  const dom_reference = document.getElementById( DOM_ID );
+  dom_reference.removeEventListener( "keydown", event_listener_dictionary["event_login_enter"] );
+}
+
+
 function attachLoginEvents( websocket ) {
   try {
+    //Login/account creation button events
     attach_event( "login_button", 'click', "event_login_click" );
+    attach_key_event( "login_username", "event_login_enter" );
+    attach_key_event( "login_password", "event_login_enter" );
     attach_event( "create_account_button", 'click', "event_account_creation_click" );
+
+    //Basic websocket events.
     attach_ws_event( websocket, 'open', "ws_event_websocket_opened" );
     attach_ws_event( websocket, 'close', "ws_event_websocket_closed" );
+
+    //Login, account creation websocket events.
     attach_ws_event( websocket, 'message', "ws_event_server_login_approval" );
     attach_ws_event( websocket, 'message', "ws_event_server_login_failure" );
     attach_ws_event( websocket, 'message', "ws_event_server_account_creation_failure" );
-    //attach_ws_event( websocket, 'message', "ws_event_server_account_creation_success" );
   } catch( error ) {
     console.error( error );
   }
@@ -158,12 +175,18 @@ function attachLoginEvents( websocket ) {
 
 function detachLoginEvents( websocket ) {
   try {
+    //Login/account creation button events
     detach_event( "login_button", 'click', "event_login_click" );
+    detach_key_event( "login_username", "event_login_enter" );
+    detach_key_event( "login_password", "event_login_enter" );
     detach_event( "create_account_button", 'click', "event_account_creation_click" );
+    
+    //Basic websocket events.
     detach_ws_event( websocket, 'open', "ws_event_websocket_opened" );
+
+    //Login, account creation websocket events.
     detach_ws_event( websocket, 'message', "ws_event_server_login_approval" );
     detach_ws_event( websocket, 'message', "ws_event_server_account_creation_failure" );
-    //detach_ws_event( websocket, 'message', "ws_event_server_account_creation_success" );
   } catch( error ) {
     console.error( error );
   }

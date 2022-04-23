@@ -44,7 +44,7 @@ function doCreateAccount( websocket, username, password ) {
 /*
 Function to be called upon login button click.
 */
-function event_login_click( event ) {
+function event_login_click() {
   //Get references to the username and password text fields.
   let username_box = document.getElementById('login_username');
   let password_box = document.getElementById('login_password');
@@ -62,9 +62,31 @@ function event_login_click( event ) {
 
 
 /*
+Function to be called upon login enter keypress.
+*/
+function event_login_enter( keypress_event ) {
+  if( keypress_event.key == "Enter" ) {
+    //Get references to the username and password text fields.
+    let username_box = document.getElementById('login_username');
+    let password_box = document.getElementById('login_password');
+    
+    //Get the text content from the username and password text fields.
+    let username = username_box.value;
+    let password = password_box.value;
+
+    //Ensure that credentials have been provided in their respective text fields.
+    if( username != "" && password != "" ) {
+      //Send login attempt to the server.
+      doLogin( this, username, password );
+    }
+  }
+}
+
+
+/*
 Function called upon Create Account button click.
 */
-function event_account_creation_click( event ) {
+function event_account_creation_click() {
   //Get references to the username and password text fields.
   let username_box = document.getElementById('login_username');
   let password_box = document.getElementById('login_password');
