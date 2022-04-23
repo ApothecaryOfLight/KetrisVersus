@@ -2,21 +2,22 @@
 This is sent to new users, to give them a full list of posted games.
 */
 function send_GameList( myLogger, games, myWebsocketConnection ) {
+    console.log( "Send game list." );
     try {
         const avail_gamesList = [];
+        console.dir( games );
         games.forEach( game=> {
-            if( Object.keys(game).length != 0 && game.is_listed == true ) {
-                avail_gamesList.push({
-                    game_name: game.game_name,
-                    game_id: game.game_id
-                });
-            }
+            avail_gamesList.push({
+                game_name: game.game_name,
+                game_id: game.game_id
+            });
         });
         const out = {
             type: "chat_event",
             event: "server_game_list",
             game_list : avail_gamesList
         }
+        console.dir( out );
         myWebsocketConnection.myConnection.sendUTF( JSON.stringify( out ) );
     } catch( error_obj ) {
         myLogger.log_error(
