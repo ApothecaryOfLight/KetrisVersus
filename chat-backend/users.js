@@ -101,35 +101,51 @@ games if the login is successful.
 */
 async function attempt_login ( logger, mySqlPool, new_user, inUsername, inPassword, users, games, myWebsocketConnection, myUIDGen, send_GameList ) {
     try {
-        const [rows,fields] = await mySqlPool.query(
-        'SELECT * FROM ketris_users ' +
-        'WHERE password_hash=UNHEX(MD5(\"' + inPassword + '\")) AND ' +
-        'username_hash=UNHEX(MD5(\"'+inUsername+'\"));' );
-        if( rows.length > 0 ) {
-            do_approve_login( logger, new_user, inUsername, inPassword, users, games, myWebsocketConnection, myUIDGen, send_GameList );
-            const details_obj = {
-                "username": inUsername,
-                "password": inPassword
-            }
-            logger.log_event(
-              "attempt_login()::try",
-              "Successful login.",
-              myWebsocketConnection.ip,
-              details_obj
-            );
-        } else {
-            do_reject_login( logger, myWebsocketConnection );
-            const details_obj = {
-                "username": inUsername,
-                "password": inPassword
-            }
-            logger.log_event(
-              "attempt_login()::try",
-              "Failed login attempt was made.",
-              myWebsocketConnection.ip,
-              details_obj
-            );
+      if( !users.every( (user) => { return user.username =! inUsername } ) ) {
+        do_reject_login( logger, myWebsocketConnection );
+        const details_obj = {
+            "username": inUsername,
+            "password": inPassword,
+            "reason": "User already logged in."
         }
+        logger.log_event(
+          "attempt_login()::try",
+          "Failed login attempt was made.",
+          myWebsocketConnection.ip,
+          details_obj
+        );
+        return;
+      }
+
+      const [rows,fields] = await mySqlPool.query(
+      'SELECT * FROM ketris_users ' +
+      'WHERE password_hash=UNHEX(MD5(\"' + inPassword + '\")) AND ' +
+      'username_hash=UNHEX(MD5(\"'+inUsername+'\"));' );
+      if( rows.length > 0 ) {
+          do_approve_login( logger, new_user, inUsername, inPassword, users, games, myWebsocketConnection, myUIDGen, send_GameList );
+          const details_obj = {
+              "username": inUsername,
+              "password": inPassword
+          }
+          logger.log_event(
+            "attempt_login()::try",
+            "Successful login.",
+            myWebsocketConnection.ip,
+            details_obj
+          );
+      } else {
+          do_reject_login( logger, myWebsocketConnection );
+          const details_obj = {
+              "username": inUsername,
+              "password": inPassword
+          }
+          logger.log_event(
+            "attempt_login()::try",
+            "Failed login attempt was made.",
+            myWebsocketConnection.ip,
+            details_obj
+          );
+      }
     } catch( error_obj ) {
       doDeny( logger, myWebsocketConnection.myConnection );
       const details_obj = {
