@@ -26,6 +26,7 @@
 
 .table_cell {
     border: 1px solid black;
+    overflow-wrap: break-word;
 }
 
 .table_row {
