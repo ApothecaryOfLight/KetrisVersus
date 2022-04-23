@@ -52,11 +52,11 @@ async function do_log_chat_message( myLogger, mySqlPool, myChatMessage, myWebsoc
     } catch( error ) {
         //Log the error.
         const details_obj = {
-            "username": myChatMessage.username,
-            "chat_message": myChatMessage.text,
-            "chat_timestamp": myChatMessage.timestamp,
-            "chat_ip": myChatMessage,ip,
-            "error": error_obj
+            username: myChatMessage.username,
+            chat_message: myChatMessage.text,
+            chat_timestamp: myChatMessage.timestamp,
+            chat_ip: myChatMessage,ip,
+            error: error_obj
         }
         logger.log_error(
             "do_log_chat_message()::catch",

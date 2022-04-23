@@ -151,9 +151,9 @@ async function attempt_login ( logger, mySqlPool, new_user, inUsername, inPasswo
 
       //Log the event.
       const details_obj = {
-          "username": inUsername,
-          "password": inPassword,
-          "reason": "User already logged in."
+          username: inUsername,
+          password: inPassword,
+          reason: "User already logged in."
       }
       logger.log_event(
         "attempt_login()::try",
@@ -198,9 +198,9 @@ async function attempt_login ( logger, mySqlPool, new_user, inUsername, inPasswo
 
       //Log the event.
       const details_obj = {
-          "username": inUsername,
-          "password": inPassword,
-          "reason": "Credentials not matched in database."
+          username: inUsername,
+          password: inPassword,
+          reason: "Credentials not matched in database."
       }
       logger.log_event(
         "attempt_login()::try",
@@ -216,9 +216,9 @@ async function attempt_login ( logger, mySqlPool, new_user, inUsername, inPasswo
 
     //Log the error.
     const details_obj = {
-        "username": inUsername,
-        "password": inPassword,
-        "error": error_obj
+        username: inUsername,
+        password: inPassword,
+        error: error_obj
     }
     logger.log_error(
         "attempt_login()::catch",

@@ -12,9 +12,9 @@ password: Provided password credential.
 */
 function doLogin( websocket, username, password ) {
   const login = {
-    "event" : "client_login",
-    "username" : username,
-    "password" : password
+    event : "client_login",
+    username : username,
+    password : password
   }
   const login_text = JSON.stringify( login );
   websocket.send( login_text );
@@ -32,9 +32,9 @@ password: Provided password credential.
 */
 function doCreateAccount( websocket, username, password ) {
   const account_creation = {
-    "event": "client_account_creation",
-    "username": username,
-    "password": password
+    event: "client_account_creation",
+    username: username,
+    password: password
   }
   const account_creation_text = JSON.stringify( account_creation );
   websocket.send( account_creation_text );
