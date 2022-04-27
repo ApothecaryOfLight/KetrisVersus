@@ -262,7 +262,7 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
       }
 
       //Delete user.
-      users[new_user.user_id] = {};
+      delete users[new_user.user_id];
     });
   });
 }

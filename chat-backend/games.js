@@ -73,7 +73,7 @@ function delist_game( myLogger, myWebsocketConnection, users, games, in_game_id,
         users[ in_posting_user_id ].has_game = false;
         
         //Delete game server-side and retire its ID.
-        games[ in_game_id ] = {};
+        delete games[ in_game_id ];
         myUIDGen.retireUID( "games", in_game_id );
 
         //Send message to all connected users that the game is delisted.
