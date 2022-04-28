@@ -9,8 +9,72 @@ class CurrentUsers extends React.Component {
   super( userlist, websocket );
     this.state = {...userlist};
     this.UID = new UID;
+    window.CurrentUsers = this;
   }
 
+  updateWebsocket( websocket ) {
+    this.state.websocket = websocket;
+
+    parent.CurrentUsers.state.userlist.splice(
+      0,
+      parent.CurrentUsers.state.userlist.length
+    );
+
+    this.state.websocket.addEventListener('message', function(event) {
+      //Parse the JSON object.
+      const inMessage = JSON.parse( event.data );
+
+      //Check the event type to determine how the message should be acted upon.
+      if( inMessage.event === "server_new_user" ) {
+        //Add a new user to the list of users.
+        parent.CurrentUsers.state.userlist.push({
+          username: inMessage.username,
+          user_icon: inMessage.username.charAt(0).toUpperCase(),
+          user_color: getColor( inMessage.username.charAt(0).toUpperCase() ),
+          UID: parent.CurrentUsers.UID.generateUID('users')
+        });
+        
+        //Have React render the user lists.
+        parent.CurrentUsers.setState( parent.CurrentUsers.state.userlist );
+      } else if( inMessage.event === "server_remove_user" ) {
+        //Remove a user who has disconnected.
+        let held_index;
+
+        //Iterate through the list of users and remove that user.
+        parent.CurrentUsers.state.userlist.forEach( (element, index ) => {
+          if( element.username == inMessage.username ) {
+            held_index = element.UID;
+            parent.CurrentUsers.state.userlist.splice( index, 1 );
+          }
+        });
+
+        //Have React render the user lists.
+        parent.CurrentUsers.setState( parent.CurrentUsers.state.userlist );
+
+        //Retire that user's ID.
+        parent.CurrentUsers.UID.retireUID( 'users', held_index );
+      } else if( inMessage.event === "server_user_list" ) {
+        //Populate the list of users already connected. This is for
+        //a new client who needs the whole list of current users.
+
+        //Create an empty array of connected users.
+        parent.CurrentUsers.state.userlist = [];
+
+        //Map the provided user list to the array of users.
+        inMessage.user_list.map( (user) => {
+          parent.CurrentUsers.state.userlist.push({
+            username: user.username,
+            user_icon: user.username.charAt(0).toUpperCase(),
+            user_color: getColor( user.username.charAt(0).toUpperCase() ),
+            UID: parent.CurrentUsers.UID.generateUID('users')
+          });
+        });
+
+        //Have React render the user lists.
+        parent.CurrentUsers.setState( parent.CurrentUsers.state.userlist );
+      }
+    });
+  }
 
   //Call upon React being ready to attach event listeners to the component.
   componentDidMount() {

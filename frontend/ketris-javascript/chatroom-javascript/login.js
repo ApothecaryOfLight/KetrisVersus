@@ -10,7 +10,7 @@ username: Provided username credential.
 
 password: Provided password credential.
 */
-function doLogin( websocket, username, password ) {
+function doLogin( websocket, username, password, user_obj ) {
   const login = {
     event : "client_login",
     username : username,
@@ -18,6 +18,10 @@ function doLogin( websocket, username, password ) {
   }
   const login_text = JSON.stringify( login );
   websocket.send( login_text );
+
+  if( user_obj.isLogged ) {
+    websocket.removeEventListener( 'open', user_obj.resend_login );
+  }
 }
 
 
@@ -44,7 +48,7 @@ function doCreateAccount( websocket, username, password ) {
 /*
 Function to be called upon login button click.
 */
-function event_login_click() {
+function event_login_click( user_obj ) {
   //Get references to the username and password text fields.
   let username_box = document.getElementById('login_username');
   let password_box = document.getElementById('login_password');
@@ -53,10 +57,15 @@ function event_login_click() {
   let username = username_box.value;
   let password = password_box.value;
 
+
   //Ensure that credentials have been provided in their respective text fields.
   if( username != "" && password != "" ) {
     //Send login attempt to the server.
-    doLogin( this, username, password );
+    doLogin( this, username, password, user_obj );
+
+    //Store credentials for relogging.
+    user_obj.username = username;
+    user_obj.password = password;
   }
 }
 
@@ -64,7 +73,7 @@ function event_login_click() {
 /*
 Function to be called upon login enter keypress.
 */
-function event_login_enter( keypress_event ) {
+function event_login_enter( user_obj, keypress_event ) {
   if( keypress_event.key == "Enter" ) {
     //Get references to the username and password text fields.
     let username_box = document.getElementById('login_username');
@@ -77,7 +86,11 @@ function event_login_enter( keypress_event ) {
     //Ensure that credentials have been provided in their respective text fields.
     if( username != "" && password != "" ) {
       //Send login attempt to the server.
-      doLogin( this, username, password );
+      doLogin( this, username, password, user_obj );
+      
+      //Store credentials for relogging.
+      user_obj.username = username;
+      user_obj.password = password;
     }
   }
 }
@@ -86,7 +99,7 @@ function event_login_enter( keypress_event ) {
 /*
 Function called upon Create Account button click.
 */
-function event_account_creation_click() {
+function event_account_creation_click( user_obj ) {
   //Get references to the username and password text fields.
   let username_box = document.getElementById('login_username');
   let password_box = document.getElementById('login_password');
@@ -99,6 +112,10 @@ function event_account_creation_click() {
   if( username != "" && password != "" ) {
     //Send account creation to the server.
     doCreateAccount( this, username, password );
+      
+    //Store credentials for relogging.
+    user_obj.username = username;
+    user_obj.password = password;
   }
 }
 
@@ -106,14 +123,17 @@ function event_account_creation_click() {
 /*
 Function called upon receiving from the server a login approval.
 */
-function ws_event_server_login_approval( event ) {
+function ws_event_server_login_approval( user_obj, event ) {
   //Check the received event data.
   if( event.data === "server_login_approved" ) {
+    //Set the local user_obj to being logged in.
+    user_obj.isLogged = true;
+
     //Show the chat interface and hide the login and game interfaces.
     switchInterface( "chat", this );
 
     //Launch the chat interface.
-    launch_ChatInterface( this );
+    launch_ChatInterface( this, user_obj );
   }
 }
 

@@ -177,7 +177,6 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myChat.send_MessageToAllExcept
         );
       } else if( inMessage.event === "client_enter_game" ) {
-        console.log( "Delisting game." );
         //Delist the game serverside and with all the clients.
         const posting_user_id = games[inMessage.game_id].posting_user_id;
         myGames.delist_game(
@@ -219,7 +218,6 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
       }
     });
     myConnection.on( 'close', function( reasonCode, desc ) {
-      console.log("connection close.");
       error_log.log_event(
         "main.js::do_attach_connection_events()",
         "Websocket connection closed.",

@@ -25,6 +25,7 @@ function switchInterface( targetInterface, websocket ) {
             game_interface.style.display = "none";
 
             //Attach chat events, detach game and login events.
+            detachWebsocketEvents( websocket );
             attachChatEvents( websocket );
             detachLoginEvents( websocket );
             detachGameEvents();
@@ -35,6 +36,7 @@ function switchInterface( targetInterface, websocket ) {
             game_interface.style.display = "none";
 
             //Attach login events, detach game and chat events.
+            attachWebsocketEvents( websocket );
             attachLoginEvents( websocket );
             detachChatEvents( websocket );
             detachGameEvents();

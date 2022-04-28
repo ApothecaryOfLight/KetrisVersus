@@ -27,7 +27,7 @@ function doLaunchWebsocket( inIPAddress, inGameID, inChatroomWebsocket ) {
         document.addEventListener("visibilitychange", on_visibility_change);
     }
     connection.onerror = function (error) {
-        console.error( "There has been an error." );
+        console.error( "There has been a websocket error." );
         console.error( error );
     }
     connection.onmessage = function (message) {
