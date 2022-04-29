@@ -48,11 +48,11 @@ function doDrawScore() {
       doComposeScore( myScore[myDigitKey], myDigitKey );
     }
   }
-  let myPlayCanvasContext =
-    myDOMHandles.myPlayCanvas.getContext( "2d" );
+  let myBufferCanvasContext =
+    myDOMHandles.myBufferCanvas.getContext( "2d" );
   let myScoreCanvasContext =
     myDOMHandles.myScoreCanvas.getContext( "2d" );
-  myPlayCanvasContext.drawImage(
+  myBufferCanvasContext.drawImage(
     myDOMHandles.myScoreCanvas,
     0, 0,
     myDOMHandles.myScoreCanvas.width,
@@ -100,9 +100,9 @@ function doDrawEnemyScore() {
       doComposeEnemyScore( myEnemyScore[myDigitKey], myDigitKey );
     }
   }
-  let myPlayCanvasContext =
-    myDOMHandles.myPlayCanvas.getContext( "2d" );
-  myPlayCanvasContext.drawImage(
+  let myBufferCanvasContext =
+    myDOMHandles.myBufferCanvas.getContext( "2d" );
+  myBufferCanvasContext.drawImage(
     myDOMHandles.myEnemyScoreCanvas,
     0, 0,
     myDOMHandles.myEnemyScoreCanvas.width,

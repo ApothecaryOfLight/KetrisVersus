@@ -30,14 +30,17 @@ function doLaunchKetrisGameplayer() {
   //Attach an event listener to await the completion of loading the spite atlas.
   myDOMHandles.KetrisImage.onload = function() {
     console.log( "Images loaded.");
-    //Set the dimensions of each canvas.
+    //Create each canvas and set their dimensions.
+    //NB: They will all be drawn to the buffer canvas, which will then be drawn to
+    //the display canvas, and stretched to fit that canvas. So all draw operations
+    //can take place in the same coordinate space.
+    myDOMHandles.myBufferCanvas = document.createElement("canvas");
+    myDOMHandles.myBufferCanvas.width = playCanvasWidth;
+    myDOMHandles.myBufferCanvas.height = 749;
+
     myDOMHandles.myBackgroundCanvas = document.createElement("canvas");
     myDOMHandles.myBackgroundCanvas.width = playCanvasWidth;
     myDOMHandles.myBackgroundCanvas.height = 749;
-
-    myDOMHandles.myPlayCanvas = document.createElement("canvas");
-    myDOMHandles.myPlayCanvas.width = playCanvasWidth;
-    myDOMHandles.myPlayCanvas.height = 749;
 
     myDOMHandles.myMenuCanvas = document.createElement("canvas");
     myDOMHandles.myMenuCanvas.width = playCanvasWidth;

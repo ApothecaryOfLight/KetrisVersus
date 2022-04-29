@@ -43,8 +43,8 @@ Function to call all drawing functions.
 */
 function doDraw() {
   //Get a reference to the canvas.
-  let myCanvas = document.getElementById( "myKetrisCanvas" );
-  let myCanvasContext = myCanvas.getContext( "2d" );
+  const myCanvas = document.getElementById( "myKetrisCanvas" );
+  const myCanvasContext = myCanvas.getContext( "2d" );
 
   //Clear the canvas.
   myCanvasContext.clearRect(
@@ -55,14 +55,14 @@ function doDraw() {
   );
 
   //Get a reference to the canvas.
-  let myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
+  const myBufferCanvasContext = myDOMHandles.myBufferCanvas.getContext( "2d" );
 
   //Clear the canvas.
-  myPlayCanvasContext.clearRect(
+  myBufferCanvasContext.clearRect(
     0,
     0,
-    myDOMHandles.myPlayCanvas.width,
-    myDOMHandles.myPlayCanvas.height
+    myDOMHandles.myBufferCanvas.width,
+    myDOMHandles.myBufferCanvas.height
   );
 
   //Clear the player and enemy game area canvases.
@@ -90,8 +90,8 @@ function doDraw() {
   //Copy the buffered images to the visible canvases.
   doBlit();
 
-  //Draw the play canvas to the main canvas.
-  myCanvasContext.drawImage( myDOMHandles.myPlayCanvas, 0, 0 );
+  //Draw the buffer canvas to the displayed canvas.
+  myCanvasContext.drawImage( myDOMHandles.myBufferCanvas, 0, 0 );
 
   //If the menu is visible:
   if( DrawMenu == true ) {
@@ -133,15 +133,15 @@ Draw the cached canvases to the play canvases.
 */
 function doBlit() {
   //Get a reference to the play canvas.
-  var myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
+  var myBufferCanvasContext = myDOMHandles.myBufferCanvas.getContext( "2d" );
 
   //Draw the cahced player canvas to the visible canvas.
-  myPlayCanvasContext.drawImage( myDOMHandles.myPlayerCanvas, 0, 0 );
+  myBufferCanvasContext.drawImage( myDOMHandles.myPlayerCanvas, 0, 0 );
 
   //Check if this is not mobile:
   if( isMobile == false ) {
     //If it is not mobile, then draw the enemy canvas at the given position.
-    myPlayCanvasContext.drawImage(
+    myBufferCanvasContext.drawImage(
       myDOMHandles.myEnemyCanvas,
       320,
       0
@@ -149,7 +149,7 @@ function doBlit() {
   } else {
     //Otherwise,  if it is mobile, draw the enemy canvas at the given position and
     //with the given width and height variables.
-    myPlayCanvasContext.drawImage(
+    myBufferCanvasContext.drawImage(
       myDOMHandles.myEnemyCanvas,
       260,
       0,
@@ -542,14 +542,14 @@ function doDrawPreviewBlock() {
   let toDrawColor = CurrentElement.NextColor;
 
   //Get the canvas context of the player's play area.
-  let myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
+  let myBufferCanvasContext = myDOMHandles.myBufferCanvas.getContext( "2d" );
 
   //Iterate over every place in the next shape.
   for( let x=0; x<4; x++ ) {
     for( let y=0; y<4; y++ ) {
       //If there is a block in this place, draw it.
       if( Shapes[toDrawShape][0][x][y] == 1 ) {
-        myPlayCanvasContext.drawImage(
+        myBufferCanvasContext.drawImage(
           myDOMHandles.KetrisImage,
           (toDrawColor-1)*32, 0, 32, 32,
           ((x)*31)+150, ((y)*31)+25,

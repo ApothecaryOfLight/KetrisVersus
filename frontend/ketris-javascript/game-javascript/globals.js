@@ -66,16 +66,23 @@ function format_globals() {
 
 
 /*
-Object containing references to the canvases, both those displayed and those used as
-buffers, as well as the sprite atlas from which images are drawn.
+Object containing references to the canvases.
+
+All of these canvases except myBufferCanvas will be drawn to myBufferCanvas.
+
+myBufferCanvas will be drawn to myKetrisCanvas, which is the only canvas displayed
+to the players.
 */
 const myDOMHandles = {
   KetrisImage: new Image(),
-  myBackgroundCanvas: null,
-  myPlayCanvas: null,
-  myMenuCanvas: null,
-  myScoreCanvas: null,
-  myEnemyScoreCanvas : null
+  myBufferCanvas: null, //Canvas which all other canvases will be drawn to before
+                        //finally this canvas is drawn to the displayed canvas.
+  myBackgroundCanvas: null, //Where the background image is stored.
+  myMenuCanvas: null, //Where the menu image is stored.
+  myScoreCanvas: null, //Where the score image is stored.
+  myEnemyScoreCanvas : null, //Where the enemy score image is stored.
+  myPlayerCanvas: null, //Where the player's gameplay area image is stored.
+  myEnemyCanvas: null //Where the enemy's gameplay area image is stored.
 }
 
 
