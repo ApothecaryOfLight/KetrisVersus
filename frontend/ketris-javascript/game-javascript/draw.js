@@ -321,7 +321,7 @@ or right.
 */
 function doDrawGhostblock() {
   //Get a reference to the play canvas.
-  let myPlayCanvasContext = myDOMHandles.myPlayCanvas.getContext( "2d" );
+  let myPlayerCanvasContext = myDOMHandles.myPlayerCanvas.getContext( "2d" );
 
   //Get information about the current shape.
   let Shape = CurrentElement.Shape;
@@ -346,7 +346,7 @@ function doDrawGhostblock() {
   for( let x=0; x<4; x++ ) {
     for( let y=0; y<4; y++ ) {
       if( Shapes[Shape][Rotation][x][y] == 1 ) {
-        myPlayCanvasContext.drawImage(
+        myPlayerCanvasContext.drawImage(
           myDOMHandles.KetrisImage,
           32*5, 0, 32, 32,
           (x+xOffset)*31, ((y+yOffset)*31)+128,
