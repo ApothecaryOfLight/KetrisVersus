@@ -32,6 +32,9 @@ function get_error_log() {
     .then( json => json.json() )
     .then( json => {
         const error_log_container = document.getElementById("error-log-container");
+        while( error_log_container.firstChild ) {
+          error_log_container.removeChild( error_log_conatiner.firstChild );
+        }
         error_log_container.appendChild( compose_error_log( json.error_log ) );
     });
 }
@@ -50,6 +53,9 @@ function get_event_log() {
     .then( json => json.json() )
     .then( json => {
       const event_log_container = document.getElementById("event-log-container");
+      while( event_log_container.firstChild ) {
+        event_log_container.removeChild( event_log_container.firstChild );
+      }
       event_log_container.appendChild( compose_event_log( json.event_log ) );
     });
 }
