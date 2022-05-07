@@ -176,6 +176,20 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           users[new_user.user_id].username,
           myChat.send_MessageToAllExcept
         );
+      } else if(inMessage.event === "client_cancel_game") {
+        if( users[ new_user.user_id].has_game ) {
+          myGames.delist_game(
+            error_log,
+            myWebsocketConnection,
+            users,
+            games,
+            users[ new_user.user_id ].game_id,
+            users[ new_user.user_id ].user_id,
+            myUIDGen,
+            myChat.send_MessageToAll
+          );
+        }
+
       } else if( inMessage.event === "client_enter_game" ) {
         //Delist the game serverside and with all the clients.
         const posting_user_id = games[inMessage.game_id].posting_user_id;

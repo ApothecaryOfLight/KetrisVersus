@@ -74,8 +74,28 @@ sending to the server a request to create a new posted game that other users
 can then accept to start a Ketris match.
 */
 function event_start_new_game_button() {
-  let myNewGameButton = document.getElementById("start_new_game_button");
   this.send( JSON.stringify({
     event: "client_new_game"
   }));
+  let myNewGameButton = document.getElementById("start_new_game_button");
+  let myCancelGameButton = document.getElementById("cancel_new_game_button");
+  myNewGameButton.style.display = "none";
+  myCancelGameButton.style.display = "flex";
+}
+
+
+/*
+This function is triggered upon this user clicking the Cancel Game button,
+sending to the server a request to delete the game this user created. The
+server will then notify all other connected users that this game has been
+deleted.
+*/
+function event_cancel_new_game_button() {
+  this.send( JSON.stringify({
+    event: "client_cancel_game"
+  }));
+  let myNewGameButton = document.getElementById("start_new_game_button");
+  let myCancelGameButton = document.getElementById("cancel_new_game_button");
+  myNewGameButton.style.display = "flex";
+  myCancelGameButton.style.display = "none";
 }

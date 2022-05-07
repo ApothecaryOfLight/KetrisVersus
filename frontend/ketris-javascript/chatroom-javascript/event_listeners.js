@@ -37,7 +37,8 @@ function build_event_listener_dictionary( ws, user_obj ) {
   event_listener_dictionary["event_send_button"] = event_send_button.bind( ws );
   event_listener_dictionary["event_enter_send_message"] = event_enter_send_message.bind( ws );
   event_listener_dictionary["event_start_new_game_button"] = event_start_new_game_button.bind( ws );
-
+  event_listener_dictionary["event_cancel_new_game_button"] = event_cancel_new_game_button.bind( ws );
+  
   /* Chat events: Contact dev popup*/
   event_listener_dictionary["event_launch_contact_dev_popup"] = event_launch_contact_dev_popup.bind( ws );
   event_listener_dictionary["event_close_contact_dev_popup"] = event_close_contact_dev_popup.bind( ws );
@@ -222,6 +223,7 @@ function attachChatEvents( websocket ) {
     //Start and enter game events.
     attach_ws_event( websocket, 'message', "ws_event_server_enter_game" );
     attach_event( 'start_new_game_button', 'click', 'event_start_new_game_button' );
+    attach_event( 'cancel_new_game_button', 'click', 'event_cancel_new_game_button' );
   } catch( error ) {
     console.error( error );
   }
@@ -240,6 +242,7 @@ function detachChatEvents( websocket ) {
 
     //Start and enter game events.
     detach_event( 'start_new_game_button', 'click', 'event_start_new_game_button' );  
+    detach_event( 'cancel_new_game_button', 'click', 'event_cancel_new_game_button' );  
     detach_ws_event( websocket, 'message', "ws_event_server_enter_game" );
   } catch( error ) {
     console.error( error );

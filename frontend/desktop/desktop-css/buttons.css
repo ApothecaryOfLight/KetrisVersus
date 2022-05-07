@@ -1,0 +1,17 @@
+.button_class {
+    color: white;
+    background-color: DodgerBlue;
+    border-radius: 15px;
+    margin-top: 6px;
+    border: none;
+    font-family: "Arial Black";
+    font-size: 15px;
+    height: max(50px);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.button_class:hover {
+    background-color: #571fff;
+}
