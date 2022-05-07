@@ -32,3 +32,7 @@
     align-items:center;
     justify-content:center;
   }
+
+  .button_class:hover {
+    background-color: #571fff;
+  }
