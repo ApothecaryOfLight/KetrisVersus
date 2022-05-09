@@ -38,6 +38,11 @@ function build_event_listener_dictionary( ws, user_obj ) {
   event_listener_dictionary["event_enter_send_message"] = event_enter_send_message.bind( ws );
   event_listener_dictionary["event_start_new_game_button"] = event_start_new_game_button.bind( ws );
   event_listener_dictionary["event_cancel_new_game_button"] = event_cancel_new_game_button.bind( ws );
+
+  /* Posted Game Events */
+  event_listener_dictionary["doAddListedGame"] = doAddListedGame.bind( ws );
+  event_listener_dictionary["doRemoveListedGame"] = doRemoveListedGame.bind( ws );
+  event_listener_dictionary["doAddAllListedGames"] = doAddAllListedGames.bind( ws );
   
   /* Chat events: Contact dev popup*/
   event_listener_dictionary["event_launch_contact_dev_popup"] = event_launch_contact_dev_popup.bind( ws );
@@ -220,6 +225,12 @@ function attachChatEvents( websocket ) {
     attach_event( 'input_text', 'keydown', "event_enter_send_message" );
     attach_event( 'send_button', 'click', 'event_send_button' );
 
+    //Posted games events
+    attach_ws_event( websocket, 'message', "doAddListedGame" );
+    //attach_ws_event( websocket, 'message', "ws_event_server_game_posting_success" );
+    attach_ws_event( websocket, 'message', "doRemoveListedGame" );
+    attach_ws_event( websocket, 'message', "doAddAllListedGames" );
+
     //Start and enter game events.
     attach_ws_event( websocket, 'message', "ws_event_server_enter_game" );
     attach_event( 'start_new_game_button', 'click', 'event_start_new_game_button' );
@@ -239,6 +250,12 @@ function detachChatEvents( websocket ) {
     //Send chat message events.
     detach_event( 'input_text', 'keydown', "event_enter_send_message" );
     detach_event( 'send_button', 'click', 'event_send_button' );
+
+    //Posted games events
+    detach_ws_event( websocket, 'message', "ws_event_server_list_game" );
+    detach_ws_event( websocket, 'message', "ws_event_server_game_posting_success" );
+    detach_ws_event( websocket, 'message', "ws_event_server_server_delist_game" );
+    detach_ws_event( websocket, 'message', "ws_event_server_game_list" );
 
     //Start and enter game events.
     detach_event( 'start_new_game_button', 'click', 'event_start_new_game_button' );  

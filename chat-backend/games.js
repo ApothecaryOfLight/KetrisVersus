@@ -64,7 +64,7 @@ This is sent to all connected users to notify them that a game is no longer post
 whether that means the user who created it has logged out, or whether the game
 has been accepted by another player.
 */
-function delist_game( myLogger, myWebsocketConnection, users, games, in_game_id, in_posting_user_id, myUIDGen, send_MessageToAll ) {
+function delist_game( myLogger, myWebsocketConnection, users, games, in_game_id, in_posting_user_id, myUIDGen, send_MessageToAllExcept ) {
     try {
         //Mark game as no longer listed.
         games[ in_game_id ].is_listed = false;
@@ -77,13 +77,14 @@ function delist_game( myLogger, myWebsocketConnection, users, games, in_game_id,
         myUIDGen.retireUID( "games", in_game_id );
 
         //Send message to all connected users that the game is delisted.
-        send_MessageToAll(
+        send_MessageToAllExcept(
             users,
             {
                 type: "chat_event",
                 event: "server_delist_game",
                 game_id: in_game_id
-            }
+            },
+            in_posting_user_id
         );
     } catch( error_obj ) {
         console.dir( error_obj );
@@ -148,7 +149,7 @@ exports.launch_game = launch_game;
   
   
 /*
-This is sent to all connected users to notify them that a game has been posted.
+This is sent to all connected users (except the posting user) to notify them that a game has been posted.
 */
 function send_list_game( users, in_starting_user_id, in_starting_username, in_game_id, in_game_name, send_MessageToAllExcept ) {
     send_MessageToAllExcept(
@@ -164,3 +165,20 @@ function send_list_game( users, in_starting_user_id, in_starting_username, in_ga
     );
 }
 exports.send_list_game = send_list_game;
+
+
+/*
+This is sent to the posting user to notify them that the posted game creation was a success.
+*/
+function send_list_game_to_posting_user( users, user_id, send_MessageToUser ) {
+    send_MessageToUser(
+        users,
+        {
+            type: "chat_event",
+            event: "server_game_posting_sucess",
+            game_id: users[user_id].game_id
+        },
+        user_id
+    );
+}
+exports.send_list_game_to_posting_user = send_list_game_to_posting_user;

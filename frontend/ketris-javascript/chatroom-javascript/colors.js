@@ -21,3 +21,7 @@ Function that returns the hex color code assigned to each letter.
 function getColor( inLetter ) {
   return {background: colors[inLetter]};
 }
+
+function getHexColor( inLetter ) {
+  return colors[inLetter];
+}

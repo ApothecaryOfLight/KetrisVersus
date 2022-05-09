@@ -1,166 +1,142 @@
 'use strict';
 
+const PostedGames = [];
 
-/*
-React component to manage games posted by other players.
-*/
-class AvailGames extends React.Component {
-    constructor( inGames, websocket ) {
-      super( inGames, websocket );
-      this.state = {...inGames};
-      this.UID = new UID;
-      window.AvailGames = this;
-    }
+function join_game_ws( inGameID, inGameName, inWebsocket ) {
+  inWebsocket.send(JSON.stringify({
+    event: "client_enter_game",
+    game_id: inGameID,
+    game_name: inGameName
+  }));
+}
 
-    updateWebsocket( websocket ) {
-      //Attach the Websocket listener events to this React component.
-      this.state.websocket = websocket;
-      parent.AvailGames.state.inGames.splice(
-        0,
-        parent.AvailGames.state.inGames.length
-      );
-      this.state.websocket.addEventListener('message', function(event) {
-        //Parse the JSON object.
-        const inMessage = JSON.parse( event.data );
+function doComposeAvailGame( inStartingUser, inTimestamp, inGameColor, inGameIcon, inGameID, inWebsocket ) {
+  const avail_game_wrapper = document.createElement("div");
+  avail_game_wrapper.className = "avail_game_wrapper_class";
 
-        //Check the event type to determine how the message should be acted upon.
-        if( inMessage.event === "server_list_game" ) {
-          //Add the newly posted game to the list displayed to the user.
-          parent.AvailGames.state.inGames.push({
-            game_name: inMessage.game_name,
-            game_icon: inMessage.game_name.charAt(0).toUpperCase(),
-            game_color: getColor( inMessage.game_name.charAt(0).toUpperCase() ),
-            game_id: inMessage.game_id,
-            UID: inMessage.game_id //guaranteed unique by server
-          });
+  const avail_game = document.createElement("div");
+  avail_game.className = "avail_game_class";
+  avail_game_wrapper.appendChild( avail_game );
 
-          //Have React render the updated component.
-          parent.AvailGames.setState( parent.AvailGames.state.inGames );
-        } else if( inMessage.event === "server_delist_game" ) {
-          //Iterate through the games listed and remove the game that has been delisted.
-          parent.AvailGames.state.inGames.forEach( ( element, index ) => {
-            if( element.game_id === inMessage.game_id ) {
-              parent.AvailGames.state.inGames.splice( index, 1 );
-            }
-          });
-          parent.AvailGames.setState( parent.AvailGames.state.inGames );
-        } else if( inMessage.event === "server_game_list" ) {
-          //This object contains a list of all posted games. This is for users who have
-          //just logged in, and need that full list.
-          //parent.AvailGames.props.inGames = [];
+  //Compose left side.
+  const avail_game_left = document.createElement("div");
+  avail_game_left.className = "avail_game_left_class";
+  avail_game.appendChild( avail_game_left );
 
-          //Map the received game list into a format React can apply to it's stored list
-          //of games.
-          inMessage.game_list.map( (game) => {
-            parent.AvailGames.state.inGames.push({
-              game_name: game.game_name,
-              game_icon: game.game_name.charAt(0).toUpperCase(),
-              game_color: getColor( game.game_name.charAt(0).toUpperCase() ),
-              game_id: game.game_id,
-              UID: game.game_id
-            });
-          });
+  const avail_game_icon = document.createElement("div");
+  avail_game_icon.className = "avail_game_icon_class";
+  avail_game_icon.style.backgroundColor = inGameColor;
+  avail_game_icon.innerText = inGameIcon;
+  avail_game_left.appendChild( avail_game_icon );
 
-          //Have React render the updated component.
-          parent.AvailGames.setState( parent.AvailGames.state.inGames );
-        }
+  const avail_game_username = document.createElement("div");
+  avail_game_username.className = "avail_game_username_class";
+  avail_game_username.innerText = inStartingUser;
+  avail_game_left.appendChild( avail_game_username );
+
+  const avail_game_timestamp = document.createElement("div");
+  avail_game_timestamp.className = "avail_game_timestamp";
+  avail_game_timestamp.innerText = inTimestamp;
+  avail_game_left.appendChild( avail_game_timestamp );
+
+  //Compose right side
+  const avail_game_right = document.createElement("div");
+  avail_game_right.className = "avail_game_right_class";
+  avail_game.appendChild( avail_game_right );
+
+  const avail_game_join_button = document.createElement("button");
+  avail_game_join_button.className = "avail_game_join_game_button_class button_class";
+  avail_game_join_button.innerText = "Join Game";
+  avail_game_join_button.onclick =
+    join_game_ws.bind(
+      null,
+      inGameID,
+      inStartingUser,
+      inWebsocket
+    );
+  avail_game_right.appendChild( avail_game_join_button );
+
+  return avail_game_wrapper;
+}
+
+function doAddAllListedGames( event ) {
+  const inMessage = JSON.parse( event.data );
+  if( inMessage.event == "server_game_list" ) {
+    //Iterate through each posted game.
+    inMessage.game_list.map( (game) => {
+      //1) Create the element fragment.
+      const avail_games_area = document.getElementById("column_avail_games_area");
+      const avail_game = avail_games_area.appendChild( doComposeAvailGame(
+        game.game_name,
+        "Time is on our side",
+        getHexColor( game.game_name.charAt(0).toUpperCase() ),
+        game.game_name.charAt(0).toUpperCase(),
+        game.game_id,
+        this 
+      ) );
+
+      //2) Add the game to the list of stored games.
+      PostedGames.push({
+        game_name: game.game_name,
+        game_icon: game.game_name.charAt(0).toUpperCase(),
+        game_color: getHexColor( game.game_name.charAt(0).toUpperCase() ),
+        game_id: game.game_id,
+        UID: game.game_id,
+        DOM_reference: avail_game
       });
-    }
 
-
-    //Call upon React being ready to attach event listeners to the component.
-    componentDidMount() {
-      this.setState( this.state.inGames );
-      let parent = this;
-
-      //Attach the Websocket listener events to this React component.
-      this.state.websocket.addEventListener('message', function(event) {
-        //Parse the JSON object.
-        const inMessage = JSON.parse( event.data );
-
-        //Check the event type to determine how the message should be acted upon.
-        if( inMessage.event === "server_list_game" ) {
-          //Add the newly posted game to the list displayed to the user.
-          parent.state.inGames.push({
-            game_name: inMessage.game_name,
-            game_icon: inMessage.game_name.charAt(0).toUpperCase(),
-            game_color: getColor( inMessage.game_name.charAt(0).toUpperCase() ),
-            game_id: inMessage.game_id,
-            UID: inMessage.game_id //guaranteed unique by server
-          });
-
-          //Have React render the updated component.
-          parent.setState( parent.state.inGames );
-        } else if( inMessage.event === "server_delist_game" ) {
-          //Iterate through the games listed and remove the game that has been delisted.
-          parent.state.inGames.forEach( ( element, index ) => {
-            if( element.game_id === inMessage.game_id ) {
-              parent.state.inGames.splice( index, 1 );
-            }
-          });
-          parent.setState( parent.state.inGames );
-        } else if( inMessage.event === "server_game_list" ) {
-          //This object contains a list of all posted games. This is for users who have
-          //just logged in, and need that full list.
-          parent.state.inGames = [];
-
-          //Map the received game list into a format React can apply to it's stored list
-          //of games.
-          inMessage.game_list.map( (game) => {
-            parent.state.inGames.push({
-              game_name: game.game_name,
-              game_icon: game.game_name.charAt(0).toUpperCase(),
-              game_color: getColor( game.game_name.charAt(0).toUpperCase() ),
-              game_id: game.game_id,
-              UID: game.game_id
-            });
-          });
-
-          //Have React render the updated component.
-          parent.setState( parent.state.inGames );
-        }
-      });
-    };
-
-
-    //This event is to be called when this user joins a posted game.
-    join_game( inGameID, inGameName ) {
-      this.state.websocket.send(JSON.stringify({
-        event: "client_enter_game",
-        game_id: inGameID,
-        game_name: inGameName
-      }));
-    }
-
-
-    //This function builds and renders the list of available games.
-    render() {
-      const avail_games_dom = this.state.inGames.map( (avail_game) =>
-        <div className='avail_game_wrapper_class' key={avail_game.UID}>
-          <div className='avail_game_class'>
-            <div className='avail_game_left_class'>
-              <div className='avail_game_icon_class' style={avail_game.game_color}>
-                {avail_game.game_icon}
-              </div>
-              <div className='avail_game_username_class'>
-                Started By: {avail_game.game_name}
-              </div>
-              <div className='avail_game_timestamp_class'>
-                Timestamp
-              </div>
-            </div>
-            <div className='avail_game_right_class'>
-              <button className='avail_game_join_game_button_class button_class'
-                onClick={()=> this.join_game(avail_game.game_id,avail_game.game_name) }
-              >
-                Join Game
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-      return(
-        <div id='avail_games_area' className='avail_games_area_class'>{avail_games_dom}</div>
-      );
-    }
+      //4) Append the available game element to the DOM.
+    });
   }
+}
+
+function doAddListedGame( event ) {
+  const inMessage = JSON.parse( event.data );
+  if( inMessage.event == "server_list_game" ) {
+    const avail_games_area = document.getElementById("column_avail_games_area");
+    const avail_game = avail_games_area.appendChild( doComposeAvailGame(
+      inMessage.game_name,
+      "Time is on our side",
+      getHexColor( inMessage.game_name.charAt(0).toUpperCase() ),
+      inMessage.game_name.charAt(0).toUpperCase(),
+      inMessage.game_id,
+      this 
+    ));
+
+    PostedGames.push({
+      game_name: inMessage.game_name,
+      game_icon: inMessage.game_name.charAt(0).toUpperCase(),
+      game_color: getHexColor( inMessage.game_name.charAt(0).toUpperCase() ),
+      game_id: inMessage.game_id,
+      UID: inMessage.game_id,
+      DOM_reference: avail_game
+    });
+  }
+}
+
+function doRemoveListedGame( event ) {
+  const inMessage = JSON.parse( event.data );
+  if( inMessage.event == "server_delist_game" ) {
+    //1) Find the index position of the game to remove in PostedGames.
+    const RemoveGameIndex =
+      PostedGames.findIndex( (game) => game.game_id == inMessage.game_id );
+
+    //2) Remove the game from the DOM.
+    PostedGames[RemoveGameIndex].DOM_reference.remove();
+
+    //3) Remove the game from PostedGames.
+    PostedGames.splice( RemoveGameIndex, 1 );
+  }
+}
+
+function doListOwnGame( PostedGames, inGameID ) {
+  //1) Add the own game into PostedGames.
+
+  //2) Add the own game to the DOM.
+}
+
+function doDelistOwnGame( PostedGames, inGameID ) {
+  //1) Remove the own game from PostedGames.
+
+  //2) Remove the own game from the DOM.
+}
