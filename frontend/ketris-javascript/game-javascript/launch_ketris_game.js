@@ -86,4 +86,5 @@ function doEndKetrisGameplayer( inChatroomWebsocket ) {
   document.removeEventListener( 'visibilitychange', on_visibility_change );
 
   switchInterface( "chat", inChatroomWebsocket );
+  requestUserList( inChatroomWebsocket );
 }

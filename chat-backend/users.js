@@ -406,3 +406,4 @@ function send_UserList( users, conn ) {
   }
   conn.sendUTF( JSON.stringify( out ) );
 }
+exports.send_UserList = send_UserList;

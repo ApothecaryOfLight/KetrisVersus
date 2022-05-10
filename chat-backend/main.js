@@ -232,6 +232,11 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myWebsocketConnection.ip
         );
       } else if( inMessage.event == "pong" ) {
+      } else if( inMessage.event == "requestUserList" ) {
+        myUsers.send_UserList(
+          users,
+          myWebsocketConnection.myConnection
+        );
       } else {
         console.log( "Unrecognized object!" );
         console.dir( inMessage );

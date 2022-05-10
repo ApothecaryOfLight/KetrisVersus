@@ -40,8 +40,13 @@ function composeUserElement( user ) {
 function addUserList( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event === "server_user_list" ) {
+    console.dir( inMessage );
+    const user_area = document.getElementById("user_area");
+    while( user_area.firstChild != null ) {
+      console.log("removing");
+      user_area.firstChild.remove();
+    }
     inMessage.user_list.map( (user) => {
-      const user_area = document.getElementById("user_area");
       const user_ref = user_area.appendChild(composeUserElement({
         username: user.username,
         user_icon: user.username.charAt(0).toUpperCase(),
@@ -68,6 +73,8 @@ function addUser( event ) {
 function removeUser( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event === "server_remove_user" ) {
+    console.log("remove user");
+    console.dir(inMessage);
     users.forEach( (user,index) => {
       if( user.username == inMessage.username ) {
         user.ref.remove();
@@ -75,4 +82,13 @@ function removeUser( event ) {
       }
     })
   }
+}
+
+function requestUserList( inWebsocket ) {
+  console.log("requestUserList");
+  const requestUserList = {
+    event : "requestUserList"
+  }
+  const requestUserList_string = JSON.stringify( requestUserList );
+  inWebsocket.send( requestUserList_string );
 }
