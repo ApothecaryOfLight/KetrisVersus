@@ -121,11 +121,13 @@ function doRemoveListedGame( event ) {
     const RemoveGameIndex =
       PostedGames.findIndex( (game) => game.game_id == inMessage.game_id );
 
-    //2) Remove the game from the DOM.
-    PostedGames[RemoveGameIndex].DOM_reference.remove();
+    if( RemoveGameIndex != -1 ) {
+      //2) Remove the game from the DOM.
+      PostedGames[RemoveGameIndex].DOM_reference.remove();
 
-    //3) Remove the game from PostedGames.
-    PostedGames.splice( RemoveGameIndex, 1 );
+      //3) Remove the game from PostedGames.
+      PostedGames.splice( RemoveGameIndex, 1 );
+    }
   }
 }
 
