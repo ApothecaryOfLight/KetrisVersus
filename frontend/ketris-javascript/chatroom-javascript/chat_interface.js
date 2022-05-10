@@ -29,6 +29,10 @@ function ws_event_server_enter_game( event ) {
   if( inMessage.event === "server_enter_game" ) {
     //Hide the login/chat interfaces, show the game interface, and attach game event listeners.
     switchInterface( "game", this );
+
+    if( OwnGame.has_game ) {
+      doDelistOwnGame();
+    }
   
     //Launch the game itself.
     launchKetris( ip, inMessage.game_id, this );
@@ -98,4 +102,8 @@ function event_cancel_new_game_button() {
   let myCancelGameButton = document.getElementById("cancel_new_game_button");
   myNewGameButton.style.display = "flex";
   myCancelGameButton.style.display = "none";
+
+  if( OwnGame.has_game ) {
+    doDelistOwnGame();
+  }
 }

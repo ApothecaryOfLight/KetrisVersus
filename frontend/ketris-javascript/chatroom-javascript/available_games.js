@@ -1,6 +1,7 @@
 'use strict';
 
 const PostedGames = [];
+const OwnGame = { has_game: false };
 
 function join_game_ws( inGameID, inGameName, inWebsocket ) {
   inWebsocket.send(JSON.stringify({
@@ -131,14 +132,32 @@ function doRemoveListedGame( event ) {
   }
 }
 
-function doListOwnGame( PostedGames, inGameID ) {
-  //1) Add the own game into PostedGames.
-
-  //2) Add the own game to the DOM.
+function ws_event_server_game_posting_success( event ) {
+  const inMessage = JSON.parse( event.data );
+  if( inMessage.event == "server_game_posting_sucess" ) {
+    doListOwnGame()
+  }
 }
 
-function doDelistOwnGame( PostedGames, inGameID ) {
-  //1) Remove the own game from PostedGames.
+function doListOwnGame() {
+  if( !OwnGame.has_game ) {
+    const avail_games_area = document.getElementById("avail_games_area");
 
-  //2) Remove the own game from the DOM.
+    const avail_game_wrapper = document.createElement("div");
+    avail_game_wrapper.className = "avail_game_wrapper_class";
+
+    const avail_game = document.createElement("div");
+    avail_game.className = "avail_game_class";
+    avail_game.innerText = "You have a game posted!";
+    avail_game_wrapper.appendChild( avail_game );
+
+    OwnGame.reference = avail_games_area.insertBefore( avail_game_wrapper, avail_games_area.firstChild );
+    OwnGame.has_game = true;
+  }
+}
+
+function doDelistOwnGame() {
+  OwnGame.reference.remove();
+  OwnGame.reference = null;
+  OwnGame.has_game = false;
 }

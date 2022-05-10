@@ -40,7 +40,6 @@ function composeUserElement( user ) {
 function addUserList( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event === "server_user_list" ) {
-    console.dir( inMessage );
     const user_area = document.getElementById("user_area");
     while( user_area.firstChild != null ) {
       console.log("removing");

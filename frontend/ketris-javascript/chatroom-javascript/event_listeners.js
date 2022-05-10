@@ -33,7 +33,6 @@ function build_event_listener_dictionary( ws, user_obj ) {
     ws_event_server_account_creation_failure.bind( ws );
 
   /* Chat events */
-  event_listener_dictionary["ws_event_server_enter_game"] = ws_event_server_enter_game.bind( ws );
   event_listener_dictionary["event_send_button"] = event_send_button.bind( ws );
   event_listener_dictionary["event_enter_send_message"] = event_enter_send_message.bind( ws );
   event_listener_dictionary["event_start_new_game_button"] = event_start_new_game_button.bind( ws );
@@ -44,6 +43,8 @@ function build_event_listener_dictionary( ws, user_obj ) {
   event_listener_dictionary["addUserList"] = addUserList.bind( ws );
 
   /* Posted Game Events */
+  event_listener_dictionary["ws_event_server_enter_game"] = ws_event_server_enter_game.bind( ws );
+  event_listener_dictionary["ws_event_server_game_posting_success"] = ws_event_server_game_posting_success.bind( ws );
   event_listener_dictionary["doAddListedGame"] = doAddListedGame.bind( ws );
   event_listener_dictionary["doRemoveListedGame"] = doRemoveListedGame.bind( ws );
   event_listener_dictionary["doAddAllListedGames"] = doAddAllListedGames.bind( ws );
@@ -239,14 +240,14 @@ function attachChatEvents( websocket ) {
 
     //Posted games events
     attach_ws_event( websocket, 'message', "doAddListedGame" );
-    //attach_ws_event( websocket, 'message', "ws_event_server_game_posting_success" );
+    attach_ws_event( websocket, 'message', "ws_event_server_game_posting_success" );
     attach_ws_event( websocket, 'message', "doRemoveListedGame" );
     attach_ws_event( websocket, 'message', "doAddAllListedGames" );
 
     //Start and enter game events.
-    attach_ws_event( websocket, 'message', "ws_event_server_enter_game" );
     attach_event( 'start_new_game_button', 'click', 'event_start_new_game_button' );
     attach_event( 'cancel_new_game_button', 'click', 'event_cancel_new_game_button' );
+    attach_ws_event( websocket, 'message', "ws_event_server_enter_game" );
   } catch( error ) {
     console.error( error );
   }
