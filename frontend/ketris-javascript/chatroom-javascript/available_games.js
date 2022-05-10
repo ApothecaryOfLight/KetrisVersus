@@ -65,7 +65,7 @@ function doAddAllListedGames( event ) {
     //Iterate through each posted game.
     inMessage.game_list.map( (game) => {
       //1) Create the element fragment.
-      const avail_games_area = document.getElementById("column_avail_games_area");
+      const avail_games_area = document.getElementById("avail_games_area");
       const avail_game = avail_games_area.appendChild( doComposeAvailGame(
         game.game_name,
         "Time is on our side",

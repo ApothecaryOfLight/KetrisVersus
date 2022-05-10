@@ -131,9 +131,6 @@ function ws_event_server_login_approval( user_obj, event ) {
 
     //Show the chat interface and hide the login and game interfaces.
     switchInterface( "chat", this );
-
-    //Launch the chat interface.
-    launch_ChatInterface( this, user_obj );
   }
 }
 

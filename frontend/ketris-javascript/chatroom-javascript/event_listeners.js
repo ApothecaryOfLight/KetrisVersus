@@ -38,6 +38,10 @@ function build_event_listener_dictionary( ws, user_obj ) {
   event_listener_dictionary["event_enter_send_message"] = event_enter_send_message.bind( ws );
   event_listener_dictionary["event_start_new_game_button"] = event_start_new_game_button.bind( ws );
   event_listener_dictionary["event_cancel_new_game_button"] = event_cancel_new_game_button.bind( ws );
+  event_listener_dictionary["addToChatLog"] = addToChatLog.bind( ws );
+  event_listener_dictionary["addUser"] = addUser.bind( ws );
+  event_listener_dictionary["removeUser"] = removeUser.bind( ws );
+  event_listener_dictionary["addUserList"] = addUserList.bind( ws );
 
   /* Posted Game Events */
   event_listener_dictionary["doAddListedGame"] = doAddListedGame.bind( ws );
@@ -225,6 +229,14 @@ function attachChatEvents( websocket ) {
     attach_event( 'input_text', 'keydown', "event_enter_send_message" );
     attach_event( 'send_button', 'click', 'event_send_button' );
 
+    //Receive chat message event
+    attach_ws_event( websocket, 'message', "addToChatLog" );
+
+    //User events
+    attach_ws_event( websocket, 'message', "addUser" );
+    attach_ws_event( websocket, 'message', "removeUser" );
+    attach_ws_event( websocket, 'message', "addUserList" );
+
     //Posted games events
     attach_ws_event( websocket, 'message', "doAddListedGame" );
     //attach_ws_event( websocket, 'message', "ws_event_server_game_posting_success" );
@@ -250,6 +262,14 @@ function detachChatEvents( websocket ) {
     //Send chat message events.
     detach_event( 'input_text', 'keydown', "event_enter_send_message" );
     detach_event( 'send_button', 'click', 'event_send_button' );
+
+    //Receive chat message event
+    detach_ws_event( websocket, 'message', "addToChatLog" );
+
+    //User events
+    detach_ws_event( websocket, 'message', "addUser" );
+    detach_ws_event( websocket, 'message', "removeUser" );
+    detach_ws_event( websocket, 'message', "addUserList" );
 
     //Posted games events
     detach_ws_event( websocket, 'message', "ws_event_server_list_game" );
