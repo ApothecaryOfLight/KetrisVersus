@@ -63,10 +63,15 @@ function doComposeAvailGame( inStartingUser, inTimestamp, inGameColor, inGameIco
 function doAddAllListedGames( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event == "server_game_list" ) {
+    
+    const avail_games_area = document.getElementById("avail_games_area");
+    while( avail_games_area.firstChild != null ) {
+      avail_games_area.firstChild.remove();
+    }
+
     //Iterate through each posted game.
     inMessage.game_list.map( (game) => {
       //1) Create the element fragment.
-      const avail_games_area = document.getElementById("avail_games_area");
       const avail_game = avail_games_area.appendChild( doComposeAvailGame(
         game.game_name,
         "Time is on our side",
@@ -160,4 +165,13 @@ function doDelistOwnGame() {
   OwnGame.reference.remove();
   OwnGame.reference = null;
   OwnGame.has_game = false;
+}
+
+
+function requestGamesList( inWebsocket ) {
+  const requestGamesList = {
+    event : "requestGamesList"
+  }
+  const requestGamesList_string = JSON.stringify( requestGamesList );
+  inWebsocket.send( requestGamesList_string );
 }

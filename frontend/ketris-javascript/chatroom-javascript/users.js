@@ -42,7 +42,6 @@ function addUserList( event ) {
   if( inMessage.event === "server_user_list" ) {
     const user_area = document.getElementById("user_area");
     while( user_area.firstChild != null ) {
-      console.log("removing");
       user_area.firstChild.remove();
     }
     inMessage.user_list.map( (user) => {
@@ -84,7 +83,6 @@ function removeUser( event ) {
 }
 
 function requestUserList( inWebsocket ) {
-  console.log("requestUserList");
   const requestUserList = {
     event : "requestUserList"
   }

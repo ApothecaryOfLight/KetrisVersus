@@ -59,3 +59,20 @@ function get_event_log() {
       event_log_container.appendChild( compose_event_log( json.event_log ) );
     });
 }
+
+
+function get_user_list() {
+  const non_ws_ip = get_ip();
+  const get_user_list_request = new Request(
+      non_ws_ip + 'get_user_list'
+  );
+  fetch( get_user_list_request )
+  .then( json => json.json() )
+  .then( json => {
+    const user_list_container = document.getElementById("user-list-container");
+    while( user_list_container.firstChild ) {
+      user_list_container.removeChild( user_list_container.firstChild );
+    }
+    user_list_container.appendChild( compose_user_table( json.user_list ) );
+  });
+}

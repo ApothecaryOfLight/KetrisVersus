@@ -237,6 +237,12 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           users,
           myWebsocketConnection.myConnection
         );
+      } else if( inMessage.event == "requestGamesList" ) {
+        myGames.send_GameList(
+          error_log,
+          games,
+          myWebsocketConnection.myConnection
+        );
       } else {
         console.log( "Unrecognized object!" );
         console.dir( inMessage );
@@ -267,7 +273,9 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
 
         //Delete game.
         if( users[ new_user.user_id ].has_game == true ) {
-          console.log( "Desliting game " + users[new_user.user_id].game_id );
+          console.log( "Delisting game " + users[new_user.user_id].game_id );
+          console.dir( users );
+          console.dir( games );
           myGames.delist_game(
             error_log,
             myWebsocketConnection,

@@ -24,11 +24,11 @@
     table-layout: fixed;
 }
 
+.table_row {
+    height: min-content;
+}
+
 .table_cell {
     border: 1px solid black;
     overflow-wrap: break-word;
-}
-
-.table_row {
-    height: min-content important!;
 }

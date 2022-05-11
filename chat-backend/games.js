@@ -44,8 +44,6 @@ function remove_game( myLogger, myWebsocketConnection, users, games, in_game_id,
         if( games[ in_game_id ].is_listed == true ) {
             send_delist_game( users, in_game_id );
         }
-
-        //Delete game server-side.
     } catch( error_obj ) {
         myLogger.log_error(
             "games.js::remove_game()::catch",

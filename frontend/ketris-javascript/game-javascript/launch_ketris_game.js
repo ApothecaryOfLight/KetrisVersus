@@ -87,4 +87,5 @@ function doEndKetrisGameplayer( inChatroomWebsocket ) {
 
   switchInterface( "chat", inChatroomWebsocket );
   requestUserList( inChatroomWebsocket );
+  requestGamesList( inChatroomWebsocket );
 }
