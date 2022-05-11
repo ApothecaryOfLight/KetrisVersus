@@ -77,6 +77,7 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
 
     const new_user = {
       connection : myConnection,
+      ip: request.socket.remoteAddress,
       username : "unlogged",
       password : "unlogged",
       isLogged : false,
@@ -184,18 +185,16 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myChat.send_MessageToUser
         );
       } else if(inMessage.event === "client_cancel_game") {
-        if( users[ new_user.user_id].has_game ) {
-          myGames.delist_game(
-            error_log,
-            myWebsocketConnection,
-            users,
-            games,
-            users[ new_user.user_id ].game_id,
-            new_user.user_id,
-            myUIDGen,
-            myChat.send_MessageToAllExcept
-          );
-        }
+        myGames.delist_game(
+          error_log,
+          myWebsocketConnection,
+          users,
+          games,
+          users[ new_user.user_id ].game_id,
+          new_user.user_id,
+          myUIDGen,
+          myChat.send_MessageToAllExcept
+        );
       } else if( inMessage.event === "client_enter_game" ) {
         //Delist the game serverside and with all the clients.
         const posting_user_id = games[inMessage.game_id].posting_user_id;
@@ -210,6 +209,19 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           myChat.send_MessageToAll
         );
 
+        if( new_user.has_game ) {
+          myGames.delist_game(
+            error_log,
+            myWebsocketConnection,
+            users,
+            games,
+            new_user.game_id,
+            new_user.user_id,
+            myUIDGen,
+            myChat.send_MessageToAll
+          );
+        }
+
         //Launch the game.
         myGames.launch_game(
           error_log,
@@ -221,6 +233,9 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
           inMessage.game_id,
           myChat.send_MessageToUser
         );
+
+        //Mark that the user no longer has a game posted.
+        users[posting_user_id].has_game = false;
       } else if( inMessage.event === "client_completed_game" ) {
       } else if( inMessage.event == "client_dev_message" ) {
         log_dev_message(
@@ -241,7 +256,7 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
         myGames.send_GameList(
           error_log,
           games,
-          myWebsocketConnection.myConnection
+          new_user
         );
       } else {
         console.log( "Unrecognized object!" );
@@ -272,17 +287,14 @@ function do_attach_connection_events( myWebsocket, mySqlPool ) {
         );
 
         //Delete game.
-        if( users[ new_user.user_id ].has_game == true ) {
-          console.log( "Delisting game " + users[new_user.user_id].game_id );
-          console.dir( users );
-          console.dir( games );
+        if( users[ new_user.user_id ].has_game ) {
           myGames.delist_game(
             error_log,
             myWebsocketConnection,
             users,
             games,
             users[ new_user.user_id ].game_id,
-            users[ new_user.user_id ].user_id,
+            new_user.user_id,
             myUIDGen,
             myChat.send_MessageToAll
           );

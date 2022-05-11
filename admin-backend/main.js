@@ -29,7 +29,6 @@ This attaches a get route to our Express server, returning the error log in resp
 to a URI request that ends in /get_error_log.
 */
 app.get( '/get_error_log', async function(req,res) {
-    console.log( "get_error_log received.");
     try {
         const errors = await error_log.get_error_log();
         res.send({
@@ -52,7 +51,6 @@ This attaches a get route to our Express server, returning the event log in resp
 to a URI request that ends in /get_event_log.
 */
 app.get( '/get_event_log', async function(req,res) {
-    console.log( "get_event_log received.");
     try {
         const events = await error_log.get_event_log();
         res.send({
@@ -71,7 +69,6 @@ app.get( '/get_event_log', async function(req,res) {
 
 
 app.get( '/get_user_list', async function(req,res) {
-    console.log( "get_user_list received." );
     try {
         const get_user_list_query = 
             "SELECT username_plaintext, creation_ip, last_login, account_creation_time " +

@@ -63,9 +63,19 @@ function doComposeAvailGame( inStartingUser, inTimestamp, inGameColor, inGameIco
 function doAddAllListedGames( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event == "server_game_list" ) {
+    console.log( "doAddAllListedGames" );
+    console.dir( inMessage.game_list );
+    
+    PostedGames.splice(
+      0,
+      PostedGames.length
+    );
     
     const avail_games_area = document.getElementById("avail_games_area");
+    console.dir( JSON.parse( JSON.stringify( avail_games_area ) ) );
+    console.log( avail_games_area.firstChild );
     while( avail_games_area.firstChild != null ) {
+      console.log("blanking");
       avail_games_area.firstChild.remove();
     }
 
@@ -90,8 +100,6 @@ function doAddAllListedGames( event ) {
         UID: game.game_id,
         DOM_reference: avail_game
       });
-
-      //4) Append the available game element to the DOM.
     });
   }
 }
@@ -99,7 +107,11 @@ function doAddAllListedGames( event ) {
 function doAddListedGame( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event == "server_list_game" ) {
-    const avail_games_area = document.getElementById("column_avail_games_area");
+    console.log("doAddListedGame");
+
+    console.dir( inMessage );
+
+    const avail_games_area = document.getElementById("avail_games_area");
     const avail_game = avail_games_area.appendChild( doComposeAvailGame(
       inMessage.game_name,
       "Time is on our side",
@@ -165,10 +177,16 @@ function doDelistOwnGame() {
   OwnGame.reference.remove();
   OwnGame.reference = null;
   OwnGame.has_game = false;
+
+  let myNewGameButton = document.getElementById("start_new_game_button");
+  let myCancelGameButton = document.getElementById("cancel_new_game_button");
+  myNewGameButton.style.display = "flex";
+  myCancelGameButton.style.display = "none";
 }
 
 
 function requestGamesList( inWebsocket ) {
+  console.log("requesting games list");
   const requestGamesList = {
     event : "requestGamesList"
   }

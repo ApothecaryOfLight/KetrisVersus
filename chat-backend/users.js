@@ -41,7 +41,7 @@ async function do_approve_login( myLogger, new_user, username, password, users, 
 
       //Send the client lists of connected users and available games.
       send_UserList( users, myWebsocketConnection.myConnection );
-      send_GameList( myLogger, games, myWebsocketConnection );
+      send_GameList( myLogger, games, new_user );
 
       //Send a new user login event to all other connected users.
       send_NewUserNotification( users, new_user.user_id );

@@ -1,11 +1,9 @@
 /*
 This is sent to new users, to give them a full list of posted games.
 */
-function send_GameList( myLogger, games, myWebsocketConnection ) {
-    console.log( "Send game list." );
+function send_GameList( myLogger, games, user ) {
     try {
         const avail_gamesList = [];
-        console.dir( games );
         games.forEach( game=> {
             avail_gamesList.push({
                 game_name: game.game_name,
@@ -17,15 +15,21 @@ function send_GameList( myLogger, games, myWebsocketConnection ) {
             event: "server_game_list",
             game_list : avail_gamesList
         }
-        console.dir( out );
-        myWebsocketConnection.myConnection.sendUTF( JSON.stringify( out ) );
+        user.connection.sendUTF( JSON.stringify( out ) );
     } catch( error_obj ) {
+        const details = {
+            username: user.username,
+            user_id: user.user_id,
+            game_id: user.game_id,
+            has_game: user.has_game
+        }
         myLogger.log_error(
             "games.js::send_GameList()::catch",
             "Failed to send game list to a specified connection.",
             0,
-            myWebsocketConnection.ip,
-            error_obj
+            user.ip,
+            error_obj,
+            details
         )
     }
 }
@@ -85,13 +89,17 @@ function delist_game( myLogger, myWebsocketConnection, users, games, in_game_id,
             in_posting_user_id
         );
     } catch( error_obj ) {
-        console.dir( error_obj );
+        const details = {
+            game_id: in_game_id,
+            posting_user_id: in_posting_user_id
+        };
         myLogger.log_error(
             "games.js::delist_game()::catch",
             "Error delisting game.",
             0,
             myWebsocketConnection.ip,
-            error_obj
+            error_obj,
+            details
         )
     }
 }

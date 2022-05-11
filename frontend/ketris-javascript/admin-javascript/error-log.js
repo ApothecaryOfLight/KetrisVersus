@@ -31,11 +31,11 @@ function get_error_log() {
     fetch( get_error_log_request )
     .then( json => json.json() )
     .then( json => {
-        const error_log_container = document.getElementById("error-log-container");
-        while( error_log_container.firstChild ) {
-          error_log_container.removeChild( error_log_conatiner.firstChild );
-        }
-        error_log_container.appendChild( compose_error_log( json.error_log ) );
+      const error_log_container = document.getElementById("error-log-container");
+      while( error_log_container.firstChild ) {
+        error_log_container.removeChild( error_log_container.firstChild );
+      }
+      error_log_container.appendChild( compose_error_log( json.error_log ) );
     });
 }
 
