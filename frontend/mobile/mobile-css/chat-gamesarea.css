@@ -38,7 +38,15 @@
   .avail_game_join_button_class {
     padding: 15px;
   }
-  .start_new_game_button_class {
+
+  #start_new_game_button {
+    width: 96%;
+    margin-left: 4%;
+    flex-grow:0;
+    bottom: 0px;
+  }
+  #cancel_new_game_button {
+    display: none;
     width: 96%;
     margin-left: 4%;
     flex-grow:0;

@@ -62,20 +62,14 @@ function doComposeAvailGame( inStartingUser, inTimestamp, inGameColor, inGameIco
 
 function doAddAllListedGames( event ) {
   const inMessage = JSON.parse( event.data );
-  if( inMessage.event == "server_game_list" ) {
-    console.log( "doAddAllListedGames" );
-    console.dir( inMessage.game_list );
-    
+  if( inMessage.event == "server_game_list" ) {    
     PostedGames.splice(
       0,
       PostedGames.length
     );
     
     const avail_games_area = document.getElementById("avail_games_area");
-    console.dir( JSON.parse( JSON.stringify( avail_games_area ) ) );
-    console.log( avail_games_area.firstChild );
     while( avail_games_area.firstChild != null ) {
-      console.log("blanking");
       avail_games_area.firstChild.remove();
     }
 
@@ -107,10 +101,6 @@ function doAddAllListedGames( event ) {
 function doAddListedGame( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event == "server_list_game" ) {
-    console.log("doAddListedGame");
-
-    console.dir( inMessage );
-
     const avail_games_area = document.getElementById("avail_games_area");
     const avail_game = avail_games_area.appendChild( doComposeAvailGame(
       inMessage.game_name,
@@ -186,7 +176,6 @@ function doDelistOwnGame() {
 
 
 function requestGamesList( inWebsocket ) {
-  console.log("requesting games list");
   const requestGamesList = {
     event : "requestGamesList"
   }

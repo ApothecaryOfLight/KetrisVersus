@@ -32,7 +32,10 @@ function transform_mouse_coords_to_ketris_canvas( mouse_move_event ) {
   //Get the CSS adjusted height and width of the canvas.
   //Note that the enemy's part of the canvas is irrelevant, so we divide the width
   //by 2 to get the width of just the user's part of the canvas.
-  const canvas_width = myKetrisCanvas.offsetWidth/2;
+  let canvas_width = myKetrisCanvas.offsetWidth/2;
+  if( isMobile ) {
+    canvas_width = myKetrisCanvas.offsetWidth;
+  }
   const canvas_height = myKetrisCanvas.offsetHeight;
 
   //Next, divide the default pixel size of the canvas by the actual size.

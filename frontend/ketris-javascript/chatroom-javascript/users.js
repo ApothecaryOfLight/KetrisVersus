@@ -71,8 +71,6 @@ function addUser( event ) {
 function removeUser( event ) {
   const inMessage = JSON.parse( event.data );
   if( inMessage.event === "server_remove_user" ) {
-    console.log("remove user");
-    console.dir(inMessage);
     users.forEach( (user,index) => {
       if( user.username == inMessage.username ) {
         user.ref.remove();

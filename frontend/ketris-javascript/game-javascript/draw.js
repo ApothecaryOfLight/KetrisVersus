@@ -544,6 +544,11 @@ function doDrawPreviewBlock() {
   //Get the canvas context of the player's play area.
   let myBufferCanvasContext = myDOMHandles.myBufferCanvas.getContext( "2d" );
 
+  let mobile_offset = 0;
+  if( isMobile ) {
+    mobile_offset = -32;
+  }
+
   //Iterate over every place in the next shape.
   for( let x=0; x<4; x++ ) {
     for( let y=0; y<4; y++ ) {
@@ -551,8 +556,9 @@ function doDrawPreviewBlock() {
       if( Shapes[toDrawShape][0][x][y] == 1 ) {
         myBufferCanvasContext.drawImage(
           myDOMHandles.KetrisImage,
-          (toDrawColor-1)*32, 0, 32, 32,
-          ((x)*31)+150, ((y)*31)+25,
+          (toDrawColor-1)*32, 0,
+          32, 32,
+          ((x)*31)+150+mobile_offset, ((y)*31)+25,
           32, 32
         );
       }

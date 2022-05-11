@@ -170,9 +170,6 @@ argument, and returns an element containing the entire error log formatted as an
 table, with expandable/collapsible hidden rows for the details Objects.
 */
 function compose_error_log( error_log_obj ) {
-  console.log( "Compose error log" );
-  console.log( typeof( error_log_obj ) );
-  console.dir( error_log_obj );
   //Create a document fragment that will act as a DOM element within which we will
   //create our table.
   const error_log = document.createDocumentFragment();

@@ -76,6 +76,7 @@ function attach_event( DOM_ID, event, function_name ) {
     let dom_element_handle = document.getElementById( DOM_ID );
     dom_element_handle.addEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
+    console.log( DOM_ID + ", " + function_name );
     console.error( error );
   }
 }
@@ -101,6 +102,7 @@ function detach_event( DOM_ID, event, function_name ) {
     let dom_element_handle = document.getElementById( DOM_ID );
     dom_element_handle.removeEventListener( event, event_listener_dictionary[ function_name ] );
   } catch ( error ) {
+    console.log( DOM_ID + ", " + function_name );
     console.error( error );
   }
 }

@@ -29,27 +29,21 @@
   const isMobile = true;
 </script>
 
-<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
   <!--Dynamically generated ip file for switching between dev and prod.-->
   <script src="ketris-javascript/ip_file.js"></script>
 
   <!--Chatroom and matchmaking JavaScript.-->
-  <script type="text/babel" src="ketris-javascript/chatroom-javascript/react.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/available_games.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/chat_interface.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/chatroom.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/colors.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/contact_dev.js"></script>
-  <script type="text/babel" src="ketris-javascript/chatroom-javascript/create_account.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/event_listeners.js"></script>
-  <script type="text/babel" src="ketris-javascript/chatroom-javascript/launch_chat_interface.js"></script>
-  <script type="text/babel" src="ketris-javascript/chatroom-javascript/launch_game_interface.js"></script>
-  <script type="text/babel" src="ketris-javascript/chatroom-javascript/launch_login_interface.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/login.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/modal.js"></script>
+  <script type="text/babel" src="ketris-javascript/chatroom-javascript/switch_interface.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/unique_identifier.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/users.js"></script>
   <script type="text/babel" src="ketris-javascript/chatroom-javascript/websocket.js"></script>
@@ -70,7 +64,7 @@
   <script type="text/babel" src="ketris-javascript/game-javascript/score.js"></script>
   <script type="text/babel" src="ketris-javascript/game-javascript/shapes.js"></script>
   <script type="text/babel" src="ketris-javascript/game-javascript/send_events.js"></script>
-  <script type="text/babel" src="ketris-javascript/game-javascript/websocket.js"></script>
+  <script type="text/babel" src="ketris-javascript/game-javascript/game_websocket.js"></script>
 </head>
 
 <body>
@@ -131,7 +125,8 @@
       <div id='column_avail_games_area' class='column_avail_games_area_class'>
         <div id='avail_games_area' class='avail_games_area_class'></div>
       </div>
-      <button id='start_new_game_button' class='start_new_game_button_class button_class unselectable'>Start New Game</buton>
+      <button id='start_new_game_button' class='button_class unselectable'>Start New Game</buton>
+      <button id='cancel_new_game_button' class='button_class unselectable'>Cancel Game</buton>
     </div>
   </div>
 </div>
