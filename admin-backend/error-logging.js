@@ -141,7 +141,7 @@ And finally we take the INSERT query that we've string bashed together and use i
 with an asynchronous MySQL query call. Because it is asynchronous, we use await
 to prevent the function from returning before the query is compelte.
 */
-async function log_error( source, message, severity, ip, details ) {
+async function log_error( source, message, severity, ip, error, details ) {
   const timestamp_string = get_datetime();
   const new_error_id_query =
     "SELECT ketris_db.generate_new_id( 0 ) as new_id;";
@@ -149,10 +149,12 @@ async function log_error( source, message, severity, ip, details ) {
     await sqlPool.query( new_error_id_query );
   const new_error_id = new_error_row[0].new_id;
 
-  details.error = {
-    stack: details.error.stack,
-    message: details.error.message
+  const composed_error = {
+    error: error.toString(),
+    details: details,
+    stack: error.stack
   }
+  const out_error = process_text(JSON.stringify(composed_error));
 
   const add_error_query =
     "INSERT INTO error_log " +
@@ -163,7 +165,7 @@ async function log_error( source, message, severity, ip, details ) {
     severity + ", " +
     "\'" + timestamp_string + "\', " +
     "\'" + ip + "\', " +
-    "\'" + process_text(JSON.stringify( details )) + "\'" +
+    "\'" + out_error + "\'" +
     ");";
 
   const [add_rows,add_fields] = await sqlPool.query( add_error_query );
