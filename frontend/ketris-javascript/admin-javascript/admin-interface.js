@@ -1,14 +1,24 @@
 "use strict";
 
+/*
+Function to switch between interfaces.
+
+target_interface_id: The name of the interface to display.
+*/
 function switch_interface( target_interface_id ) {
+    //Create an array of all interface names.
     const interfaces = [
         "error-log-container",
         "event-log-container",
         "user-list-container",
         "game-list-container"
     ];
+
+    //Iterate through each interface name.
     interfaces.forEach( (interface_name) => {
         const interface_ref = document.getElementById(interface_name);
+        //If this interface in the array is the target, show it ("block").
+        //Otherwise, hide it ("none").
         if( interface_name == target_interface_id ) {
             interface_ref.style["display"] = "block";
         } else {

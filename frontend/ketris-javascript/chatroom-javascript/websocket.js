@@ -126,6 +126,9 @@ function ws_event_websocket_error( error ) {
 }
 
 
+/*
+Main function to launch Ketris as a whole.
+*/
 function main() {
   const user_obj = {
     isLogged: false,
@@ -154,4 +157,6 @@ function main() {
   switchInterface( "login", ws );
 }
 
+
+//Launch Ketris as a whole.
 main();

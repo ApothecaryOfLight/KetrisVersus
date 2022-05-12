@@ -156,16 +156,37 @@ function detach_ws_event( ws, event, function_name ) {
 }
 
 
+/*
+Attach a key-down event listener to an element.
+
+DOM_ID: Element to attach the listener to.
+
+function_name: Function to attach as the callback.
+*/
 function attach_key_event( DOM_ID, function_name ) {
   const dom_reference = document.getElementById( DOM_ID );
   dom_reference.addEventListener( "keydown", event_listener_dictionary["event_login_enter"] );
 }
 
+
+/*
+Detach a key-down event listener from an element.
+
+DOM_ID: Element to detach the listener from.
+
+function_name: Name of the callback function to detach.
+*/
 function detach_key_event( DOM_ID, function_name ) {
   const dom_reference = document.getElementById( DOM_ID );
   dom_reference.removeEventListener( "keydown", event_listener_dictionary["event_login_enter"] );
 }
 
+
+/*
+Attach basic websocket event listeners.
+
+websocket: Connection to chat server.
+*/
 function attachWebsocketEvents( websocket ) {
   try {
     //Basic websocket events.
@@ -177,6 +198,12 @@ function attachWebsocketEvents( websocket ) {
   }
 }
 
+
+/*
+Detach basic websocket event listeners.
+
+websocket: Connection to chat server.
+*/
 function detachWebsocketEvents( websocket ) {
   try {
     //Basic websocket events.
@@ -187,6 +214,13 @@ function detachWebsocketEvents( websocket ) {
 }
 
 
+/*
+Attach login event listeners.
+
+Called when the login interface is opened.
+
+websocket: Connection to chat server.
+*/
 function attachLoginEvents( websocket ) {
   try {
     //Login/account creation button events
@@ -205,6 +239,14 @@ function attachLoginEvents( websocket ) {
   }
 }
 
+
+/*
+Detach login event listeners.
+
+Called when the login interface is closed.
+
+websocket: Connection to chat server.
+*/
 function detachLoginEvents( websocket ) {
   try {
     //Login/account creation button events
@@ -221,6 +263,14 @@ function detachLoginEvents( websocket ) {
   }
 }
 
+
+/*
+Attach chat event listeners.
+
+Called when chat interface is launched.
+
+websocket: Connection to chat server.
+*/
 function attachChatEvents( websocket ) {
   try {
     //Contact dev events.
@@ -255,6 +305,14 @@ function attachChatEvents( websocket ) {
   }
 }
 
+
+/*
+Detach chat event listeners.
+
+Called when chat interface is closed.
+
+websocket: Connection to chat server.
+*/
 function detachChatEvents( websocket ) {
   try {
     //Contact dev events.

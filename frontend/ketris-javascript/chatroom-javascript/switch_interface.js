@@ -1,5 +1,13 @@
 'use strict'
 
+
+/*
+Function to switch between the three main interfaces of Ketris.
+
+targetInterface: Desired interface to display.
+
+websocket: Chat server connection.
+*/
 function switchInterface( targetInterface, websocket ) {
     try {
         //Get references to each interface.
